@@ -1,0 +1,46 @@
+{
+  "common": {
+    "appName": "QuitQOS",
+    "continue": "Continue",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "close": "Close"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark"
+  },
+  "language": {
+    "en": "English",
+    "tr": "Türkçe"
+  },
+  "home": {
+    "startTitle": "Ready to quit?",
+    "startButton": "I'm quitting now",
+    "backdated": "I quit earlier",
+    "streak": {
+      "days_one": "{{count}} day",
+      "days_other": "{{count}} days",
+      "hours": "{{count}}h",
+      "minutes": "{{count}}m",
+      "seconds": "{{count}}s"
+    }
+  },
+  "relapse": {
+    "button": "Unfortunately, I smoked",
+    "warningTitle": "You'll lose your streak",
+    "warningBody": "Your counter will reset to zero, but your past attempts are saved.",
+    "encouragement": "A slip isn't the end. Start again — you've got this."
+  },
+  "tabs": {
+    "home": "Home",
+    "health": "Health",
+    "badges": "Badges",
+    "leaderboard": "Leaderboard"
+  }
+}

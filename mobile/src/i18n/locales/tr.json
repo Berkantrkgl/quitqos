@@ -1,0 +1,46 @@
+{
+  "common": {
+    "appName": "QuitQOS",
+    "continue": "Devam et",
+    "cancel": "Vazgeç",
+    "confirm": "Onayla",
+    "save": "Kaydet",
+    "close": "Kapat"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "language": "Dil",
+    "theme": "Tema",
+    "themeSystem": "Sistem",
+    "themeLight": "Açık",
+    "themeDark": "Koyu"
+  },
+  "language": {
+    "en": "English",
+    "tr": "Türkçe"
+  },
+  "home": {
+    "startTitle": "Bırakmaya hazır mısın?",
+    "startButton": "Şimdi bırakıyorum",
+    "backdated": "Daha önce bıraktım",
+    "streak": {
+      "days_one": "{{count}} gün",
+      "days_other": "{{count}} gün",
+      "hours": "{{count}}sa",
+      "minutes": "{{count}}dk",
+      "seconds": "{{count}}sn"
+    }
+  },
+  "relapse": {
+    "button": "Maalesef içtim",
+    "warningTitle": "Streak'ini kaybedeceksin",
+    "warningBody": "Sayacın sıfırlanacak ama geçmiş denemelerin saklanır.",
+    "encouragement": "Bir kayma son değildir. Yeniden başla — başaracaksın."
+  },
+  "tabs": {
+    "home": "Ana sayfa",
+    "health": "Sağlık",
+    "badges": "Rozetler",
+    "leaderboard": "Sıralama"
+  }
+}
