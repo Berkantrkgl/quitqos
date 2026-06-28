@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: quitqos-postgres
+    environment:
+      POSTGRES_DB: quitqos
+      POSTGRES_USER: quitqos
+      POSTGRES_PASSWORD: quitqos
+    ports:
+      # Host 5434 → container 5432. Host 5432 = system Postgres, 5433 = another project's DB.
+      - "5434:5432"
+    volumes:
+      - quitqos-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quitqos -d quitqos"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  quitqos-pgdata:
