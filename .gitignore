@@ -72,3 +72,6 @@ mobile/ios/
 mobile/android/
 mobile/*.tsbuildinfo
 mobile/.expo-shared/
+
+# Local-only project guide for Claude (not committed)
+CLAUDE.md
