@@ -1,0 +1,314 @@
+{
+  "info": {
+    "name": "QuitQOS API (v1)",
+    "description": "QuitQOS backend — 18 endpoints under /api/v1.\n\nQuick start:\n1. Set the `baseUrl` collection variable (default http://localhost:8080).\n2. Run **Auth → Firebase Login**. With the dev stub verifier, `firebaseIdToken` is treated as the Firebase uid, so any string logs you in as that user. The response's accessToken + refreshToken are saved to collection variables automatically.\n3. Every authenticated request uses `{{accessToken}}` via the collection-level Bearer auth. **Refresh** and **Login** rotate `{{refreshToken}}` automatically.\n\nStatus: Stage 2 (auth) is live. Stages 3-6 endpoints are included but not yet implemented server-side — they will return 404 until built.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{accessToken}}", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "accessToken", "value": "", "type": "string" },
+    { "key": "refreshToken", "value": "", "type": "string" },
+    { "key": "firebaseUid", "value": "test-uid-1", "type": "string" },
+    { "key": "quitAttemptId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Firebase Login / Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "if (b.accessToken) pm.collectionVariables.set('accessToken', b.accessToken);",
+                  "if (b.refreshToken) pm.collectionVariables.set('refreshToken', b.refreshToken);",
+                  "pm.test('returned tokens', () => { pm.expect(b.accessToken).to.be.a('string'); pm.expect(b.refreshToken).to.be.a('string'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firebaseIdToken\": \"{{firebaseUid}}\",\n  \"displayName\": \"Berkan\",\n  \"avatarUrl\": null,\n  \"fcmToken\": null\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/firebase", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","firebase"] },
+            "description": "Login/register with a Firebase ID token. Upserts the user, returns app JWT + refresh token. With the dev stub, `firebaseIdToken` == the uid. Public."
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "if (b.accessToken) pm.collectionVariables.set('accessToken', b.accessToken);",
+                  "if (b.refreshToken) pm.collectionVariables.set('refreshToken', b.refreshToken);",
+                  "pm.test('rotated refresh token', () => pm.expect(b.refreshToken).to.be.a('string'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/refresh", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","refresh"] },
+            "description": "Exchange the refresh token for a new access JWT. The refresh token is single-use and rotated: the old one is invalidated, a new one is returned (and saved here). Public. 401 if invalid/expired/revoked."
+          }
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('204 No Content', () => pm.response.to.have.status(204));",
+                  "pm.collectionVariables.set('refreshToken', '');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/logout", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","logout"] },
+            "description": "Delete the refresh token server-side so the session truly ends. 204 No Content. Public."
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me", "host": ["{{baseUrl}}"], "path": ["api","v1","users","me"] },
+            "description": "Current user's profile. Auth required."
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Berkan T.\",\n  \"avatarUrl\": \"https://example.com/avatar.png\",\n  \"notificationsEnabled\": false\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me", "host": ["{{baseUrl}}"], "path": ["api","v1","users","me"] },
+            "description": "Partial profile update; all fields optional. `notificationsEnabled=false` stops pushes (UserMilestone records still created). Auth required."
+          }
+        },
+        {
+          "name": "Set FCM Token",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fcmToken\": \"<device-fcm-token>\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me/fcm-token", "host": ["{{baseUrl}}"], "path": ["api","v1","users","me","fcm-token"] },
+            "description": "Register/update the device push token. 204 No Content. Auth required."
+          }
+        },
+        {
+          "name": "Sync Guest Data",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quitAttempts\": [\n    {\n      \"startedAt\": \"2026-05-01T08:00:00Z\",\n      \"endedAt\": \"2026-05-10T08:00:00Z\",\n      \"status\": \"RELAPSED\",\n      \"isBackdated\": false,\n      \"localId\": \"device-uuid-1\"\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me/sync", "host": ["{{baseUrl}}"], "path": ["api","v1","users","me","sync"] },
+            "description": "Merge device-local guest data once after upgrade. Idempotent by `localId`. Auth required."
+          }
+        },
+        {
+          "name": "Get My Achievements",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me/achievements", "host": ["{{baseUrl}}"], "path": ["api","v1","users","me","achievements"] },
+            "description": "Earned badges + health benefits derived from the user's UserMilestone records. Auth required."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Quit Attempts",
+      "item": [
+        {
+          "name": "Start Quit Attempt",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) { const b = pm.response.json(); if (b.id) pm.collectionVariables.set('quitAttemptId', b.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startedAt\": \"2026-06-20T09:00:00Z\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/quit-attempts", "host": ["{{baseUrl}}"], "path": ["api","v1","quit-attempts"] },
+            "description": "Start a new streak. `startedAt` optional (defaults to now). Past → isBackdated=true; future → 422; existing ACTIVE → 409. The created id is saved to {{quitAttemptId}}. Auth required."
+          }
+        },
+        {
+          "name": "Get Current Attempt",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/quit-attempts/current", "host": ["{{baseUrl}}"], "path": ["api","v1","quit-attempts","current"] },
+            "description": "Active streak + live elapsed time (home counter). 404 if none active. Auth required."
+          }
+        },
+        {
+          "name": "List Attempts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/quit-attempts?sort=startedAt,desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","quit-attempts"],
+              "query": [
+                { "key": "sort", "value": "startedAt,desc" },
+                { "key": "status", "value": "RELAPSED", "disabled": true }
+              ]
+            },
+            "description": "All past attempts + longestStreakSeconds. Optional `?status=RELAPSED`, `?sort=`. Auth required."
+          }
+        },
+        {
+          "name": "Get Attempt By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/quit-attempts/{{quitAttemptId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","quit-attempts","{{quitAttemptId}}"] },
+            "description": "Single attempt detail (+ earned milestones). Auth required."
+          }
+        },
+        {
+          "name": "Relapse",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"endedAt\": \"2026-06-24T18:00:00Z\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/quit-attempts/{{quitAttemptId}}/relapse", "host": ["{{baseUrl}}"], "path": ["api","v1","quit-attempts","{{quitAttemptId}}","relapse"] },
+            "description": "Close the active attempt: status=RELAPSED, endedAt set (optional, defaults to now). Returns durationSeconds + lostBadges. Auth required."
+          }
+        },
+        {
+          "name": "Attempt Milestones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/quit-attempts/{{quitAttemptId}}/milestones", "host": ["{{baseUrl}}"], "path": ["api","v1","quit-attempts","{{quitAttemptId}}","milestones"] },
+            "description": "Achieved + pending milestones for this attempt (with achievedAt / etaAt). Auth required."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Catalog",
+      "item": [
+        {
+          "name": "List Milestones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/milestones", "host": ["{{baseUrl}}"], "path": ["api","v1","milestones"] },
+            "description": "Full milestone catalogue (with badge). Auth required."
+          }
+        },
+        {
+          "name": "List Badges",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/badges", "host": ["{{baseUrl}}"], "path": ["api","v1","badges"] },
+            "description": "Full badge catalogue (locked ones shown unearned client-side). Auth required."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leaderboard",
+      "item": [
+        {
+          "name": "Leaderboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leaderboard?metric=current&limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","leaderboard"],
+              "query": [
+                { "key": "metric", "value": "current" },
+                { "key": "limit", "value": "50" },
+                { "key": "cursor", "value": "", "disabled": true }
+              ]
+            },
+            "description": "Streak ranking. Default metric `current` (live active streak); `longest` also supported. Registered-only (guest → 403). Auth required."
+          }
+        },
+        {
+          "name": "My Rank",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/leaderboard/me", "host": ["{{baseUrl}}"], "path": ["api","v1","leaderboard","me"] },
+            "description": "The current user's own rank. Registered-only (guest → 403). Auth required."
+          }
+        }
+      ]
+    }
+  ]
+}
