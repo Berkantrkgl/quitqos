@@ -61,6 +61,11 @@
         </dependency>
 
         <!-- Database migrations (versions managed by Spring Boot BOM) -->
+        <!-- Spring Boot 4 extracted Flyway auto-configuration into this module; flyway-core alone does not wire it. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-flyway</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
