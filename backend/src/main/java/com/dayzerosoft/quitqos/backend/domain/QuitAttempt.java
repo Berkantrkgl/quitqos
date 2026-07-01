@@ -54,6 +54,10 @@ public class QuitAttempt {
     @Column(name = "is_backdated", nullable = false)
     private boolean backdated = false;
 
+    /** Device-local id from a guest merge (POST /users/me/sync); null for server-created attempts. */
+    @Column(name = "local_id")
+    private String localId;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
