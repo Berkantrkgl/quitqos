@@ -1,9 +1,8 @@
-<title>QuitQOS — 3 Home Screen Directions</title>
-<meta name="description" content="Three distinct visual directions for the QuitQOS quit-counter home screen, shown as phone mockups.">
+<title>QuitQOS — Ana Ekran: 3 Tasarım Yönü (Light/Dark)</title>
+<meta name="description" content="QuitQOS ana ekranı (bırakma sayacı) için, backend domainine sadık, 3 farklı layout + renk kimliği, her biri light ve dark modda.">
 <style>
   :root{
     --page-bg:#0e1513;
-    --page-panel:#151d1b;
     --ink:#e7efec;
     --ink-dim:#9aa8a3;
     --hair:#26302d;
@@ -17,587 +16,425 @@
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
     -webkit-font-smoothing:antialiased;
     line-height:1.5;
-    padding:48px 20px 80px;
+    padding:48px 20px 96px;
   }
-  .wrap{max-width:1180px;margin:0 auto}
+  .wrap{max-width:1320px;margin:0 auto}
 
-  /* ---- page header ---- */
-  header.page{
-    text-align:center;margin-bottom:14px;
-  }
-  .kicker{
-    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
-    color:var(--accent);font-weight:700;
-  }
-  header.page h1{
-    font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:-.02em;
-    margin:8px 0 10px;text-wrap:balance;
-  }
-  header.page p{color:var(--ink-dim);max-width:60ch;margin:0 auto;font-size:15px}
+  header.page{text-align:center;margin-bottom:14px}
+  .kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  header.page h1{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:-.02em;margin:8px 0 10px;text-wrap:balance}
+  header.page p{color:var(--ink-dim);max-width:64ch;margin:0 auto;font-size:15px}
+  header.page .note{margin-top:14px;font-size:13px;color:#5f6d68;max-width:70ch;margin-inline:auto}
 
-  /* ---- columns ---- */
-  .grid{
-    display:grid;grid-template-columns:repeat(3,1fr);gap:28px;
-    margin-top:40px;align-items:start;
-  }
-  @media(max-width:980px){.grid{grid-template-columns:1fr;max-width:420px;margin-inline:auto}}
+  section.direction{margin-top:72px}
+  .dir-head{padding:0 4px;margin-bottom:22px;text-align:left}
+  .dir-num{font-size:12px;letter-spacing:.18em;color:var(--ink-dim);font-weight:700;display:flex;align-items:center;gap:8px}
+  .dir-num b{color:var(--accent)}
+  .dir-head h2{font-size:24px;font-weight:800;letter-spacing:-.01em;margin:8px 0 6px}
+  .dir-head .tag{font-size:13px;color:var(--accent);font-weight:600}
+  .dir-head .desc{font-size:13.5px;color:var(--ink-dim);margin-top:8px;line-height:1.6;max-width:80ch}
 
-  .col{display:flex;flex-direction:column;gap:18px}
-  .col-head{padding:0 4px}
-  .col-num{
-    font-size:12px;letter-spacing:.18em;color:var(--ink-dim);font-weight:700;
-    display:flex;align-items:center;gap:8px;
-  }
-  .col-num b{color:var(--accent)}
-  .col-head h2{font-size:20px;font-weight:800;letter-spacing:-.01em;margin:6px 0 4px}
-  .col-head .tag{font-size:13px;color:var(--ink-dim)}
-  .col-head .desc{font-size:13px;color:var(--ink-dim);margin-top:8px;line-height:1.55}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  @media(max-width:900px){.pair{grid-template-columns:1fr;max-width:420px;margin-inline:auto}}
 
-  /* ---- phone frame ---- */
-  .phone{
-    width:100%;aspect-ratio:393/812;border-radius:42px;
-    border:1px solid var(--hair);
-    background:#000;padding:9px;
-    box-shadow:0 30px 70px -25px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.02) inset;
-    position:relative;
-  }
-  .screen{
-    width:100%;height:100%;border-radius:34px;overflow:hidden;position:relative;
-    display:flex;flex-direction:column;
-  }
-  .notch{
-    position:absolute;top:11px;left:50%;transform:translateX(-50%);
-    width:34%;height:22px;background:#000;border-radius:0 0 14px 14px;z-index:30;
-  }
-  .statusbar{
-    position:absolute;top:13px;left:0;right:0;z-index:25;
-    display:flex;justify-content:space-between;padding:0 26px;
-    font-size:11px;font-weight:600;
-  }
-  .tabbar{
-    display:flex;justify-content:space-around;align-items:center;
-    padding:10px 0 22px;border-top:1px solid;
-  }
-  .tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;font-weight:600}
-  .tab .dot{width:20px;height:20px;border-radius:6px}
-  .screen-body{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  .col{display:flex;flex-direction:column;gap:12px}
+  .mode-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);font-weight:700;padding:0 4px}
 
-  /* ============================================================
-     STYLE 1 — VITAL SIGNS (clinical-calm)
-     ============================================================ */
-  .s1{
-    --bg:#f7faf9;--card:#ffffff;--ink:#0f1c19;--dim:#5d6f6a;
-    --line:#e3ecea;--teal:#0d9b78;--teal-soft:#e6f6f1;--amber:#c8861a;
-    background:var(--bg);color:var(--ink);
-    font-family:"SF Pro Text",-apple-system,system-ui,sans-serif;
-  }
-  .s1 .statusbar{color:#0f1c19}
-  .s1 .screen-body{padding:46px 22px 0}
-  .s1 .s1-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
-  .s1 .s1-top .hi{font-size:13px;color:var(--dim)}
-  .s1 .s1-top .hi b{display:block;color:var(--ink);font-size:16px;font-weight:700;letter-spacing:-.01em}
-  .s1 .avatar{width:34px;height:34px;border-radius:50%;background:var(--teal-soft);
-    display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--teal);font-size:13px}
-  /* ring */
-  .s1 .ring-wrap{display:flex;justify-content:center;margin:6px 0 18px}
-  .s1 .ring{position:relative;width:210px;height:210px}
-  .s1 .ring svg{transform:rotate(-90deg)}
-  .s1 .ring .center{
-    position:absolute;inset:0;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;
-  }
-  .s1 .ring .num{
-    font-size:62px;font-weight:800;letter-spacing:-.04em;line-height:1;
-    font-variant-numeric:tabular-nums;
-  }
-  .s1 .ring .unit{font-size:13px;color:var(--dim);letter-spacing:.04em;margin-top:4px}
-  .s1 .ring .clock{
-    margin-top:10px;font-size:12px;color:var(--teal);font-weight:600;
-    font-variant-numeric:tabular-nums;letter-spacing:.03em;
-  }
-  .s1 .label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:700;margin:4px 2px 10px}
-  /* stat cards */
-  .s1 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .s1 .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 14px}
-  .s1 .stat .v{font-size:20px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-  .s1 .stat .v.amber{color:var(--amber)}
-  .s1 .stat .k{font-size:11px;color:var(--dim);margin-top:2px}
-  /* next milestone */
-  .s1 .next{background:var(--teal-soft);border-radius:16px;padding:13px 14px;margin-top:11px;
-    display:flex;align-items:center;gap:11px}
-  .s1 .next .ic{width:30px;height:30px;border-radius:9px;background:var(--teal);flex:none;
-    display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px}
-  .s1 .next .t{font-size:13px;font-weight:700;color:#084332}
-  .s1 .next .s{font-size:11.5px;color:#1b7a61}
-  .s1 .tabbar{border-color:var(--line);background:var(--card)}
-  .s1 .tab{color:var(--dim)}
-  .s1 .tab.on{color:var(--teal)}
-  .s1 .tab .dot{background:#dde7e4}
-  .s1 .tab.on .dot{background:var(--teal)}
+  /* phone frame */
+  .phone{width:100%;aspect-ratio:393/812;border-radius:42px;border:1px solid var(--hair);background:#000;padding:9px;box-shadow:0 30px 60px -20px rgba(0,0,0,.6)}
+  .screen{width:100%;height:100%;border-radius:34px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:110px;height:26px;background:#000;border-radius:0 0 16px 16px;z-index:20}
+  .statusbar{height:46px;flex:0 0 auto;display:flex;align-items:flex-end;justify-content:space-between;padding:0 22px 8px;font-size:13px;font-weight:600}
+  .content{flex:1 1 auto;overflow:hidden;position:relative}
+  .tabbar{flex:0 0 auto;display:flex;justify-content:space-around;align-items:center;padding:10px 6px calc(10px + 14px);border-top:1px solid rgba(127,127,127,.14)}
+  .tabitem{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;font-weight:600}
+  .tabicon{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px}
 
-  /* ============================================================
-     STYLE 2 — STREAK FORGE (bold / gamified)
-     ============================================================ */
-  .s2{
-    --bg:#0a0d12;--ink:#f2f4f7;--dim:#7e8794;--amber:#ffb020;--amber2:#ff7a18;
-    --line:#1d232c;--card:#11161d;
-    background:
-      radial-gradient(420px 320px at 50% 6%, rgba(255,138,24,.20), transparent 70%),
-      var(--bg);
-    color:var(--ink);
-    font-family:"SF Pro Display",-apple-system,system-ui,sans-serif;
-  }
-  .s2 .statusbar{color:#f2f4f7}
-  .s2 .screen-body{padding:44px 20px 0}
-  .s2 .s2-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .s2 .rankpill{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);
-    padding:6px 11px;border-radius:999px;font-size:12px;font-weight:700}
-  .s2 .rankpill .r{color:var(--amber)}
-  .s2 .flame{font-size:13px;color:var(--dim);font-weight:700}
-  /* big number */
-  .s2 .hero{text-align:center;margin:14px 0 6px;position:relative}
-  .s2 .hero .big{
-    font-size:128px;font-weight:900;line-height:.82;letter-spacing:-.05em;
-    background:linear-gradient(180deg,var(--amber) 0%,var(--amber2) 100%);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    font-variant-numeric:tabular-nums;
-  }
-  .s2 .hero .days{font-size:15px;font-weight:800;letter-spacing:.3em;text-transform:uppercase;color:var(--ink);margin-top:2px}
-  .s2 .hero .sub{font-size:12px;color:var(--dim);margin-top:8px;font-variant-numeric:tabular-nums}
-  /* progress to next */
-  .s2 .bar-wrap{margin:20px 2px 8px}
-  .s2 .bar-top{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:7px}
-  .s2 .bar-top .l{color:var(--dim);font-weight:600}
-  .s2 .bar-top .r{color:var(--amber);font-weight:800}
-  .s2 .bar{height:9px;background:#1a212a;border-radius:999px;overflow:hidden}
-  .s2 .bar i{display:block;height:100%;width:62%;border-radius:999px;
-    background:linear-gradient(90deg,var(--amber2),var(--amber))}
-  /* badges */
-  .s2 .badges-h{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);
-    font-weight:800;margin:20px 2px 11px}
-  .s2 .badges{display:flex;gap:10px}
-  .s2 .badge{flex:1;aspect-ratio:1;border-radius:16px;background:var(--card);border:1px solid var(--line);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
-  .s2 .badge .em{font-size:22px}
-  .s2 .badge .nm{font-size:9px;color:var(--dim);font-weight:700}
-  .s2 .badge.got{border-color:rgba(255,176,32,.4);background:linear-gradient(180deg,rgba(255,176,32,.12),transparent)}
-  .s2 .badge.got .nm{color:var(--amber)}
-  .s2 .badge.lock{opacity:.45}
-  .s2 .tabbar{border-color:var(--line);background:rgba(10,13,18,.9)}
-  .s2 .tab{color:var(--dim)}
-  .s2 .tab.on{color:var(--amber)}
-  .s2 .tab .dot{background:#222a33}
-  .s2 .tab.on .dot{background:var(--amber)}
-
-  /* ============================================================
-     STYLE 3 — CLEAN SLATE (soft / editorial)
-     ============================================================ */
-  .s3{
-    --bg:#f4efe7;--card:#fffdf9;--ink:#2c2a26;--dim:#857f74;
-    --sage:#6f9b7d;--sage-deep:#4f7d5e;--coral:#e08763;--line:#e8e0d3;
-    background:var(--bg);color:var(--ink);
-    font-family:"SF Pro Rounded","SF Pro Text",-apple-system,system-ui,sans-serif;
-  }
-  .s3 .statusbar{color:#2c2a26}
-  .s3 .screen-body{padding:48px 22px 0}
-  .s3 .s3-greet{font-size:14px;color:var(--dim)}
-  .s3 .s3-greet b{color:var(--ink)}
-  .s3 .s3-quote{font-size:18px;font-weight:700;letter-spacing:-.01em;line-height:1.32;margin:6px 0 22px;text-wrap:balance}
-  .s3 .s3-quote em{font-style:normal;color:var(--sage-deep)}
-  /* soft counter card */
-  .s3 .card{
-    background:var(--card);border-radius:28px;padding:26px 22px;text-align:center;
-    border:1px solid var(--line);box-shadow:0 14px 30px -18px rgba(79,125,94,.5);
-    position:relative;overflow:hidden;
-  }
-  .s3 .card::before{
-    content:"";position:absolute;top:-50px;right:-40px;width:140px;height:140px;border-radius:50%;
-    background:radial-gradient(circle,rgba(111,155,125,.20),transparent 70%);
-  }
-  .s3 .breathe{
-    width:64px;height:64px;border-radius:50%;margin:0 auto 14px;
-    background:radial-gradient(circle at 38% 34%,#86b394,var(--sage));
-    box-shadow:0 0 0 10px rgba(111,155,125,.12),0 0 0 22px rgba(111,155,125,.06);
-    animation:breathe 5s ease-in-out infinite;
-  }
-  @keyframes breathe{0%,100%{transform:scale(.92)}50%{transform:scale(1.06)}}
-  @media(prefers-reduced-motion:reduce){.s3 .breathe{animation:none}}
-  .s3 .card .num{font-size:54px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
-  .s3 .card .num span{color:var(--sage-deep)}
-  .s3 .card .unit{font-size:13px;color:var(--dim);margin-top:6px}
-  .s3 .card .clock{margin-top:12px;font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums;letter-spacing:.02em}
-  /* progress dots (milestones) */
-  .s3 .miles{margin:18px 4px 0}
-  .s3 .miles .mh{font-size:13px;font-weight:700;margin-bottom:11px}
-  .s3 .dots{display:flex;align-items:center;gap:0}
-  .s3 .dseg{flex:1;height:3px;border-radius:2px;background:#e3dccd}
-  .s3 .dseg.done{background:var(--sage)}
-  .s3 .dnode{width:13px;height:13px;border-radius:50%;background:#e3dccd;flex:none;border:2px solid var(--card)}
-  .s3 .dnode.done{background:var(--sage)}
-  .s3 .dnode.now{background:var(--coral);box-shadow:0 0 0 4px rgba(224,135,99,.2)}
-  .s3 .miles .cap{display:flex;justify-content:space-between;margin-top:9px;font-size:11px;color:var(--dim)}
-  .s3 .miles .cap .c-now{color:var(--coral);font-weight:700}
-  /* relapse / soft action */
-  .s3 .soft-row{display:flex;gap:10px;margin-top:18px}
-  .s3 .pillbtn{flex:1;text-align:center;padding:13px;border-radius:16px;font-size:13px;font-weight:700}
-  .s3 .pillbtn.primary{background:var(--sage);color:#fff}
-  .s3 .pillbtn.ghost{background:transparent;border:1.5px solid var(--line);color:var(--dim)}
-  .s3 .tabbar{border-color:var(--line);background:var(--card)}
-  .s3 .tab{color:var(--dim)}
-  .s3 .tab.on{color:var(--sage-deep)}
-  .s3 .tab .dot{background:#e3dccd}
-  .s3 .tab.on .dot{background:var(--sage)}
-
-  /* ============================================================
-     STYLE 4 — NEON PULSE (cyber / high-energy)
-     ============================================================ */
-  .s4{
-    --bg:#06070f;--ink:#eaf6ff;--dim:#6f7d99;--cyan:#22e3ff;--mag:#ff3df0;
-    --line:#19203a;--card:#0c1126;
-    background:
-      radial-gradient(360px 300px at 50% 4%, rgba(34,227,255,.16), transparent 70%),
-      radial-gradient(300px 280px at 50% 96%, rgba(255,61,240,.12), transparent 70%),
-      var(--bg);
-    color:var(--ink);
-    font-family:"SF Mono",ui-monospace,"SF Pro Display",-apple-system,system-ui,sans-serif;
-  }
-  .s4 .statusbar{color:#eaf6ff}
-  .s4 .screen-body{padding:44px 20px 0}
-  .s4 .s4-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-  .s4 .s4-top .sys{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);font-weight:700}
-  .s4 .s4-top .live{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--mag);font-weight:700;letter-spacing:.12em}
-  .s4 .s4-top .live .blink{width:7px;height:7px;border-radius:50%;background:var(--mag);box-shadow:0 0 8px var(--mag);animation:blink 1.4s ease-in-out infinite}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
-  @media(prefers-reduced-motion:reduce){.s4 .s4-top .live .blink{animation:none}}
-  /* glowing ring */
-  .s4 .ring-wrap{display:flex;justify-content:center;margin:16px 0 14px}
-  .s4 .ring{position:relative;width:212px;height:212px}
-  .s4 .ring svg{transform:rotate(-90deg);filter:drop-shadow(0 0 6px rgba(34,227,255,.7))}
-  .s4 .ring .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-  .s4 .ring .num{font-size:66px;font-weight:800;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;
-    text-shadow:0 0 18px rgba(34,227,255,.55)}
-  .s4 .ring .unit{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--cyan);margin-top:7px;font-weight:700}
-  .s4 .ring .clock{margin-top:9px;font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums;letter-spacing:.08em}
-  /* readout grid */
-  .s4 .read{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:6px}
-  .s4 .rcell{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px;position:relative;overflow:hidden}
-  .s4 .rcell::after{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
-  .s4 .rcell.mag::after{background:var(--mag);box-shadow:0 0 8px var(--mag)}
-  .s4 .rcell .v{font-size:18px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-  .s4 .rcell .v.c{color:var(--cyan)} .s4 .rcell .v.m{color:var(--mag)}
-  .s4 .rcell .k{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:3px;font-weight:600}
-  /* next target bar */
-  .s4 .tgt{margin:13px 2px 0}
-  .s4 .tgt-top{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px;font-weight:700}
-  .s4 .tgt-top .l{color:var(--dim)} .s4 .tgt-top .r{color:var(--cyan)}
-  .s4 .tgt-bar{height:8px;background:#0e1430;border:1px solid var(--line);border-radius:999px;overflow:hidden}
-  .s4 .tgt-bar i{display:block;height:100%;width:80%;background:linear-gradient(90deg,var(--mag),var(--cyan));box-shadow:0 0 10px rgba(34,227,255,.6)}
-  .s4 .tabbar{border-color:var(--line);background:rgba(6,7,15,.92)}
-  .s4 .tab{color:var(--dim)} .s4 .tab.on{color:var(--cyan)}
-  .s4 .tab .dot{background:#16203f} .s4 .tab.on .dot{background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
-
-  /* ============================================================
-     STYLE 5 — PAPER JOURNAL (analog / reflective)
-     ============================================================ */
-  .s5{
-    --bg:#efe9dc;--paper:#fbf7ee;--ink:#33302a;--dim:#8a8276;
-    --rule:#d8cfbb;--ink-blue:#3b5a6b;--ink-red:#b65644;--gold:#a8862f;
-    background:var(--bg);color:var(--ink);
-    font-family:"New York","Iowan Old Style",ui-serif,Georgia,serif;
-  }
-  .s5 .statusbar{color:#33302a}
-  .s5 .screen-body{
-    padding:46px 24px 0;
-    background:
-      repeating-linear-gradient(180deg,transparent 0 31px,var(--rule) 31px 32px),
-      var(--paper);
-    background-position:0 60px;
-  }
-  .s5 .s5-date{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);
-    font-family:ui-sans-serif,system-ui,sans-serif;font-weight:600}
-  .s5 .s5-h{font-size:22px;font-weight:600;letter-spacing:-.01em;margin:3px 0 18px;font-style:italic}
-  .s5 .s5-h b{font-style:normal;font-weight:700}
-  /* day count, written large */
-  .s5 .count{text-align:center;margin:6px 0 4px}
-  .s5 .count .num{font-size:78px;font-weight:600;line-height:.9;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-  .s5 .count .num .sm{font-size:30px;color:var(--dim)}
-  .s5 .count .lbl{font-size:13px;color:var(--dim);font-style:italic;margin-top:4px}
-  .s5 .rule-strong{height:2px;background:var(--ink);opacity:.18;margin:18px 0 16px}
-  /* ledger entries */
-  .s5 .ledger{display:flex;flex-direction:column;gap:0}
-  .s5 .lrow{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px dotted var(--rule)}
-  .s5 .lrow .lk{font-size:14px;color:var(--ink)}
-  .s5 .lrow .lk .mk{color:var(--ink-red);margin-right:6px;font-weight:700}
-  .s5 .lrow .lv{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
-  .s5 .lrow .lv.gold{color:var(--gold)}
-  /* margin note */
-  .s5 .note{
-    margin-top:16px;padding:12px 14px;background:rgba(59,90,107,.07);
-    border-left:3px solid var(--ink-blue);border-radius:0 8px 8px 0;
-    font-size:13px;font-style:italic;color:var(--ink-blue);line-height:1.45;
-  }
-  .s5 .note b{font-style:normal}
-  .s5 .stamp{
-    margin:16px auto 0;width:max-content;border:2px solid var(--ink-red);color:var(--ink-red);
-    padding:5px 13px;border-radius:6px;transform:rotate(-3deg);
-    font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.85;
-  }
-  .s5 .tabbar{border-color:var(--rule);background:var(--paper)}
-  .s5 .tab{color:var(--dim);font-family:ui-sans-serif,system-ui,sans-serif}
-  .s5 .tab.on{color:var(--ink-red)}
-  .s5 .tab .dot{background:#ddd4c2} .s5 .tab.on .dot{background:var(--ink-red)}
-
-  /* footer note */
-  .foot{margin-top:48px;text-align:center;color:var(--ink-dim);font-size:13px;line-height:1.6}
-  .foot code{background:var(--page-panel);border:1px solid var(--hair);padding:2px 7px;border-radius:6px;font-size:12px}
+  /* generic helpers reused across directions */
+  .u-row{display:flex;align-items:center;justify-content:space-between}
+  .u-scroll{padding:16px 18px 20px;display:flex;flex-direction:column;gap:16px;height:100%;overflow:hidden}
 </style>
 
 <div class="wrap">
+
   <header class="page">
-    <div class="kicker">QuitQOS · Home Screen</div>
-    <h1>Five directions for the quit counter</h1>
-    <p>Same screen, same content — a 24-day active streak — rendered in five visual identities. Pick a direction (or mix elements) and I'll build it as real React Native screens.</p>
+    <div class="kicker">QuitQOS · Ana Ekran</div>
+    <h1>Bırakma Sayacı — 3 Tasarım Yönü</h1>
+    <p>Her yön hem farklı bir yerleşim hem farklı bir renk kimliği dener. İçerik backend domainine sadık: aktif <code>QuitAttempt</code> süresi, sonraki milestone'a ilerleme, kazanılan rozet sayısı, leaderboard sırası ve relapse aksiyonu. Uydurma özellik yok — "koç" gibi karşılığı olmayan kavramlar kaldırıldı.</div>
+    <div class="note">Her yön için Light ve Dark mod yan yana. Sekme çubuğu 4 gerçek modülü yansıtır: Ana Sayfa · Sağlık · Rozetler · Sıralama.</div>
   </header>
 
-  <div class="grid">
+  <!-- ================= DIRECTION 1 ================= -->
+  <section class="direction">
+    <div class="dir-head">
+      <div class="dir-num"><b>01</b> — Halka Odaklı</div>
+      <h2>Sakin Klinik</h2>
+      <div class="tag">Teal marka rengi · tek büyük halka · milestone ilerlemesi merkezde</div>
+      <div class="desc">Mevcut <code>theme.ts</code> paletiyle (teal <code>primary</code>, amber <code>streak</code>) birebir uyumlu, en düşük riskli yön. Halka; gün sayısını değil, <b>bir sonraki milestone'a kalan süreyi</b> gösterir (ör. 24. günde sıradaki hedef "1 ay"). Alt satırda iki küçük istatistik (rozet sayısı, sıralama), altta tek net CTA satırı ("Maalesef içtim").</div>
+    </div>
+    <div class="pair">
 
-    <!-- ================= STYLE 1 ================= -->
-    <section class="col">
-      <div class="col-head">
-        <div class="col-num"><b>01</b> — Vital Signs</div>
-        <h2>Clinical&nbsp;·&nbsp;Calm</h2>
-        <div class="tag">A quiet health instrument</div>
-        <div class="desc">Builds on your teal palette. Thin progress ring, tabular numerals, lots of white. Reads as trustworthy and medical — quitting framed as recovery you can measure.</div>
-      </div>
-      <div class="phone">
-        <div class="notch"></div>
-        <div class="screen s1">
-          <div class="statusbar"><span>9:41</span><span>●●● 􀟝 100%</span></div>
-          <div class="screen-body">
-            <div class="s1-top">
-              <div class="hi">Welcome back<b>Berkan</b></div>
-              <div class="avatar">BT</div>
-            </div>
-            <div class="ring-wrap">
-              <div class="ring">
-                <svg width="210" height="210" viewBox="0 0 210 210">
-                  <circle cx="105" cy="105" r="92" fill="none" stroke="#e3ecea" stroke-width="13"/>
-                  <circle cx="105" cy="105" r="92" fill="none" stroke="#0d9b78" stroke-width="13"
-                    stroke-linecap="round" stroke-dasharray="578" stroke-dashoffset="218"/>
-                </svg>
-                <div class="center">
-                  <div class="num">24</div>
-                  <div class="unit">days smoke-free</div>
-                  <div class="clock">12:04:51 elapsed</div>
+      <!-- 01 LIGHT -->
+      <div class="col">
+        <div class="mode-label">Light</div>
+        <div class="phone"><div class="screen" style="background:#FFFFFF">
+          <div class="notch"></div>
+          <div class="statusbar" style="color:#11181C"><span>9:41</span><span>●●●● 5G 🔋</span></div>
+          <div class="content">
+            <div class="u-scroll">
+              <div class="u-row">
+                <div>
+                  <div style="font-size:17px;font-weight:800;color:#11181C">QuitQOS</div>
+                  <div style="font-size:11px;color:#60646C">Dumansız 24. gün</div>
+                </div>
+                <div style="width:34px;height:34px;border-radius:10px;background:#F0F0F3;display:flex;align-items:center;justify-content:center;font-size:15px">⚙️</div>
+              </div>
+
+              <div style="background:#FFFFFF;border:1px solid #E2E4E9;border-radius:24px;padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:10px">
+                <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#60646C;font-weight:700">Sıradaki Milestone · 1 Ay</div>
+                <div style="width:172px;height:172px;border-radius:50%;background:conic-gradient(#10B981 0turn 0.56turn, #E0E1E6 0.56turn 1turn);display:flex;align-items:center;justify-content:center">
+                  <div style="width:140px;height:140px;border-radius:50%;background:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+                    <div style="font-size:40px;font-weight:800;color:#11181C;line-height:1">24</div>
+                    <div style="font-size:11px;color:#60646C;font-weight:600">DUMANSIZ GÜN</div>
+                    <div style="margin-top:4px;font-size:12px;font-weight:700;color:#10B981;background:#D1FAE5;padding:3px 10px;border-radius:20px">12:17:28</div>
+                  </div>
+                </div>
+                <div style="font-size:12px;color:#60646C">6 gün sonra <b style="color:#11181C">Nefes alma kolaylaşır</b> milestone'ı</div>
+              </div>
+
+              <div style="display:flex;gap:12px">
+                <div style="flex:1;background:#F0F0F3;border-radius:16px;padding:14px">
+                  <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#60646C;font-weight:700">Rozetler</div>
+                  <div style="font-size:22px;font-weight:800;color:#11181C;margin-top:4px">4<span style="font-size:13px;color:#60646C;font-weight:600">/9</span></div>
+                </div>
+                <div style="flex:1;background:#F0F0F3;border-radius:16px;padding:14px">
+                  <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#60646C;font-weight:700">Sıralama</div>
+                  <div style="font-size:22px;font-weight:800;color:#11181C;margin-top:4px">#12</div>
                 </div>
               </div>
+
+              <button style="border:1px solid #EF4444;color:#EF4444;background:#FEE2E2;border-radius:14px;padding:13px;font-size:14px;font-weight:700">Maalesef içtim</button>
             </div>
-            <div class="label">Today</div>
-            <div class="stats">
-              <div class="stat"><div class="v amber">₺3,360</div><div class="k">Money saved</div></div>
-              <div class="stat"><div class="v">480</div><div class="k">Sticks not used</div></div>
-            </div>
-            <div class="next">
-              <div class="ic">􀉪</div>
-              <div>
-                <div class="t">Next: 1 month</div>
-                <div class="s">6 days away · lung cilia recover</div>
+          </div>
+          <div class="tabbar" style="background:#FFFFFF;border-color:#E2E4E9">
+            <div class="tabitem" style="color:#10B981"><div class="tabicon" style="background:#D1FAE5">🏠</div>Ana Sayfa</div>
+            <div class="tabitem" style="color:#60646C"><div class="tabicon">💚</div>Sağlık</div>
+            <div class="tabitem" style="color:#60646C"><div class="tabicon">🏅</div>Rozetler</div>
+            <div class="tabitem" style="color:#60646C"><div class="tabicon">🏆</div>Sıralama</div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- 01 DARK -->
+      <div class="col">
+        <div class="mode-label">Dark</div>
+        <div class="phone"><div class="screen" style="background:#0B0F0E">
+          <div class="notch"></div>
+          <div class="statusbar" style="color:#ECEDEE"><span>9:41</span><span>●●●● 5G 🔋</span></div>
+          <div class="content">
+            <div class="u-scroll">
+              <div class="u-row">
+                <div>
+                  <div style="font-size:17px;font-weight:800;color:#ECEDEE">QuitQOS</div>
+                  <div style="font-size:11px;color:#B0B4BA">Dumansız 24. gün</div>
+                </div>
+                <div style="width:34px;height:34px;border-radius:10px;background:#181C1B;display:flex;align-items:center;justify-content:center;font-size:15px">⚙️</div>
               </div>
-            </div>
-          </div>
-          <div class="tabbar">
-            <div class="tab on"><div class="dot"></div>Home</div>
-            <div class="tab"><div class="dot"></div>Stats</div>
-            <div class="tab"><div class="dot"></div>Badges</div>
-            <div class="tab"><div class="dot"></div>Ranks</div>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- ================= STYLE 2 ================= -->
-    <section class="col">
-      <div class="col-head">
-        <div class="col-num"><b>02</b> — Streak Forge</div>
-        <h2>Bold&nbsp;·&nbsp;Gamified</h2>
-        <div class="tag">An achievement engine</div>
-        <div class="desc">Leans on your amber streak color over a dark ground. Heavy numerals, progress-to-next bar, badge shelf, leaderboard rank up top. Drives momentum — every day is points earned.</div>
-      </div>
-      <div class="phone">
-        <div class="notch"></div>
-        <div class="screen s2">
-          <div class="statusbar"><span>9:41</span><span>●●● 􀟝 100%</span></div>
-          <div class="screen-body">
-            <div class="s2-top">
-              <div class="rankpill">🏆 <span class="r">#142</span> global</div>
-              <div class="flame">🔥 24-day streak</div>
-            </div>
-            <div class="hero">
-              <div class="big">24</div>
-              <div class="days">Days Clean</div>
-              <div class="sub">12 : 04 : 51 · longest ever 24d</div>
-            </div>
-            <div class="bar-wrap">
-              <div class="bar-top"><span class="l">Next badge · 1 Month</span><span class="r">80%</span></div>
-              <div class="bar"><i></i></div>
-            </div>
-            <div class="badges-h">Recent badges</div>
-            <div class="badges">
-              <div class="badge got"><div class="em">🥉</div><div class="nm">72 HOURS</div></div>
-              <div class="badge got"><div class="em">🥈</div><div class="nm">1 WEEK</div></div>
-              <div class="badge lock"><div class="em">🔒</div><div class="nm">1 MONTH</div></div>
-              <div class="badge lock"><div class="em">🔒</div><div class="nm">3 MONTHS</div></div>
-            </div>
-          </div>
-          <div class="tabbar">
-            <div class="tab on"><div class="dot"></div>Home</div>
-            <div class="tab"><div class="dot"></div>Stats</div>
-            <div class="tab"><div class="dot"></div>Badges</div>
-            <div class="tab"><div class="dot"></div>Ranks</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= STYLE 3 ================= -->
-    <section class="col">
-      <div class="col-head">
-        <div class="col-num"><b>03</b> — Clean Slate</div>
-        <h2>Soft&nbsp;·&nbsp;Editorial</h2>
-        <div class="tag">A gentle daily companion</div>
-        <div class="desc">A warmer departure: paper-cream ground, sage + coral, rounded type, a breathing orb. Low-pressure and kind — supports recovery without shouting. Relapse feels safe, not like failure.</div>
-      </div>
-      <div class="phone">
-        <div class="notch"></div>
-        <div class="screen s3">
-          <div class="statusbar"><span>9:41</span><span>●●● 􀟝 100%</span></div>
-          <div class="screen-body">
-            <div class="s3-greet">Good morning, <b>Berkan</b></div>
-            <div class="s3-quote">You've made it <em>24 days</em>. Your body is already thanking you.</div>
-            <div class="card">
-              <div class="breathe"></div>
-              <div class="num"><span>24</span></div>
-              <div class="unit">days, 12 hours free</div>
-              <div class="clock">since June 5 · backdated start</div>
-            </div>
-            <div class="miles">
-              <div class="mh">Your journey</div>
-              <div class="dots">
-                <div class="dnode done"></div><div class="dseg done"></div>
-                <div class="dnode done"></div><div class="dseg done"></div>
-                <div class="dnode done"></div><div class="dseg done"></div>
-                <div class="dnode now"></div><div class="dseg"></div>
-                <div class="dnode"></div>
+              <div style="background:#0F1413;border:1px solid #2A2F2E;border-radius:24px;padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:10px">
+                <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#B0B4BA;font-weight:700">Sıradaki Milestone · 1 Ay</div>
+                <div style="width:172px;height:172px;border-radius:50%;background:conic-gradient(#2DD4A7 0turn 0.56turn, #23282A 0.56turn 1turn);display:flex;align-items:center;justify-content:center">
+                  <div style="width:140px;height:140px;border-radius:50%;background:#0B0F0E;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+                    <div style="font-size:40px;font-weight:800;color:#ECEDEE;line-height:1">24</div>
+                    <div style="font-size:11px;color:#B0B4BA;font-weight:600">DUMANSIZ GÜN</div>
+                    <div style="margin-top:4px;font-size:12px;font-weight:700;color:#04130E;background:#2DD4A7;padding:3px 10px;border-radius:20px">12:17:28</div>
+                  </div>
+                </div>
+                <div style="font-size:12px;color:#B0B4BA">6 gün sonra <b style="color:#ECEDEE">Nefes alma kolaylaşır</b> milestone'ı</div>
               </div>
-              <div class="cap"><span>1 week</span><span class="c-now">1 month →</span></div>
-            </div>
-            <div class="soft-row">
-              <div class="pillbtn primary">View health gains</div>
-              <div class="pillbtn ghost">I slipped</div>
-            </div>
-          </div>
-          <div class="tabbar">
-            <div class="tab on"><div class="dot"></div>Today</div>
-            <div class="tab"><div class="dot"></div>Stats</div>
-            <div class="tab"><div class="dot"></div>Badges</div>
-            <div class="tab"><div class="dot"></div>Ranks</div>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- ================= STYLE 4 ================= -->
-    <section class="col">
-      <div class="col-head">
-        <div class="col-num"><b>04</b> — Neon Pulse</div>
-        <h2>Cyber&nbsp;·&nbsp;High-energy</h2>
-        <div class="tag">A live performance readout</div>
-        <div class="desc">Dark with electric cyan + magenta glow, mono numerals, a pulsing live indicator. Frames the streak as a system you're actively winning — bold, modern, gym-app energy.</div>
-      </div>
-      <div class="phone">
-        <div class="notch"></div>
-        <div class="screen s4">
-          <div class="statusbar"><span>9:41</span><span>●●● 􀟝 100%</span></div>
-          <div class="screen-body">
-            <div class="s4-top">
-              <div class="sys">// streak.active</div>
-              <div class="live"><span class="blink"></span>LIVE · #142</div>
-            </div>
-            <div class="ring-wrap">
-              <div class="ring">
-                <svg width="212" height="212" viewBox="0 0 212 212">
-                  <circle cx="106" cy="106" r="92" fill="none" stroke="#141b36" stroke-width="11"/>
-                  <circle cx="106" cy="106" r="92" fill="none" stroke="#22e3ff" stroke-width="11"
-                    stroke-linecap="round" stroke-dasharray="578" stroke-dashoffset="173"/>
-                </svg>
-                <div class="center">
-                  <div class="num">24</div>
-                  <div class="unit">days clean</div>
-                  <div class="clock">12:04:51</div>
+              <div style="display:flex;gap:12px">
+                <div style="flex:1;background:#181C1B;border-radius:16px;padding:14px">
+                  <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#B0B4BA;font-weight:700">Rozetler</div>
+                  <div style="font-size:22px;font-weight:800;color:#ECEDEE;margin-top:4px">4<span style="font-size:13px;color:#B0B4BA;font-weight:600">/9</span></div>
+                </div>
+                <div style="flex:1;background:#181C1B;border-radius:16px;padding:14px">
+                  <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#B0B4BA;font-weight:700">Sıralama</div>
+                  <div style="font-size:22px;font-weight:800;color:#ECEDEE;margin-top:4px">#12</div>
                 </div>
               </div>
-            </div>
-            <div class="read">
-              <div class="rcell"><div class="v c">480</div><div class="k">sticks avoided</div></div>
-              <div class="rcell mag"><div class="v m">₺3,360</div><div class="k">saved</div></div>
-            </div>
-            <div class="tgt">
-              <div class="tgt-top"><span class="l">target · 1 month</span><span class="r">80%</span></div>
-              <div class="tgt-bar"><i></i></div>
-            </div>
-          </div>
-          <div class="tabbar">
-            <div class="tab on"><div class="dot"></div>Home</div>
-            <div class="tab"><div class="dot"></div>Stats</div>
-            <div class="tab"><div class="dot"></div>Badges</div>
-            <div class="tab"><div class="dot"></div>Ranks</div>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- ================= STYLE 5 ================= -->
-    <section class="col">
-      <div class="col-head">
-        <div class="col-num"><b>05</b> — Paper Journal</div>
-        <h2>Analog&nbsp;·&nbsp;Reflective</h2>
-        <div class="tag">A personal recovery diary</div>
-        <div class="desc">Ruled notebook paper, serif type, ledger entries, a margin note and a rubber stamp. Slow and intimate — turns quitting into a journal you keep, not a game you grind.</div>
-      </div>
-      <div class="phone">
-        <div class="notch"></div>
-        <div class="screen s5">
-          <div class="statusbar"><span>9:41</span><span>●●● 􀟝 100%</span></div>
-          <div class="screen-body">
-            <div class="s5-date">Monday · 29 June</div>
-            <div class="s5-h">Day <b>twenty-four</b>, and counting.</div>
-            <div class="count">
-              <div class="num">24<span class="sm">d</span></div>
-              <div class="lbl">twelve hours, four minutes</div>
+              <button style="border:1px solid #F87171;color:#F87171;background:#3A1A1A;border-radius:14px;padding:13px;font-size:14px;font-weight:700">Maalesef içtim</button>
             </div>
-            <div class="rule-strong"></div>
-            <div class="ledger">
-              <div class="lrow"><span class="lk"><span class="mk">₺</span>Money kept</span><span class="lv gold">3,360</span></div>
-              <div class="lrow"><span class="lk"><span class="mk">×</span>Sticks not smoked</span><span class="lv">480</span></div>
-              <div class="lrow"><span class="lk"><span class="mk">✦</span>Badges earned</span><span class="lv">5</span></div>
-            </div>
-            <div class="note"><b>Next chapter —</b> in 6 days you reach one month. Your lungs' cilia begin to recover.</div>
-            <div class="stamp">Streak intact</div>
           </div>
-          <div class="tabbar">
-            <div class="tab on"><div class="dot"></div>Today</div>
-            <div class="tab"><div class="dot"></div>Stats</div>
-            <div class="tab"><div class="dot"></div>Badges</div>
-            <div class="tab"><div class="dot"></div>Ranks</div>
+          <div class="tabbar" style="background:#0B0F0E;border-color:#2A2F2E">
+            <div class="tabitem" style="color:#2DD4A7"><div class="tabicon" style="background:#0F3D33">🏠</div>Ana Sayfa</div>
+            <div class="tabitem" style="color:#B0B4BA"><div class="tabicon">💚</div>Sağlık</div>
+            <div class="tabitem" style="color:#B0B4BA"><div class="tabicon">🏅</div>Rozetler</div>
+            <div class="tabitem" style="color:#B0B4BA"><div class="tabicon">🏆</div>Sıralama</div>
           </div>
-        </div>
+        </div></div>
       </div>
-    </section>
 
-  </div>
+    </div>
+  </section>
 
-  <div class="foot">
-    Mockups only — no app code changed. Built to match <code>src/constants/theme.ts</code> tokens.<br>
-    Tell me which direction wins and I'll implement it on the real Home screen.
-  </div>
+  <!-- ================= DIRECTION 2 ================= -->
+  <section class="direction">
+    <div class="dir-head">
+      <div class="dir-num"><b>02</b> — Kart Yığını</div>
+      <h2>Gündelik Özet</h2>
+      <div class="tag">Amber/streak vurgusu · halka yok, sayaç bir kart içinde · dikey akış</div>
+      <div class="desc">Halka motifini tamamen bırakır; yerine üstte kompakt bir "sayaç kartı" (büyük gün sayısı + saat/dk/sn tek satırda), altında sırayla bir <b>sonraki milestone</b> kartı (ilerleme çubuğu + ETA), bir <b>rozet önizleme</b> kartı (son kazanılan rozet + toplam) ve bir <b>leaderboard</b> kartı (kullanıcının sırası + üstündeki kişi) yer alır. Bilgi yoğunluğu yüksek, tek ekranda "durumun ne" sorusuna tam cevap verir.</div>
+    </div>
+    <div class="pair">
+
+      <!-- 02 LIGHT -->
+      <div class="col">
+        <div class="mode-label">Light</div>
+        <div class="phone"><div class="screen" style="background:#FAFAF9">
+          <div class="notch"></div>
+          <div class="statusbar" style="color:#11181C"><span>9:41</span><span>●●●● 5G 🔋</span></div>
+          <div class="content">
+            <div class="u-scroll" style="gap:12px">
+              <div class="u-row">
+                <div style="font-size:17px;font-weight:800;color:#11181C">Merhaba 👋</div>
+                <div style="width:34px;height:34px;border-radius:10px;background:#F0F0F3;display:flex;align-items:center;justify-content:center;font-size:15px">⚙️</div>
+              </div>
+
+              <div style="background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:20px;padding:16px 18px;color:#fff">
+                <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.9;font-weight:700">Aktif Sayaç</div>
+                <div style="display:flex;align-items:baseline;gap:8px;margin-top:4px">
+                  <div style="font-size:34px;font-weight:800;line-height:1">24</div>
+                  <div style="font-size:13px;font-weight:600;opacity:.95">gün · 12:17:28</div>
+                </div>
+              </div>
+
+              <div style="background:#fff;border:1px solid #E2E4E9;border-radius:16px;padding:14px">
+                <div class="u-row">
+                  <div style="font-size:12px;font-weight:700;color:#60646C">SIRADAKİ MİLESTONE</div>
+                  <div style="font-size:11px;color:#F59E0B;font-weight:700">6 gün kaldı</div>
+                </div>
+                <div style="font-size:14px;font-weight:700;color:#11181C;margin-top:6px">1 Ay — Nefes alma kolaylaşır</div>
+                <div style="height:6px;background:#F0F0F3;border-radius:4px;margin-top:10px;overflow:hidden">
+                  <div style="height:100%;width:56%;background:#F59E0B;border-radius:4px"></div>
+                </div>
+              </div>
+
+              <div style="background:#fff;border:1px solid #E2E4E9;border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px">
+                <div style="width:40px;height:40px;border-radius:12px;background:#D1FAE5;display:flex;align-items:center;justify-content:center;font-size:18px">🏅</div>
+                <div style="flex:1">
+                  <div style="font-size:12px;font-weight:700;color:#60646C">SON ROZET</div>
+                  <div style="font-size:13.5px;font-weight:700;color:#11181C">72 Saat — Nikotin Temizliği</div>
+                </div>
+                <div style="font-size:13px;font-weight:700;color:#10B981">4/9</div>
+              </div>
+
+              <div style="background:#fff;border:1px solid #E2E4E9;border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px">
+                <div style="width:40px;height:40px;border-radius:12px;background:#FEF3C7;display:flex;align-items:center;justify-content:center;font-size:18px">🏆</div>
+                <div style="flex:1">
+                  <div style="font-size:12px;font-weight:700;color:#60646C">SIRALAMA</div>
+                  <div style="font-size:13.5px;font-weight:700;color:#11181C">#12 — üstündeki 3 gün önde</div>
+                </div>
+              </div>
+
+              <button style="border:none;color:#EF4444;background:#FEE2E2;border-radius:14px;padding:12px;font-size:13.5px;font-weight:700;margin-top:2px">Maalesef içtim</button>
+            </div>
+          </div>
+          <div class="tabbar" style="background:#FAFAF9;border-color:#E2E4E9">
+            <div class="tabitem" style="color:#F59E0B"><div class="tabicon" style="background:#FEF3C7">🏠</div>Ana Sayfa</div>
+            <div class="tabitem" style="color:#60646C"><div class="tabicon">💚</div>Sağlık</div>
+            <div class="tabitem" style="color:#60646C"><div class="tabicon">🏅</div>Rozetler</div>
+            <div class="tabitem" style="color:#60646C"><div class="tabicon">🏆</div>Sıralama</div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- 02 DARK -->
+      <div class="col">
+        <div class="mode-label">Dark</div>
+        <div class="phone"><div class="screen" style="background:#0B0B0A">
+          <div class="notch"></div>
+          <div class="statusbar" style="color:#ECEDEE"><span>9:41</span><span>●●●● 5G 🔋</span></div>
+          <div class="content">
+            <div class="u-scroll" style="gap:12px">
+              <div class="u-row">
+                <div style="font-size:17px;font-weight:800;color:#ECEDEE">Merhaba 👋</div>
+                <div style="width:34px;height:34px;border-radius:10px;background:#1C1B18;display:flex;align-items:center;justify-content:center;font-size:15px">⚙️</div>
+              </div>
+
+              <div style="background:linear-gradient(135deg,#B45309,#C2410C);border-radius:20px;padding:16px 18px;color:#fff">
+                <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.9;font-weight:700">Aktif Sayaç</div>
+                <div style="display:flex;align-items:baseline;gap:8px;margin-top:4px">
+                  <div style="font-size:34px;font-weight:800;line-height:1">24</div>
+                  <div style="font-size:13px;font-weight:600;opacity:.95">gün · 12:17:28</div>
+                </div>
+              </div>
+
+              <div style="background:#17150F;border:1px solid #2E2A22;border-radius:16px;padding:14px">
+                <div class="u-row">
+                  <div style="font-size:12px;font-weight:700;color:#B0B4BA">SIRADAKİ MİLESTONE</div>
+                  <div style="font-size:11px;color:#FBBF24;font-weight:700">6 gün kaldı</div>
+                </div>
+                <div style="font-size:14px;font-weight:700;color:#ECEDEE;margin-top:6px">1 Ay — Nefes alma kolaylaşır</div>
+                <div style="height:6px;background:#2E2A22;border-radius:4px;margin-top:10px;overflow:hidden">
+                  <div style="height:100%;width:56%;background:#FBBF24;border-radius:4px"></div>
+                </div>
+              </div>
+
+              <div style="background:#17150F;border:1px solid #2E2A22;border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px">
+                <div style="width:40px;height:40px;border-radius:12px;background:#0F3D33;display:flex;align-items:center;justify-content:center;font-size:18px">🏅</div>
+                <div style="flex:1">
+                  <div style="font-size:12px;font-weight:700;color:#B0B4BA">SON ROZET</div>
+                  <div style="font-size:13.5px;font-weight:700;color:#ECEDEE">72 Saat — Nikotin Temizliği</div>
+                </div>
+                <div style="font-size:13px;font-weight:700;color:#2DD4A7">4/9</div>
+              </div>
+
+              <div style="background:#17150F;border:1px solid #2E2A22;border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px">
+                <div style="width:40px;height:40px;border-radius:12px;background:#3A2E0A;display:flex;align-items:center;justify-content:center;font-size:18px">🏆</div>
+                <div style="flex:1">
+                  <div style="font-size:12px;font-weight:700;color:#B0B4BA">SIRALAMA</div>
+                  <div style="font-size:13.5px;font-weight:700;color:#ECEDEE">#12 — üstündeki 3 gün önde</div>
+                </div>
+              </div>
+
+              <button style="border:none;color:#F87171;background:#3A1A1A;border-radius:14px;padding:12px;font-size:13.5px;font-weight:700;margin-top:2px">Maalesef içtim</button>
+            </div>
+          </div>
+          <div class="tabbar" style="background:#0B0B0A;border-color:#2E2A22">
+            <div class="tabitem" style="color:#FBBF24"><div class="tabicon" style="background:#3A2E0A">🏠</div>Ana Sayfa</div>
+            <div class="tabitem" style="color:#B0B4BA"><div class="tabicon">💚</div>Sağlık</div>
+            <div class="tabitem" style="color:#B0B4BA"><div class="tabicon">🏅</div>Rozetler</div>
+            <div class="tabitem" style="color:#B0B4BA"><div class="tabicon">🏆</div>Sıralama</div>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= DIRECTION 3 ================= -->
+  <section class="direction">
+    <div class="dir-head">
+      <div class="dir-num"><b>03</b> — Gradient Hero</div>
+      <h2>Premium Dashboard</h2>
+      <div class="tag">Indigo→pembe marka gradyanı (yeni "hero" token'ları) · büyük halka + glass kartlar</div>
+      <div class="desc">Kullanıcının referans aldığı ekran görüntüsüne en yakın yön: üstte gradyan banner (aktif attempt durumu), ortada glassy kart içinde gradyan-stroke halka (ilerleme = sıradaki milestone'a kalan yüzde), altında iki istatistik kartı (rozet sayısı, leaderboard sırası — bu ikisi backend'den gelir, "tasarruf/dal" gibi backend'de karşılığı olmayan uydurma metrikler kullanılmadı), en altta relapse CTA'sı gradyanla vurgulanır. Yeni <code>brandGradientStart/End</code> token çifti gerektirir, mevcut teal/amber semantik renklere dokunmaz.</div>
+    </div>
+    <div class="pair">
+
+      <!-- 03 LIGHT -->
+      <div class="col">
+        <div class="mode-label">Light</div>
+        <div class="phone"><div class="screen" style="background:#F7F7FB">
+          <div class="notch"></div>
+          <div class="statusbar" style="color:#11181C"><span>9:41</span><span>●●●● 5G 🔋</span></div>
+          <div class="content">
+            <div class="u-scroll">
+              <div class="u-row">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#6366F1,#EC4899);display:flex;align-items:center;justify-content:center;font-size:14px">👍</div>
+                  <div style="font-size:16px;font-weight:800;color:#11181C">QuitQOS</div>
+                </div>
+                <div style="width:34px;height:34px;border-radius:10px;background:#EEF0F6;display:flex;align-items:center;justify-content:center;font-size:15px">⚙️</div>
+              </div>
+
+              <div style="background:linear-gradient(120deg,#6366F1,#8B5CF6,#EC4899);border-radius:18px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;color:#fff">
+                <div style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#fff;display:inline-block"></span>AKTİF DENEME</div>
+                <div style="font-size:11px;font-weight:700;background:rgba(255,255,255,.22);padding:3px 10px;border-radius:20px">İyi gidiyor</div>
+              </div>
+
+              <div style="background:rgba(255,255,255,.7);backdrop-filter:blur(6px);border:1px solid #E7E7F2;border-radius:26px;padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:8px">
+                <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#7A7A8C;font-weight:700">1 Aya Kalan İlerleme</div>
+                <div style="width:168px;height:168px;border-radius:50%;background:conic-gradient(#6366F1 0turn,#8B5CF6 0.3turn,#EC4899 0.56turn,#EEF0F6 0.56turn 1turn);display:flex;align-items:center;justify-content:center">
+                  <div style="width:136px;height:136px;border-radius:50%;background:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+                    <div style="font-size:38px;font-weight:800;background:linear-gradient(135deg,#6366F1,#EC4899);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1">24</div>
+                    <div style="font-size:10.5px;color:#7A7A8C;font-weight:700;letter-spacing:.06em">DUMANSIZ GÜN</div>
+                    <div style="margin-top:4px;font-size:11.5px;font-weight:700;color:#6366F1;background:#EEF0FF;padding:3px 10px;border-radius:20px">12:17:28</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:12px">
+                <div style="flex:1;background:rgba(255,255,255,.7);border:1px solid #E7E7F2;border-radius:16px;padding:14px">
+                  <div style="font-size:16px">🏅</div>
+                  <div style="font-size:19px;font-weight:800;color:#11181C;margin-top:6px">4<span style="font-size:12px;color:#7A7A8C;font-weight:600">/9 rozet</span></div>
+                </div>
+                <div style="flex:1;background:rgba(255,255,255,.7);border:1px solid #E7E7F2;border-radius:16px;padding:14px">
+                  <div style="font-size:16px">🏆</div>
+                  <div style="font-size:19px;font-weight:800;color:#11181C;margin-top:6px">#12<span style="font-size:12px;color:#7A7A8C;font-weight:600"> sırada</span></div>
+                </div>
+              </div>
+
+              <button style="border:none;color:#fff;background:linear-gradient(120deg,#F43F5E,#DB2777);border-radius:16px;padding:14px;font-size:14px;font-weight:700">Maalesef içtim</button>
+            </div>
+          </div>
+          <div class="tabbar" style="background:#F7F7FB;border-color:#E7E7F2">
+            <div class="tabitem" style="color:#6366F1"><div class="tabicon" style="background:#EEF0FF">🏠</div>Ana Sayfa</div>
+            <div class="tabitem" style="color:#7A7A8C"><div class="tabicon">💚</div>Sağlık</div>
+            <div class="tabitem" style="color:#7A7A8C"><div class="tabicon">🏅</div>Rozetler</div>
+            <div class="tabitem" style="color:#7A7A8C"><div class="tabicon">🏆</div>Sıralama</div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- 03 DARK -->
+      <div class="col">
+        <div class="mode-label">Dark</div>
+        <div class="phone"><div class="screen" style="background:#0E0E16">
+          <div class="notch"></div>
+          <div class="statusbar" style="color:#ECEDEE"><span>9:41</span><span>●●●● 5G 🔋</span></div>
+          <div class="content">
+            <div class="u-scroll">
+              <div class="u-row">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#818CF8,#F472B6);display:flex;align-items:center;justify-content:center;font-size:14px">👍</div>
+                  <div style="font-size:16px;font-weight:800;color:#ECEDEE">QuitQOS</div>
+                </div>
+                <div style="width:34px;height:34px;border-radius:10px;background:#191926;display:flex;align-items:center;justify-content:center;font-size:15px">⚙️</div>
+              </div>
+
+              <div style="background:linear-gradient(120deg,#4338CA,#7C3AED,#DB2777);border-radius:18px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;color:#fff">
+                <div style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#fff;display:inline-block"></span>AKTİF DENEME</div>
+                <div style="font-size:11px;font-weight:700;background:rgba(255,255,255,.18);padding:3px 10px;border-radius:20px">İyi gidiyor</div>
+              </div>
+
+              <div style="background:rgba(255,255,255,.05);backdrop-filter:blur(6px);border:1px solid #24243A;border-radius:26px;padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:8px">
+                <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#9A9AB4;font-weight:700">1 Aya Kalan İlerleme</div>
+                <div style="width:168px;height:168px;border-radius:50%;background:conic-gradient(#818CF8 0turn,#A78BFA 0.3turn,#F472B6 0.56turn,#20202E 0.56turn 1turn);display:flex;align-items:center;justify-content:center">
+                  <div style="width:136px;height:136px;border-radius:50%;background:#0E0E16;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+                    <div style="font-size:38px;font-weight:800;background:linear-gradient(135deg,#818CF8,#F472B6);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1">24</div>
+                    <div style="font-size:10.5px;color:#9A9AB4;font-weight:700;letter-spacing:.06em">DUMANSIZ GÜN</div>
+                    <div style="margin-top:4px;font-size:11.5px;font-weight:700;color:#C7D2FE;background:#26264A;padding:3px 10px;border-radius:20px">12:17:28</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:12px">
+                <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid #24243A;border-radius:16px;padding:14px">
+                  <div style="font-size:16px">🏅</div>
+                  <div style="font-size:19px;font-weight:800;color:#ECEDEE;margin-top:6px">4<span style="font-size:12px;color:#9A9AB4;font-weight:600">/9 rozet</span></div>
+                </div>
+                <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid #24243A;border-radius:16px;padding:14px">
+                  <div style="font-size:16px">🏆</div>
+                  <div style="font-size:19px;font-weight:800;color:#ECEDEE;margin-top:6px">#12<span style="font-size:12px;color:#9A9AB4;font-weight:600"> sırada</span></div>
+                </div>
+              </div>
+
+              <button style="border:none;color:#fff;background:linear-gradient(120deg,#FB7185,#EC4899);border-radius:16px;padding:14px;font-size:14px;font-weight:700">Maalesef içtim</button>
+            </div>
+          </div>
+          <div class="tabbar" style="background:#0E0E16;border-color:#24243A">
+            <div class="tabitem" style="color:#818CF8"><div class="tabicon" style="background:#20203A">🏠</div>Ana Sayfa</div>
+            <div class="tabitem" style="color:#9A9AB4"><div class="tabicon">💚</div>Sağlık</div>
+            <div class="tabitem" style="color:#9A9AB4"><div class="tabicon">🏅</div>Rozetler</div>
+            <div class="tabitem" style="color:#9A9AB4"><div class="tabicon">🏆</div>Sıralama</div>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </section>
+
 </div>

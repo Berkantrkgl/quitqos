@@ -60,8 +60,28 @@ CLAUDE.local.md
 
 # ── Backend (Java / Maven) ───────────────────────────────────
 backend/target/
+!backend/**/src/main/**/target/
+!backend/**/src/test/**/target/
 backend/.mvn/wrapper/maven-wrapper.jar
 backend/HELP.md
+backend/build/
+!backend/**/src/main/**/build/
+!backend/**/src/test/**/build/
+
+# STS
+backend/.apt_generated
+backend/.classpath
+backend/.factorypath
+backend/.project
+backend/.settings
+backend/.springBeans
+backend/.sts4-cache
+
+# NetBeans
+backend/nbproject/private/
+backend/nbbuild/
+backend/nbdist/
+backend/.nb-gradle/
 
 # ── Mobile (Node / Expo / RN) ────────────────────────────────
 mobile/node_modules/
@@ -72,6 +92,13 @@ mobile/ios/
 mobile/android/
 mobile/*.tsbuildinfo
 mobile/.expo-shared/
+mobile/expo-env.d.ts
+mobile/.kotlin/
+mobile/*.orig.*
+mobile/.metro-health-check*
+mobile/example
+mobile/.env*.local
 
 # Local-only project guide for Claude (not committed)
 CLAUDE.md
+.claude
