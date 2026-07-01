@@ -23,6 +23,10 @@ public interface QuitAttemptRepository extends JpaRepository<QuitAttempt, UUID> 
     /** For sync idempotency: has this device row already been merged for this user? */
     boolean existsByUserIdAndLocalId(UUID userId, String localId);
 
+    /** For the notification scheduler: every ACTIVE attempt, user eagerly joined to avoid N+1. */
+    @Query("SELECT qa FROM QuitAttempt qa JOIN FETCH qa.user WHERE qa.status = :status")
+    List<QuitAttempt> findByStatusWithUser(@Param("status") QuitStatus status);
+
     /**
      * Leaderboard by CURRENT metric: one row per user who has an ACTIVE attempt, ordered by the live
      * streak length (longest first). streakSeconds = now - startedAt, computed in the DB.

@@ -34,6 +34,9 @@ quitqos:
   firebase:
     # Path to the Firebase service-account JSON. Unset locally until auth stage.
     credentials-path: ${FIREBASE_CREDENTIALS:}
+  notifications:
+    # How often the milestone scheduler scans ACTIVE attempts (ms). API design §10: "örn. her dakika".
+    scheduler-rate-ms: ${NOTIFICATIONS_SCHEDULER_RATE_MS:60000}
 
 logging:
   level:
