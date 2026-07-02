@@ -59,6 +59,17 @@
     "warningBody": "Your counter will reset to zero, but your past attempts are saved.",
     "encouragement": "A slip isn't the end. Start again — you've got this."
   },
+  "health": {
+    "title": "Recovery",
+    "subtitle": "How your body heals after quitting IQOS",
+    "progressSummary": "{{done}} of {{total}} recovered",
+    "statusDone": "Reached",
+    "statusNext": "In progress",
+    "statusUpcoming": "Upcoming",
+    "reachedAfter": "After {{title}}",
+    "emptyTitle": "Start your streak to track recovery",
+    "emptyBody": "Once you begin, you'll see your body heal step by step."
+  },
   "tabs": {
     "home": "Home",
     "health": "Health",

@@ -59,6 +59,17 @@
     "warningBody": "Sayacın sıfırlanacak ama geçmiş denemelerin saklanır.",
     "encouragement": "Bir kayma son değildir. Yeniden başla — başaracaksın."
   },
+  "health": {
+    "title": "İyileşme",
+    "subtitle": "IQOS'u bıraktıktan sonra vücudun nasıl iyileşiyor",
+    "progressSummary": "{{total}} adımdan {{done}} tanesi tamamlandı",
+    "statusDone": "Ulaşıldı",
+    "statusNext": "Devam ediyor",
+    "statusUpcoming": "Yaklaşıyor",
+    "reachedAfter": "{{title}} sonra",
+    "emptyTitle": "İyileşmeni görmek için streak'ini başlat",
+    "emptyBody": "Başladığında vücudunun adım adım iyileştiğini göreceksin."
+  },
   "tabs": {
     "home": "Ana sayfa",
     "health": "Sağlık",
