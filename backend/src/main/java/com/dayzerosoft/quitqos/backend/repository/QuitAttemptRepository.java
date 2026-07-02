@@ -32,7 +32,8 @@ public interface QuitAttemptRepository extends JpaRepository<QuitAttempt, UUID> 
      * streak length (longest first). streakSeconds = now - startedAt, computed in the DB.
      */
     @Query(value = """
-            SELECT u.id AS userId, u.display_name AS displayName, u.avatar_url AS avatarUrl,
+            SELECT u.id AS userId, u.username AS username, u.display_name AS displayName,
+                   u.avatar_url AS avatarUrl,
                    EXTRACT(EPOCH FROM (now() - qa.started_at))::bigint AS streakSeconds
             FROM quit_attempt qa
             JOIN app_user u ON u.id = qa.user_id
@@ -46,11 +47,12 @@ public interface QuitAttemptRepository extends JpaRepository<QuitAttempt, UUID> 
      * attempts (active spans measured to now, relapsed ones to endedAt). Longest first.
      */
     @Query(value = """
-            SELECT u.id AS userId, u.display_name AS displayName, u.avatar_url AS avatarUrl,
+            SELECT u.id AS userId, u.username AS username, u.display_name AS displayName,
+                   u.avatar_url AS avatarUrl,
                    MAX(EXTRACT(EPOCH FROM (COALESCE(qa.ended_at, now()) - qa.started_at)))::bigint AS streakSeconds
             FROM quit_attempt qa
             JOIN app_user u ON u.id = qa.user_id
-            GROUP BY u.id, u.display_name, u.avatar_url
+            GROUP BY u.id, u.username, u.display_name, u.avatar_url
             ORDER BY streakSeconds DESC
             """, nativeQuery = true)
     List<LeaderboardEntry> leaderboardByLongest(Pageable pageable);

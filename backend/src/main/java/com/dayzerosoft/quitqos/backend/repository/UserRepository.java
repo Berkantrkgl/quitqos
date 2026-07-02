@@ -9,4 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserRepository extends JpaRepository<User, UUID> {
 
     Optional<User> findByFirebaseUid(String firebaseUid);
+
+    /** Case-insensitive username existence check (matches the LOWER(username) unique index). */
+    boolean existsByUsernameIgnoreCase(String username);
 }

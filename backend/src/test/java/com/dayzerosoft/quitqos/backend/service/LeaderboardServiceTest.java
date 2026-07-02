@@ -38,6 +38,7 @@ class LeaderboardServiceTest {
     private LeaderboardEntry entry(UUID userId, long streakSeconds) {
         return new LeaderboardEntry() {
             public UUID getUserId() { return userId; }
+            public String getUsername() { return "user_" + userId.toString().substring(0, 4); }
             public String getDisplayName() { return "user-" + userId; }
             public String getAvatarUrl() { return null; }
             public long getStreakSeconds() { return streakSeconds; }

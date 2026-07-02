@@ -19,7 +19,8 @@ public class RealFirebaseTokenVerifier implements FirebaseTokenVerifier {
     public VerifiedIdentity verify(String firebaseIdToken) {
         try {
             FirebaseToken token = firebaseAuth.verifyIdToken(firebaseIdToken);
-            return new VerifiedIdentity(token.getUid(), token.getName(), token.getPicture());
+            return new VerifiedIdentity(token.getUid(), token.getEmail(), token.getName(),
+                    token.getPicture());
         } catch (Exception e) {
             throw new FirebaseAuthException("Invalid Firebase ID token", e);
         }

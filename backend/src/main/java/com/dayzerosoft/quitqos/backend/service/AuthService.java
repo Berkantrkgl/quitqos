@@ -36,16 +36,18 @@ public class AuthService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProperties jwtProperties;
+    private final UsernameService usernameService;
     private final SecureRandom secureRandom = new SecureRandom();
 
     public AuthService(FirebaseTokenVerifier firebaseVerifier, JwtService jwtService,
                        UserRepository userRepository, RefreshTokenRepository refreshTokenRepository,
-                       JwtProperties jwtProperties) {
+                       JwtProperties jwtProperties, UsernameService usernameService) {
         this.firebaseVerifier = firebaseVerifier;
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.jwtProperties = jwtProperties;
+        this.usernameService = usernameService;
     }
 
     /** Verify the Firebase token, upsert the user, and mint a fresh token pair. */
@@ -53,7 +55,7 @@ public class AuthService {
     public AuthResponse loginWithFirebase(FirebaseLoginRequest request) {
         var identity = firebaseVerifier.verify(request.firebaseIdToken());
         User user = userRepository.findByFirebaseUid(identity.uid())
-                .orElseGet(() -> newUser(identity.uid()));
+                .orElseGet(() -> newUser(identity));
         applyProfileOverrides(user, request, identity);
         user = userRepository.save(user);
 
@@ -88,9 +90,11 @@ public class AuthService {
         refreshTokenRepository.deleteByTokenHash(hash(rawRefreshToken));
     }
 
-    private User newUser(String firebaseUid) {
+    private User newUser(FirebaseTokenVerifier.VerifiedIdentity identity) {
         User user = new User();
-        user.setFirebaseUid(firebaseUid);
+        user.setFirebaseUid(identity.uid());
+        // Auto-assign a unique handle derived from the email; the user can change it later.
+        user.setUsername(usernameService.deriveUnique(identity.email()));
         return user;
     }
 

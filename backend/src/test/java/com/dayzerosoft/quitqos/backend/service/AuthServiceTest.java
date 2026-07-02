@@ -44,6 +44,7 @@ class AuthServiceTest {
     @Mock UserRepository userRepository;
     @Mock RefreshTokenRepository refreshTokenRepository;
     @Mock JwtProperties jwtProperties;
+    @Mock UsernameService usernameService;
 
     @InjectMocks
     AuthService service;
@@ -53,8 +54,9 @@ class AuthServiceTest {
     @Test
     void login_whenUserIsNew_createsAndReturnsTokens() {
         when(firebaseVerifier.verify("fb-token"))
-                .thenReturn(new VerifiedIdentity("firebase-uid-1", "Ada", null));
+                .thenReturn(new VerifiedIdentity("firebase-uid-1", "ada@example.com", "Ada", null));
         when(userRepository.findByFirebaseUid("firebase-uid-1")).thenReturn(Optional.empty());
+        when(usernameService.deriveUnique("ada@example.com")).thenReturn("ada");
         when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
         when(jwtService.issueAccessToken(any())).thenReturn("access-jwt");
         when(jwtService.accessTokenTtlSeconds()).thenReturn(3600L);

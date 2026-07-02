@@ -1,9 +1,13 @@
 # QuitQOS — API Tasarımı
 
-**v0.2 — MVP**
+**v0.3 — MVP**
 Backend: Spring Boot 4.1 · Java 21 · PostgreSQL · Spring Security (JWT) · Firebase Auth + FCM
 
-> Bu doküman [project brief v0.4](./iqos_quit_brief.pdf), [ERD](./quitqos_ERD.pdf) ve [user journeys](./quitqos_user_journeys.pdf) baz alınarak hazırlanmıştır.
+> Bu doküman [project brief v0.5](./iqos_quit_brief_v0.5.pdf), [ERD](./quitqos_ERD.pdf) ve [user journeys](./quitqos_user_journeys.pdf) baz alınarak hazırlanmıştır.
+>
+> **v0.3 değişiklikleri:** benzersiz `username` alanı (auth/user/leaderboard yanıtlarına eklendi,
+> `PATCH /users/me` ile güncellenebilir); milestone çizelgesi 9 → 13 adıma çıkarıldı ve bilimsel
+> olarak yeniden ifade edildi.
 
 ---
 
@@ -99,6 +103,7 @@ Firebase ID token ile login/register. Kullanıcı yoksa oluşturur (upsert), app
   "user": {
     "id": "9f1c...",
     "isGuest": false,
+    "username": "berkanturkoglu",   // ilk login'de e-postadan türetilir (benzersiz)
     "displayName": "Berkan",
     "avatarUrl": "https://...",
     "notificationsEnabled": true,
@@ -106,6 +111,11 @@ Firebase ID token ile login/register. Kullanıcı yoksa oluşturur (upsert), app
   }
 }
 ```
+
+> **username** — benzersiz, kullanıcıya görünen handle. İlk login'de e-posta yerel
+> kısmından türetilir (`berkan.turkoglu@x.com → berkanturkoglu`; çakışmada `...2`, `...3`).
+> Kurallar: 3–20 karakter, küçük harf `[a-z0-9_]`; benzersizlik büyük/küçük harf duyarsız.
+> Kullanıcı sonradan `PATCH /users/me` ile değiştirebilir.
 
 ### `POST /api/v1/auth/refresh`
 Access JWT yenileme. Refresh token rotate edilir (eski geçersizleşir, yeni döner).
@@ -136,6 +146,7 @@ Profil bilgisi. **Auth:** required
 {
   "id": "9f1c...",
   "isGuest": false,
+  "username": "berkanturkoglu",
   "displayName": "Berkan",
   "avatarUrl": "https://...",
   "notificationsEnabled": true,
@@ -148,9 +159,14 @@ Profil bilgisi. **Auth:** required
 Profil + bildirim tercihi güncelle. Tüm alanlar opsiyonel (partial update).
 
 ```jsonc
-// Request  { "displayName": "Berkan T.", "avatarUrl": "https://...", "notificationsEnabled": false }
+// Request  { "username": "berkan_t", "displayName": "Berkan T.", "avatarUrl": "https://...", "notificationsEnabled": false }
 // 200 OK   -> güncel user objesi
+// 422      username biçimsiz (3–20, küçük harf [a-z0-9_] değil)
+// 409      username başkası tarafından alınmış (büyük/küçük harf duyarsız)
 ```
+
+> **username** güncellemesi: değer aynıysa (büyük/küçük harf duyarsız) işlem yok sayılır;
+> farklıysa doğrulanır ve benzersizlik kontrol edilir.
 
 > `notificationsEnabled=false` iken sunucu o kullanıcıya milestone push'u **göndermez** (kayıt yine de UserMilestone'a düşer).
 
@@ -358,7 +374,7 @@ Streak sıralaması. **Default metrik: `current`** (şu an devam eden en uzun ak
 {
   "metric": "current",
   "items": [
-    { "rank": 1, "userId": "u1", "displayName": "Ayşe", "avatarUrl": "...", "streakSeconds": 2592000 }
+    { "rank": 1, "userId": "u1", "username": "ayse", "displayName": "Ayşe", "avatarUrl": "...", "streakSeconds": 2592000 }
   ]
 }
 ```
@@ -425,16 +441,24 @@ Bildirim tercihleri (brief: "ayarlardan yönetebilir") MVP'de **tek `notificatio
 
 ### Seed verisi (referans)
 
-ERD'deki `Milestone` ve `Badge` tabloları statiktir; uygulama açılışında seed edilir. `offsetMinutes` değerleri:
+ERD'deki `Milestone` ve `Badge` tabloları statiktir; uygulama açılışında seed edilir (Flyway V2 + V6).
+13 milestone, her birine bir badge. `offsetMinutes` değerleri:
 
 | Milestone | offsetMinutes |
 |-----------|--------------:|
 | 20 dakika | 20 |
-| 8 saat | 480 |
+| 12 saat | 720 |
 | 24 saat | 1.440 |
 | 48 saat | 2.880 |
 | 72 saat | 4.320 |
+| 5 gün | 7.200 |
 | 1 hafta | 10.080 |
+| 10 gün | 14.400 |
+| 2 hafta | 20.160 |
 | 1 ay | 43.200 |
 | 3 ay | 129.600 |
+| 6 ay | 259.200 |
 | 1 yıl | 525.600 |
+
+> İçerik (title/description) v0.3'te CDC/WHO/ACS/Surgeon General ve hakemli literatüre göre yeniden
+> ifade edildi; ayrıntı için brief v0.5'teki milestone tablosuna bakınız.

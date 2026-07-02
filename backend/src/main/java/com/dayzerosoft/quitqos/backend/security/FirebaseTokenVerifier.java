@@ -13,8 +13,8 @@ public interface FirebaseTokenVerifier {
      */
     VerifiedIdentity verify(String firebaseIdToken);
 
-    /** Verified identity extracted from a Firebase ID token. */
-    record VerifiedIdentity(String uid, String displayName, String avatarUrl) {
+    /** Verified identity extracted from a Firebase ID token. email seeds the auto-generated username. */
+    record VerifiedIdentity(String uid, String email, String displayName, String avatarUrl) {
     }
 
     /** Thrown when an ID token fails verification; mapped to 401 by the web layer. */

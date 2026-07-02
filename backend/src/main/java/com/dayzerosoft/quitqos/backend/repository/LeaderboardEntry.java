@@ -9,6 +9,7 @@ import java.util.UUID;
  */
 public interface LeaderboardEntry {
     UUID getUserId();
+    String getUsername();
     String getDisplayName();
     String getAvatarUrl();
     long getStreakSeconds();

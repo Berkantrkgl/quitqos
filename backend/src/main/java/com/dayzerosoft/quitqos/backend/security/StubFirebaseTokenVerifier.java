@@ -14,7 +14,9 @@ public class StubFirebaseTokenVerifier implements FirebaseTokenVerifier {
         if (!StringUtils.hasText(firebaseIdToken)) {
             throw new FirebaseAuthException("Empty token", null);
         }
-        // Treat the token itself as the uid; no profile hints from a stub.
-        return new VerifiedIdentity(firebaseIdToken, null, null);
+        // Treat the token itself as the uid. If it looks like an email, also expose it as the email
+        // so username derivation is testable locally (e.g. token "berkan@x.com").
+        String email = firebaseIdToken.contains("@") ? firebaseIdToken : null;
+        return new VerifiedIdentity(firebaseIdToken, email, null, null);
     }
 }

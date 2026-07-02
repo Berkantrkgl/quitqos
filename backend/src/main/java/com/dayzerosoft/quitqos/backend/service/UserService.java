@@ -18,9 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository users;
+    private final UsernameService usernameService;
 
-    public UserService(UserRepository users) {
+    public UserService(UserRepository users, UsernameService usernameService) {
         this.users = users;
+        this.usernameService = usernameService;
     }
 
     @Transactional(readOnly = true)
@@ -32,6 +34,12 @@ public class UserService {
     @Transactional
     public UserProfileResponse update(UUID userId, UpdateUserRequest request) {
         User user = require(userId);
+        if (request.username() != null) {
+            // No-op if the handle is unchanged (case-insensitive); otherwise validate + ensure free.
+            if (!request.username().equalsIgnoreCase(user.getUsername())) {
+                user.setUsername(usernameService.validateForUpdate(request.username()));
+            }
+        }
         if (request.displayName() != null) {
             user.setDisplayName(request.displayName());
         }

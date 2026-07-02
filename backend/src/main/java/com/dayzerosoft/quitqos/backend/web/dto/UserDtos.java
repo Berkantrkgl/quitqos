@@ -18,6 +18,7 @@ public final class UserDtos {
      * not expressible — matches the contract, which only lists set-value use.)
      */
     public record UpdateUserRequest(
+            String username,
             String displayName,
             String avatarUrl,
             Boolean notificationsEnabled) {
@@ -31,6 +32,7 @@ public final class UserDtos {
     public record UserProfileResponse(
             UUID id,
             boolean isGuest,
+            String username,
             String displayName,
             String avatarUrl,
             boolean notificationsEnabled,
@@ -42,6 +44,7 @@ public final class UserDtos {
             return new UserProfileResponse(
                     user.getId(),
                     false,
+                    user.getUsername(),
                     user.getDisplayName(),
                     user.getAvatarUrl(),
                     user.isNotificationsEnabled(),

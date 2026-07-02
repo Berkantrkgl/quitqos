@@ -32,6 +32,15 @@ public class User {
     @Column(name = "firebase_uid", nullable = false, unique = true)
     private String firebaseUid;
 
+    /**
+     * Unique, user-facing handle (3–20 chars, lowercase [a-z0-9_]). Assigned on first login from
+     * the email local-part; editable via PATCH /users/me. Uniqueness is enforced case-insensitively
+     * by a functional index (LOWER(username)), so no {@code unique=true} here (Hibernate validate
+     * only understands plain unique constraints).
+     */
+    @Column(name = "username", nullable = false)
+    private String username;
+
     @Column(name = "display_name")
     private String displayName;
 

@@ -75,7 +75,7 @@ public class LeaderboardService {
         List<LeaderboardItem> items = new java.util.ArrayList<>(rows.size());
         for (int i = 0; i < rows.size(); i++) {
             LeaderboardEntry e = rows.get(i);
-            items.add(new LeaderboardItem(i + 1, e.getUserId(), e.getDisplayName(),
+            items.add(new LeaderboardItem(i + 1, e.getUserId(), e.getUsername(), e.getDisplayName(),
                     e.getAvatarUrl(), e.getStreakSeconds()));
         }
         return items;

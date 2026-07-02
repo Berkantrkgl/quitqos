@@ -13,6 +13,7 @@ public final class LeaderboardDtos {
     public record LeaderboardItem(
             int rank,
             UUID userId,
+            String username,
             String displayName,
             String avatarUrl,
             long streakSeconds) {
