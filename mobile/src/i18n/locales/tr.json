@@ -5,7 +5,8 @@
     "cancel": "Vazgeç",
     "confirm": "Onayla",
     "save": "Kaydet",
-    "close": "Kapat"
+    "close": "Kapat",
+    "comingSoon": "Yakında"
   },
   "settings": {
     "title": "Ayarlar",
@@ -29,6 +30,18 @@
       "hours": "{{count}}sa",
       "minutes": "{{count}}dk",
       "seconds": "{{count}}sn"
+    },
+    "dashboard": {
+      "eyebrow": "Sigarasız",
+      "dayCount_one": "{{count}} gün",
+      "dayCount_other": "{{count}} gün",
+      "nextMilestone": "Sıradaki: {{title}}",
+      "allMilestonesDone": "Tüm kilometre taşlarını geçtin 🎉",
+      "badgesTitle": "Rozetler",
+      "badgesValue_one": "{{count}} rozet",
+      "badgesValue_other": "{{count}} rozet",
+      "leaderboardTitle": "Sıralama",
+      "leaderboardLocked": "Giriş yap"
     }
   },
   "relapse": {
@@ -41,6 +54,7 @@
     "home": "Ana sayfa",
     "health": "Sağlık",
     "badges": "Rozetler",
-    "leaderboard": "Sıralama"
+    "leaderboard": "Sıralama",
+    "leaderboardGuestHint": "Sıralamaya katılmak için giriş yap."
   }
 }

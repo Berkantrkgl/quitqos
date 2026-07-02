@@ -2,6 +2,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from 'expo
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
+import { QuitStreakProvider } from '@/hooks/use-quit-streak';
 import '@/i18n';
 import { LanguageProvider } from '@/i18n/language-provider';
 import { ThemeProvider, useAppTheme } from '@/theme/theme-provider';
@@ -20,7 +21,9 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <NavigationShell />
+        <QuitStreakProvider>
+          <NavigationShell />
+        </QuitStreakProvider>
       </LanguageProvider>
     </ThemeProvider>
   );

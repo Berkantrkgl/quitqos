@@ -5,7 +5,8 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "save": "Save",
-    "close": "Close"
+    "close": "Close",
+    "comingSoon": "Coming soon"
   },
   "settings": {
     "title": "Settings",
@@ -29,6 +30,18 @@
       "hours": "{{count}}h",
       "minutes": "{{count}}m",
       "seconds": "{{count}}s"
+    },
+    "dashboard": {
+      "eyebrow": "Smoke-free",
+      "dayCount_one": "{{count}} day",
+      "dayCount_other": "{{count}} days",
+      "nextMilestone": "Next: {{title}}",
+      "allMilestonesDone": "You've passed every milestone 🎉",
+      "badgesTitle": "Badges",
+      "badgesValue_one": "{{count}} badge",
+      "badgesValue_other": "{{count}} badges",
+      "leaderboardTitle": "Leaderboard",
+      "leaderboardLocked": "Sign in"
     }
   },
   "relapse": {
@@ -41,6 +54,7 @@
     "home": "Home",
     "health": "Health",
     "badges": "Badges",
-    "leaderboard": "Leaderboard"
+    "leaderboard": "Leaderboard",
+    "leaderboardGuestHint": "Sign in to join the leaderboard."
   }
 }
