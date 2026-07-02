@@ -11,7 +11,9 @@
   "settings": {
     "title": "Settings",
     "language": "Language",
-    "theme": "Theme",
+    "languageHint": "Choose the app language",
+    "theme": "Appearance",
+    "themeHint": "Light or dark?",
     "themeSystem": "System",
     "themeLight": "Light",
     "themeDark": "Dark"
@@ -32,10 +34,17 @@
       "seconds": "{{count}}s"
     },
     "dashboard": {
-      "eyebrow": "Smoke-free",
+      "eyebrow": "IQOS-free",
+      "headerSubtitle_one": "{{count}} day IQOS-free",
+      "headerSubtitle_other": "{{count}} days IQOS-free",
+      "nextMilestoneTitle": "Next milestone · {{title}}",
       "dayCount_one": "{{count}} day",
       "dayCount_other": "{{count}} days",
       "nextMilestone": "Next: {{title}}",
+      "unitYear": "Yr",
+      "unitMonth": "Mo",
+      "unitDay": "Day",
+      "unitHour": "Hr",
       "allMilestonesDone": "You've passed every milestone 🎉",
       "badgesTitle": "Badges",
       "badgesValue_one": "{{count}} badge",

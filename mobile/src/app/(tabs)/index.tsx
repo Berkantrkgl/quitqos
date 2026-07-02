@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -21,9 +22,43 @@ export default function HomeScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
+        <Header startedAt={attempt?.startedAt ?? null} />
         {attempt ? <Dashboard startedAt={attempt.startedAt} /> : <StartPrompt />}
       </SafeAreaView>
     </ThemedView>
+  );
+}
+
+/** Top bar: brand + smoke-free day count, with a settings button. */
+function Header({ startedAt }: { startedAt: string | null }) {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const theme = useTheme();
+  const elapsed = useElapsedTime(startedAt);
+
+  return (
+    <View style={styles.header}>
+      <View style={styles.headerText}>
+        <ThemedText type="subtitle">{t('common.appName')}</ThemedText>
+        {elapsed ? (
+          <ThemedText type="small" themeColor="textSecondary">
+            {t('home.dashboard.headerSubtitle', { count: elapsed.days })}
+          </ThemedText>
+        ) : null}
+      </View>
+      <Pressable
+        onPress={() => router.push('/settings')}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityLabel={t('settings.title')}
+        style={({ pressed }) => [
+          styles.settingsButton,
+          { backgroundColor: theme.backgroundElement, opacity: pressed ? 0.7 : 1 },
+        ]}
+      >
+        <ThemedText type="default">⚙️</ThemedText>
+      </Pressable>
+    </View>
   );
 }
 
@@ -134,6 +169,23 @@ const styles = StyleSheet.create({
   },
   centered: {
     textAlign: 'center',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: Spacing.two,
+    paddingBottom: Spacing.four,
+  },
+  headerText: {
+    gap: 2,
+  },
+  settingsButton: {
+    width: 40,
+    height: 40,
+    borderRadius: Spacing.three,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   startContainer: {
     flex: 1,

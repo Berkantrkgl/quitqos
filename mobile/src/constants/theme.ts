@@ -36,16 +36,17 @@ export const Colors = {
     dangerMuted: '#FEE2E2',
   },
   dark: {
-    // nötr
-    text: '#ECEDEE',
-    textSecondary: '#B0B4BA',
-    background: '#0B0F0E',
-    backgroundElement: '#181C1B',
-    backgroundSelected: '#23282A',
-    border: '#2A2F2E',
+    // nötr — softer slate (not near-black) so it's easier on the eyes and
+    // elevated surfaces read as distinct layers.
+    text: '#E6E8EA',
+    textSecondary: '#9BA1A8',
+    background: '#15181C',
+    backgroundElement: '#20242A',
+    backgroundSelected: '#2C3138',
+    border: '#333A42',
     // marka
     primary: '#2DD4A7',
-    primaryMuted: '#0F3D33',
+    primaryMuted: '#12362E',
     onPrimary: '#04130E',
     // semantic
     streak: '#FBBF24',

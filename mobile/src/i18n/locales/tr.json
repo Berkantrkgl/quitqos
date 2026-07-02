@@ -11,7 +11,9 @@
   "settings": {
     "title": "Ayarlar",
     "language": "Dil",
-    "theme": "Tema",
+    "languageHint": "Uygulama dilini seç",
+    "theme": "Görünüm",
+    "themeHint": "Aydınlık mı, karanlık mı?",
     "themeSystem": "Sistem",
     "themeLight": "Açık",
     "themeDark": "Koyu"
@@ -32,10 +34,17 @@
       "seconds": "{{count}}sn"
     },
     "dashboard": {
-      "eyebrow": "Sigarasız",
+      "eyebrow": "IQOS'suz",
+      "headerSubtitle_one": "IQOS'suz {{count}}. gün",
+      "headerSubtitle_other": "IQOS'suz {{count}}. gün",
+      "nextMilestoneTitle": "Sıradaki milestone · {{title}}",
       "dayCount_one": "{{count}} gün",
       "dayCount_other": "{{count}} gün",
       "nextMilestone": "Sıradaki: {{title}}",
+      "unitYear": "Yıl",
+      "unitMonth": "Ay",
+      "unitDay": "Gün",
+      "unitHour": "Saat",
       "allMilestonesDone": "Tüm kilometre taşlarını geçtin 🎉",
       "badgesTitle": "Rozetler",
       "badgesValue_one": "{{count}} rozet",

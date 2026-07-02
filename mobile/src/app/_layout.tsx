@@ -1,28 +1,19 @@
-import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from 'expo-router';
+import { Stack } from 'expo-router';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
 import { QuitStreakProvider } from '@/hooks/use-quit-streak';
 import '@/i18n';
 import { LanguageProvider } from '@/i18n/language-provider';
-import { ThemeProvider, useAppTheme } from '@/theme/theme-provider';
-
-function NavigationShell() {
-  const { scheme } = useAppTheme();
-  return (
-    <NavThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </NavThemeProvider>
-  );
-}
+import { ThemeProvider } from '@/theme/theme-provider';
 
 export default function RootLayout() {
   return (
     <ThemeProvider>
       <LanguageProvider>
         <QuitStreakProvider>
-          <NavigationShell />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="settings" options={{ presentation: 'modal' }} />
+          </Stack>
         </QuitStreakProvider>
       </LanguageProvider>
     </ThemeProvider>
