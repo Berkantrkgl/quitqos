@@ -79,6 +79,27 @@
     "emptyTitle": "Rozet kazanmak için streak'ini başlat",
     "emptyBody": "Streak'in ilerledikçe rozetlerin tek tek açılacak."
   },
+  "auth": {
+    "title": "Giriş yap",
+    "subtitle": "Streak'ini kaydet, cihazların arasında senkronla ve sıralamaya katıl.",
+    "google": "Google ile devam et",
+    "apple": "Apple ile devam et",
+    "continueAsGuest": "Misafir olarak devam et",
+    "legal": "Devam ederek Kullanım Koşulları ve Gizlilik Politikası'nı kabul etmiş olursun.",
+    "error": "Giriş yapılamadı. Lütfen tekrar dene.",
+    "or": "veya",
+    "email": "E-posta",
+    "password": "Şifre",
+    "emailSignIn": "Giriş yap",
+    "emailRegister": "Kayıt ol",
+    "toggleToRegister": "Hesabın yok mu? Kayıt ol",
+    "toggleToSignIn": "Zaten hesabın var mı? Giriş yap",
+    "invalidEmail": "Geçerli bir e-posta gir.",
+    "shortPassword": "Şifre en az 6 karakter olmalı.",
+    "signedInAs": "Giriş yapıldı: @{{username}}",
+    "signOut": "Çıkış yap",
+    "account": "Hesap"
+  },
   "leaderboardScreen": {
     "title": "Sıralama",
     "subtitle": "En uzun streak'e sahip kullanıcılarla yarış",

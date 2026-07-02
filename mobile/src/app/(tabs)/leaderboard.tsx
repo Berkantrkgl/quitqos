@@ -1,5 +1,6 @@
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -20,10 +21,10 @@ const SAMPLE_ROWS = [
 export default function LeaderboardScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
+  const router = useRouter();
 
   function handleSignIn() {
-    // Real Firebase auth flow is a later stage; backend endpoints already exist.
-    Alert.alert(t('leaderboardScreen.signIn'), t('common.comingSoon'));
+    router.push('/login');
   }
 
   return (

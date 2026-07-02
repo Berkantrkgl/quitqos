@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useAuth } from '@/hooks/use-auth';
 import { useTheme } from '@/hooks/use-theme';
 import { type AppLanguage, SUPPORTED_LANGUAGES } from '@/i18n';
 import { useLanguage } from '@/i18n/language-provider';
@@ -34,6 +35,7 @@ export default function SettingsScreen() {
   const theme = useTheme();
   const { preference, setPreference } = useAppTheme();
   const { language, setLanguage } = useLanguage();
+  const { user, signOut } = useAuth();
 
   return (
     <ThemedView style={styles.container}>
@@ -54,6 +56,31 @@ export default function SettingsScreen() {
             </ThemedText>
           </Pressable>
         </View>
+
+        {/* Account */}
+        <SectionHeader icon="👤" title={t('auth.account')} hint={t('auth.subtitle')} />
+        {user ? (
+          <View style={[styles.accountRow, { backgroundColor: theme.backgroundElement }]}>
+            <ThemedText type="smallBold">@{user.username}</ThemedText>
+            <Pressable onPress={signOut} hitSlop={8}>
+              <ThemedText type="smallBold" themeColor="danger">
+                {t('auth.signOut')}
+              </ThemedText>
+            </Pressable>
+          </View>
+        ) : (
+          <Pressable
+            onPress={() => router.push('/login')}
+            style={({ pressed }) => [
+              styles.signInButton,
+              { backgroundColor: theme.primary, opacity: pressed ? 0.85 : 1 },
+            ]}
+          >
+            <ThemedText type="smallBold" themeColor="onPrimary">
+              {t('auth.title')}
+            </ThemedText>
+          </Pressable>
+        )}
 
         {/* Appearance */}
         <SectionHeader
@@ -168,6 +195,19 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  accountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    borderRadius: Spacing.three,
+  },
+  signInButton: {
+    paddingVertical: Spacing.three,
+    borderRadius: Spacing.three,
+    alignItems: 'center',
   },
   sectionHeader: {
     flexDirection: 'row',

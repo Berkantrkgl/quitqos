@@ -79,6 +79,27 @@
     "emptyTitle": "Start your streak to earn badges",
     "emptyBody": "As your streak grows, your badges unlock one by one."
   },
+  "auth": {
+    "title": "Sign in",
+    "subtitle": "Save your streak, sync across devices, and join the leaderboard.",
+    "google": "Continue with Google",
+    "apple": "Continue with Apple",
+    "continueAsGuest": "Continue as guest",
+    "legal": "By continuing you agree to the Terms of Use and Privacy Policy.",
+    "error": "Couldn't sign in. Please try again.",
+    "or": "or",
+    "email": "Email",
+    "password": "Password",
+    "emailSignIn": "Sign in",
+    "emailRegister": "Create account",
+    "toggleToRegister": "No account? Create one",
+    "toggleToSignIn": "Already have an account? Sign in",
+    "invalidEmail": "Enter a valid email.",
+    "shortPassword": "Password must be at least 6 characters.",
+    "signedInAs": "Signed in as @{{username}}",
+    "signOut": "Sign out",
+    "account": "Account"
+  },
   "leaderboardScreen": {
     "title": "Leaderboard",
     "subtitle": "Compete with the longest streaks",
