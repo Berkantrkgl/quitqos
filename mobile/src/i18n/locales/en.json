@@ -70,6 +70,26 @@
     "emptyTitle": "Start your streak to track recovery",
     "emptyBody": "Once you begin, you'll see your body heal step by step."
   },
+  "badgesScreen": {
+    "title": "Badges",
+    "subtitle": "Every milestone earns you a badge",
+    "summary": "{{done}} of {{total}} badges earned",
+    "lockedHint": "Locked",
+    "statusUnlocked": "Earned",
+    "emptyTitle": "Start your streak to earn badges",
+    "emptyBody": "As your streak grows, your badges unlock one by one."
+  },
+  "leaderboardScreen": {
+    "title": "Leaderboard",
+    "subtitle": "Compete with the longest streaks",
+    "lockTitle": "Join the leaderboard",
+    "lockBody": "Sign in to save your streak, sync across your devices, and take your place in the global ranking.",
+    "signIn": "Sign in",
+    "benefitSync": "Your data safe in the cloud, synced across devices",
+    "benefitRank": "See where you stand in the global ranking",
+    "benefitStreak": "Never lose your streak",
+    "you": "You"
+  },
   "tabs": {
     "home": "Home",
     "health": "Health",

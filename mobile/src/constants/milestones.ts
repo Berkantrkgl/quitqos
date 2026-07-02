@@ -14,6 +14,8 @@ export type Milestone = {
   offsetMinutes: number;
   title: string;
   description: string;
+  /** Emoji shown as the badge face on the Badges grid. */
+  icon: string;
 };
 
 /** The 9 fixed milestones, ordered by offset (ascending). */
@@ -23,78 +25,91 @@ export const MILESTONES: readonly Milestone[] = [
     offsetMinutes: 20,
     title: '20 dakika',
     description: 'Nabzın ve tansiyonun, nikotinin yol açtığı yükselmenin ardından düşmeye başlıyor.',
+    icon: '💗',
   },
   {
     key: '12h',
     offsetMinutes: 720,
     title: '12 saat',
     description: 'Kandaki karbonmonoksit normale iniyor; oksijen taşıma kapasiten düzeliyor.',
+    icon: '🫧',
   },
   {
     key: '24h',
     offsetMinutes: 1440,
     title: '24 saat',
     description: 'Kandaki nikotin seviyesi neredeyse sıfıra indi.',
+    icon: '☀️',
   },
   {
     key: '48h',
     offsetMinutes: 2880,
     title: '48 saat',
     description: 'Tat ve koku duyuların keskinleşmeye başlıyor.',
+    icon: '👃',
   },
   {
     key: '72h',
     offsetMinutes: 4320,
     title: '72 saat',
     description: 'Bronşların gevşiyor, nefes almak kolaylaşıyor.',
+    icon: '🫁',
   },
   {
     key: '5days',
     offsetMinutes: 7200,
     title: '5 gün',
     description: 'Yoksunluğun en yoğun günleri geride kaldı — en zor kısmı devirdin.',
+    icon: '💪',
   },
   {
     key: '1week',
     offsetMinutes: 10080,
     title: '1 hafta',
     description: 'Vücudun nikotinsiz düzene uyum sağlamaya başlıyor.',
+    icon: '🗓️',
   },
   {
     key: '10days',
     offsetMinutes: 14400,
     title: '10 gün',
     description: 'Tat ve koku almaya belirgin biçimde başlıyorsun; yemekler daha lezzetli.',
+    icon: '🍽️',
   },
   {
     key: '2weeks',
     offsetMinutes: 20160,
     title: '2 hafta',
     description: 'Dolaşımın düzeliyor; yürüyüş ve hareket etmek kolaylaşıyor.',
+    icon: '🩸',
   },
   {
     key: '1month',
     offsetMinutes: 43200,
     title: '1 ay',
     description: 'Akciğer fonksiyonun düzeliyor, öksürük azalıyor ve enerjin toparlanmaya başlıyor.',
+    icon: '⚡',
   },
   {
     key: '3months',
     offsetMinutes: 129600,
     title: '3 ay',
     description: 'Dolaşımın ve akciğer fonksiyonun belirgin biçimde iyileşiyor.',
+    icon: '🏃',
   },
   {
     key: '6months',
     offsetMinutes: 259200,
     title: '6 ay',
     description: 'Stres ve gerginliğin azalıyor; ruh halin daha dengeli hale geliyor.',
+    icon: '🧘',
   },
   {
     key: '1year',
     offsetMinutes: 525600,
     title: '1 yıl',
     description: 'Koroner kalp hastalığı fazla riskin, içmeye devam edenlerin yarısına iniyor.',
+    icon: '🏆',
   },
 ] as const;
 

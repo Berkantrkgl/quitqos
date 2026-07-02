@@ -70,6 +70,26 @@
     "emptyTitle": "İyileşmeni görmek için streak'ini başlat",
     "emptyBody": "Başladığında vücudunun adım adım iyileştiğini göreceksin."
   },
+  "badgesScreen": {
+    "title": "Rozetler",
+    "subtitle": "Her kilometre taşı bir rozet kazandırır",
+    "summary": "{{total}} rozetten {{done}} tanesi kazanıldı",
+    "lockedHint": "Kilitli",
+    "statusUnlocked": "Kazanıldı",
+    "emptyTitle": "Rozet kazanmak için streak'ini başlat",
+    "emptyBody": "Streak'in ilerledikçe rozetlerin tek tek açılacak."
+  },
+  "leaderboardScreen": {
+    "title": "Sıralama",
+    "subtitle": "En uzun streak'e sahip kullanıcılarla yarış",
+    "lockTitle": "Sıralamaya katıl",
+    "lockBody": "Giriş yaptığında streak'in kaydedilir, cihazların arasında senkronlanır ve dünya genelindeki sıralamada yerini alırsın.",
+    "signIn": "Giriş yap",
+    "benefitSync": "Verilerin bulutta güvende, tüm cihazlarında senkron",
+    "benefitRank": "Küresel sıralamada yerini gör",
+    "benefitStreak": "Streak'ini asla kaybetme",
+    "you": "Sen"
+  },
   "tabs": {
     "home": "Ana sayfa",
     "health": "Sağlık",
