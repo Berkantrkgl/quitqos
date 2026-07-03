@@ -1,5 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext, use, useEffect, useState, type ReactNode } from 'react';
+import { createContext, use, useCallback, useEffect, useState, type ReactNode } from 'react';
+
+import { useAuth } from '@/hooks/use-auth';
+import {
+  createAttempt,
+  getCurrentAttempt,
+  relapseAttempt,
+  type QuitAttemptResponse,
+} from '@/lib/api';
 
 const STORAGE_KEY = 'quitqos.streak';
 
@@ -22,12 +30,17 @@ export type QuitAttempt = {
 type QuitStreakContextValue = {
   /** The active attempt, or `null` when there is no streak yet. */
   attempt: QuitAttempt | null;
-  /** True until the persisted value has been read from storage. */
+  /** True until the current value has been read (from storage or the backend). */
   isLoading: boolean;
   /** Begin a new streak. `startedAt` defaults to now; a past date backdates. */
   startStreak: (startedAt?: Date) => void;
   /** End the current streak (relapse). Clears the on-device attempt. */
   relapse: () => void;
+  /**
+   * Drop the on-device attempt after it has been synced to the account, without the "relapse"
+   * meaning. Used on guest→registered upgrade: the backend becomes the source of truth.
+   */
+  clearAfterSync: () => void;
 };
 
 const QuitStreakContext = createContext<QuitStreakContextValue | undefined>(undefined);
@@ -41,48 +54,133 @@ function generateLocalId(): string {
   });
 }
 
+/** Map a backend attempt to the local shape (backend has no localId → reuse the server id). */
+function fromBackend(a: QuitAttemptResponse): QuitAttempt {
+  return {
+    localId: a.id,
+    startedAt: a.startedAt,
+    status: a.status,
+    isBackdated: a.isBackdated,
+  };
+}
+
 export function QuitStreakProvider({ children }: { children: ReactNode }) {
+  const { user, accessToken } = useAuth();
   const [attempt, setAttempt] = useState<QuitAttempt | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  // Backend id of the active attempt, needed to relapse it. Null for guests.
+  const [backendId, setBackendId] = useState<string | null>(null);
 
-  // Load the persisted attempt once on mount.
+  const isRegistered = !!(user && accessToken);
+
+  // Source of truth switches with auth: backend when registered, on-device storage for guests.
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY)
-      .then((stored) => {
-        if (stored) {
-          const parsed = JSON.parse(stored) as QuitAttempt;
-          // Only an ACTIVE attempt represents a live streak.
-          if (parsed.status === 'ACTIVE') setAttempt(parsed);
-        }
-      })
-      .catch(() => {
-        // Corrupt/unreadable value → treat as no streak.
-      })
-      .finally(() => setIsLoading(false));
-  }, []);
+    let cancelled = false;
+    setIsLoading(true);
 
-  function persist(next: QuitAttempt | null) {
+    if (isRegistered && accessToken) {
+      getCurrentAttempt(accessToken)
+        .then((a) => {
+          if (cancelled) return;
+          setAttempt(a ? fromBackend(a) : null);
+          setBackendId(a?.id ?? null);
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setAttempt(null);
+            setBackendId(null);
+          }
+        })
+        .finally(() => {
+          if (!cancelled) setIsLoading(false);
+        });
+    } else {
+      setBackendId(null);
+      AsyncStorage.getItem(STORAGE_KEY)
+        .then((stored) => {
+          if (cancelled) return;
+          if (stored) {
+            const parsed = JSON.parse(stored) as QuitAttempt;
+            // Only an ACTIVE attempt represents a live streak.
+            setAttempt(parsed.status === 'ACTIVE' ? parsed : null);
+          } else {
+            setAttempt(null);
+          }
+        })
+        .catch(() => {
+          // Corrupt/unreadable value → treat as no streak.
+          if (!cancelled) setAttempt(null);
+        })
+        .finally(() => {
+          if (!cancelled) setIsLoading(false);
+        });
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isRegistered, accessToken]);
+
+  /** Persist a guest attempt to storage and state. */
+  function persistLocal(next: QuitAttempt | null) {
     setAttempt(next);
     if (next) AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     else AsyncStorage.removeItem(STORAGE_KEY);
   }
 
-  function startStreak(startedAt: Date = new Date()) {
-    const now = Date.now();
-    persist({
-      localId: generateLocalId(),
-      startedAt: startedAt.toISOString(),
-      status: 'ACTIVE',
-      isBackdated: startedAt.getTime() < now,
-    });
-  }
+  const startStreak = useCallback(
+    (startedAt: Date = new Date()) => {
+      const now = Date.now();
+      const isBackdated = startedAt.getTime() < now;
 
-  function relapse() {
-    persist(null);
-  }
+      if (isRegistered && accessToken) {
+        // Optimistic: show it immediately, reconcile with the server's canonical record.
+        setAttempt({
+          localId: 'pending',
+          startedAt: startedAt.toISOString(),
+          status: 'ACTIVE',
+          isBackdated,
+        });
+        createAttempt(accessToken, isBackdated ? startedAt.toISOString() : undefined)
+          .then((a) => {
+            setAttempt(fromBackend(a));
+            setBackendId(a.id);
+          })
+          .catch(() => {
+            // Roll back the optimistic streak on failure.
+            setAttempt(null);
+            setBackendId(null);
+          });
+        return;
+      }
+
+      persistLocal({
+        localId: generateLocalId(),
+        startedAt: startedAt.toISOString(),
+        status: 'ACTIVE',
+        isBackdated,
+      });
+    },
+    [isRegistered, accessToken],
+  );
+
+  const relapse = useCallback(() => {
+    if (isRegistered && accessToken && backendId) {
+      const id = backendId;
+      setAttempt(null);
+      setBackendId(null);
+      relapseAttempt(accessToken, id).catch(() => undefined);
+      return;
+    }
+    persistLocal(null);
+  }, [isRegistered, accessToken, backendId]);
+
+  const clearAfterSync = useCallback(() => {
+    persistLocal(null);
+  }, []);
 
   return (
-    <QuitStreakContext value={{ attempt, isLoading, startStreak, relapse }}>
+    <QuitStreakContext value={{ attempt, isLoading, startStreak, relapse, clearAfterSync }}>
       {children}
     </QuitStreakContext>
   );

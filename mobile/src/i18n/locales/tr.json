@@ -98,7 +98,15 @@
     "shortPassword": "Şifre en az 6 karakter olmalı.",
     "signedInAs": "Giriş yapıldı: @{{username}}",
     "signOut": "Çıkış yap",
-    "account": "Hesap"
+    "account": "Hesap",
+    "errInvalidEmail": "Geçersiz e-posta adresi.",
+    "errUserDisabled": "Bu hesap devre dışı bırakılmış.",
+    "errUserNotFound": "Bu e-postayla bir hesap bulunamadı.",
+    "errWrongPassword": "E-posta veya şifre hatalı.",
+    "errEmailInUse": "Bu e-posta zaten kayıtlı. Giriş yapmayı dene.",
+    "errWeakPassword": "Şifre çok zayıf. En az 6 karakter kullan.",
+    "errNetwork": "Bağlantı hatası. İnternetini kontrol et.",
+    "errTooManyRequests": "Çok fazla deneme yapıldı. Biraz sonra tekrar dene."
   },
   "leaderboardScreen": {
     "title": "Sıralama",
@@ -109,7 +117,11 @@
     "benefitSync": "Verilerin bulutta güvende, tüm cihazlarında senkron",
     "benefitRank": "Küresel sıralamada yerini gör",
     "benefitStreak": "Streak'ini asla kaybetme",
-    "you": "Sen"
+    "you": "Sen",
+    "error": "Sıralama yüklenemedi. Lütfen tekrar dene.",
+    "empty": "Sıralama henüz boş. İlk streak'i başlatan sen ol!",
+    "notRanked": "Sıralamaya girmek için bir streak başlat.",
+    "dayUnit": "gün"
   },
   "tabs": {
     "home": "Ana sayfa",

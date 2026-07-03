@@ -98,7 +98,15 @@
     "shortPassword": "Password must be at least 6 characters.",
     "signedInAs": "Signed in as @{{username}}",
     "signOut": "Sign out",
-    "account": "Account"
+    "account": "Account",
+    "errInvalidEmail": "Invalid email address.",
+    "errUserDisabled": "This account has been disabled.",
+    "errUserNotFound": "No account found with this email.",
+    "errWrongPassword": "Incorrect email or password.",
+    "errEmailInUse": "This email is already registered. Try signing in.",
+    "errWeakPassword": "Password is too weak. Use at least 6 characters.",
+    "errNetwork": "Connection error. Check your internet.",
+    "errTooManyRequests": "Too many attempts. Please try again later."
   },
   "leaderboardScreen": {
     "title": "Leaderboard",
@@ -109,7 +117,11 @@
     "benefitSync": "Your data safe in the cloud, synced across devices",
     "benefitRank": "See where you stand in the global ranking",
     "benefitStreak": "Never lose your streak",
-    "you": "You"
+    "you": "You",
+    "error": "Couldn't load the leaderboard. Please try again.",
+    "empty": "The leaderboard is empty. Be the first to start a streak!",
+    "notRanked": "Start a streak to enter the leaderboard.",
+    "dayUnit": "days"
   },
   "tabs": {
     "home": "Home",

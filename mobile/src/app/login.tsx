@@ -16,19 +16,55 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
-import { useAuth, type AuthProvider_ } from '@/hooks/use-auth';
+import { useAuth, isSignInCancellation, type AuthProvider_ } from '@/hooks/use-auth';
+import { useQuitStreak } from '@/hooks/use-quit-streak';
 import { useTheme } from '@/hooks/use-theme';
+import type { SyncAttempt } from '@/lib/api';
 
 type Busy = AuthProvider_ | 'email' | null;
 type Mode = 'signIn' | 'register';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/** Firebase Auth error `code` → i18n key. Anything unrecognised falls back to the generic message. */
+const FIREBASE_ERROR_KEYS = {
+  'auth/invalid-email': 'auth.errInvalidEmail',
+  'auth/user-disabled': 'auth.errUserDisabled',
+  'auth/user-not-found': 'auth.errUserNotFound',
+  'auth/wrong-password': 'auth.errWrongPassword',
+  'auth/invalid-credential': 'auth.errWrongPassword',
+  'auth/email-already-in-use': 'auth.errEmailInUse',
+  'auth/weak-password': 'auth.errWeakPassword',
+  'auth/network-request-failed': 'auth.errNetwork',
+  'auth/too-many-requests': 'auth.errTooManyRequests',
+} as const;
+
+type AuthErrorKey = (typeof FIREBASE_ERROR_KEYS)[keyof typeof FIREBASE_ERROR_KEYS] | 'auth.error';
+
+/** Map a caught sign-in error to an i18n key, preferring a specific Firebase code over the generic. */
+function authErrorKey(err: unknown): AuthErrorKey {
+  const code = typeof err === 'object' && err && 'code' in err ? String((err as { code: unknown }).code) : '';
+  return FIREBASE_ERROR_KEYS[code as keyof typeof FIREBASE_ERROR_KEYS] ?? 'auth.error';
+}
+
 export default function LoginScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const theme = useTheme();
   const { signIn, signInWithEmail, registerWithEmail } = useAuth();
+  const { attempt, clearAfterSync } = useQuitStreak();
+
+  // The guest's on-device streak to merge into the account on sign-in (empty when there's none).
+  const pendingAttempts: SyncAttempt[] = attempt
+    ? [
+        {
+          startedAt: attempt.startedAt,
+          status: attempt.status,
+          isBackdated: attempt.isBackdated,
+          localId: attempt.localId,
+        },
+      ]
+    : [];
 
   const [busy, setBusy] = useState<Busy>(null);
   const [error, setError] = useState<string | null>(null);
@@ -44,8 +80,10 @@ export default function LoginScreen() {
     try {
       await action();
       router.back();
-    } catch {
-      setError(t('auth.error'));
+    } catch (err) {
+      // Cancelling a native sheet (Google/Apple) is a no-op, not an error — leave the screen alone.
+      if (isSignInCancellation(err)) return;
+      setError(t(authErrorKey(err)));
     } finally {
       setBusy(null);
     }
@@ -62,7 +100,10 @@ export default function LoginScreen() {
       return;
     }
     run(
-      () => (mode === 'register' ? registerWithEmail(mail, password) : signInWithEmail(mail, password)),
+      () =>
+        mode === 'register'
+          ? registerWithEmail(mail, password, pendingAttempts, clearAfterSync)
+          : signInWithEmail(mail, password, pendingAttempts, clearAfterSync),
       'email',
     );
   }
@@ -120,7 +161,7 @@ export default function LoginScreen() {
                 icon="G"
                 busy={busy === 'google'}
                 disabled={anyBusy}
-                onPress={() => run(() => signIn('google'), 'google')}
+                onPress={() => run(() => signIn('google', pendingAttempts, clearAfterSync), 'google')}
                 variant="light"
               />
               {Platform.OS === 'ios' ? (
@@ -129,7 +170,7 @@ export default function LoginScreen() {
                   icon=""
                   busy={busy === 'apple'}
                   disabled={anyBusy}
-                  onPress={() => run(() => signIn('apple'), 'apple')}
+                  onPress={() => run(() => signIn('apple', pendingAttempts, clearAfterSync), 'apple')}
                   variant="dark"
                 />
               ) : null}

@@ -109,3 +109,122 @@ export function refreshTokens(refreshToken: string): Promise<TokenResponse> {
 export function logout(refreshToken: string): Promise<void> {
   return apiFetch<void>('/auth/logout', { method: 'POST', body: { refreshToken } });
 }
+
+// ---- Quit attempts (registered) -------------------------------------------
+
+export type QuitStatus = 'ACTIVE' | 'RELAPSED';
+
+/** Full attempt view (mirrors backend QuitAttemptResponse). */
+export type QuitAttemptResponse = {
+  id: string;
+  startedAt: string;
+  endedAt: string | null;
+  status: QuitStatus;
+  isBackdated: boolean;
+  elapsed: { days: number; hours: number; minutes: number; seconds: number };
+};
+
+/**
+ * GET /quit-attempts/current — the active streak, or null when there is none (backend 404).
+ * Any other error still throws.
+ */
+export async function getCurrentAttempt(accessToken: string): Promise<QuitAttemptResponse | null> {
+  try {
+    return await apiFetch<QuitAttemptResponse>('/quit-attempts/current', { accessToken });
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) return null;
+    throw err;
+  }
+}
+
+/** POST /quit-attempts — start a streak. Omit startedAt for "now"; a past ISO date backdates. */
+export function createAttempt(
+  accessToken: string,
+  startedAt?: string,
+): Promise<QuitAttemptResponse> {
+  return apiFetch<QuitAttemptResponse>('/quit-attempts', {
+    method: 'POST',
+    body: startedAt ? { startedAt } : {},
+    accessToken,
+  });
+}
+
+/** POST /quit-attempts/{id}/relapse — end the active streak. */
+export function relapseAttempt(accessToken: string, id: string): Promise<unknown> {
+  return apiFetch<unknown>(`/quit-attempts/${id}/relapse`, { method: 'POST', body: {}, accessToken });
+}
+
+// ---- Sync (guest → registered upgrade) ------------------------------------
+
+/** One device-local attempt to merge (mirrors backend SyncAttempt). */
+export type SyncAttempt = {
+  startedAt: string;
+  endedAt?: string | null;
+  status: 'ACTIVE' | 'RELAPSED';
+  isBackdated: boolean;
+  localId: string;
+};
+
+export type SyncResponse = {
+  merged: number;
+  skipped: number;
+  currentAttemptId: string | null;
+};
+
+/** POST /users/me/sync — merge device quit-attempt history into the account (idempotent by localId). */
+export function syncQuitAttempts(
+  accessToken: string,
+  quitAttempts: SyncAttempt[],
+): Promise<SyncResponse> {
+  return apiFetch<SyncResponse>('/users/me/sync', {
+    method: 'POST',
+    body: { quitAttempts },
+    accessToken,
+  });
+}
+
+// ---- Leaderboard ----------------------------------------------------------
+
+/** Which streak the leaderboard ranks by: live active streak, or longest ever. */
+export type LeaderboardMetric = 'current' | 'longest';
+
+/** One ranked row (mirrors backend LeaderboardItem). rank is 1-based. */
+export type LeaderboardItem = {
+  rank: number;
+  userId: string;
+  username: string;
+  displayName: string | null;
+  avatarUrl: string | null;
+  streakSeconds: number;
+};
+
+export type LeaderboardResponse = {
+  metric: LeaderboardMetric;
+  items: LeaderboardItem[];
+};
+
+/** The caller's own rank, or rank 0 when they aren't ranked (no active streak). */
+export type LeaderboardMeResponse = {
+  rank: number;
+  streakSeconds: number;
+  metric: LeaderboardMetric;
+};
+
+/** GET /leaderboard — ranked list for the metric (registered-only; guest → 403). */
+export function getLeaderboard(
+  accessToken: string,
+  metric: LeaderboardMetric = 'current',
+  limit = 50,
+): Promise<LeaderboardResponse> {
+  return apiFetch<LeaderboardResponse>(`/leaderboard?metric=${metric}&limit=${limit}`, {
+    accessToken,
+  });
+}
+
+/** GET /leaderboard/me — the caller's own rank for the metric. */
+export function getMyRank(
+  accessToken: string,
+  metric: LeaderboardMetric = 'current',
+): Promise<LeaderboardMeResponse> {
+  return apiFetch<LeaderboardMeResponse>(`/leaderboard/me?metric=${metric}`, { accessToken });
+}

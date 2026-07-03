@@ -32,6 +32,9 @@ module.exports = {
       supportsTablet: true,
       bundleIdentifier: BUNDLE_ID,
       usesAppleSignIn: true,
+      // Firebase config for iOS. Gitignored (real values); absent until we build for iOS on a Mac.
+      // Defined so the RNFirebase config plugin doesn't fail prebuild when it runs the iOS mods.
+      googleServicesFile: process.env.GOOGLE_SERVICES_PLIST || './GoogleService-Info.plist',
       config: {
         usesNonExemptEncryption: false,
       },
@@ -53,6 +56,9 @@ module.exports = {
       },
       predictiveBackGestureEnabled: false,
       package: ANDROID_PACKAGE,
+      // Firebase config for Android. Gitignored (real values), so the file may be absent on a
+      // fresh clone — RNFirebase's config plugin only needs it at native build time.
+      googleServicesFile: process.env.GOOGLE_SERVICES_JSON || './google-services.json',
     },
     web: {
       output: 'static',
@@ -72,6 +78,11 @@ module.exports = {
       ],
       'expo-localization',
       'expo-apple-authentication',
+      // Firebase + Google Sign-In native modules (config plugins wire the Gradle/pod setup so we
+      // don't touch native files by hand). These require a fresh dev-client build to take effect.
+      '@react-native-firebase/app',
+      '@react-native-firebase/auth',
+      '@react-native-google-signin/google-signin',
     ],
     experiments: {
       typedRoutes: true,
