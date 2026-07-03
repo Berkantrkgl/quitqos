@@ -32,8 +32,10 @@ quitqos:
     access-token-ttl: ${JWT_ACCESS_TTL:PT1H}        # ISO-8601 duration (~1 hour)
     refresh-token-ttl: ${JWT_REFRESH_TTL:P180D}     # ~180 days
   firebase:
-    # Path to the Firebase service-account JSON. Unset locally until auth stage.
-    credentials-path: ${FIREBASE_CREDENTIALS:}
+    # Firebase service-account JSON (gitignored), lives in src/main/resources so it's on the
+    # classpath. Resolved via ResourceLoader → works from any working dir (IDE Run or terminal).
+    # Override with FIREBASE_CREDENTIALS (accepts classpath:/file:/plain paths). Auth fails fast if blank.
+    credentials-path: ${FIREBASE_CREDENTIALS:classpath:firebase-service-account.json}
   notifications:
     # How often the milestone scheduler scans ACTIVE attempts (ms). API design §10: "örn. her dakika".
     scheduler-rate-ms: ${NOTIFICATIONS_SCHEDULER_RATE_MS:60000}

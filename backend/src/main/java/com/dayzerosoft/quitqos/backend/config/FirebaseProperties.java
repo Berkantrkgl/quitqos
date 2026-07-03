@@ -3,10 +3,11 @@ package com.dayzerosoft.quitqos.backend.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Binds {@code quitqos.firebase.*}. When {@code credentialsPath} is blank, the app skips real
- * Firebase initialization and falls back to a dev verifier (see FirebaseConfig / TokenVerifier).
+ * Binds {@code quitqos.firebase.*}. Auth requires a real service-account JSON — a blank
+ * {@code credentialsPath} fails fast at startup (see {@link FirebaseConfig}); only push degrades
+ * to a dev stub when unconfigured.
  *
- * @param credentialsPath Filesystem path to the Firebase service-account JSON. Blank locally.
+ * @param credentialsPath Filesystem path to the Firebase service-account JSON.
  */
 @ConfigurationProperties(prefix = "quitqos.firebase")
 public record FirebaseProperties(String credentialsPath) {

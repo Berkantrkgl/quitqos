@@ -1,7 +1,7 @@
 package com.dayzerosoft.quitqos.backend.config;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -12,31 +12,38 @@ import com.dayzerosoft.quitqos.backend.security.FirebaseTokenVerifier;
 import com.dayzerosoft.quitqos.backend.security.PushNotificationSender;
 import com.dayzerosoft.quitqos.backend.security.RealFirebaseTokenVerifier;
 import com.dayzerosoft.quitqos.backend.security.RealPushNotificationSender;
-import com.dayzerosoft.quitqos.backend.security.StubFirebaseTokenVerifier;
 import com.dayzerosoft.quitqos.backend.security.StubPushNotificationSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 
 /**
- * Wires the Firebase verifier. If {@code quitqos.firebase.credentials-path} points at a
- * service-account JSON, the real Firebase Admin SDK is initialized; otherwise a dev stub is used so
- * the auth flow stays testable locally without Firebase. The chosen bean is logged at startup.
+ * Wires the Firebase beans from the service-account JSON at {@code quitqos.firebase.credentials-path}.
+ * Auth requires real Firebase: a blank path fails fast at startup (no stub fallback). Push still
+ * degrades to a dev stub when unconfigured, since FCM needs real device tokens to be useful.
  */
 @Configuration
 public class FirebaseConfig {
 
     private static final Logger log = LoggerFactory.getLogger(FirebaseConfig.class);
 
+    private final ResourceLoader resourceLoader;
+
+    FirebaseConfig(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
     @Bean
     FirebaseTokenVerifier firebaseTokenVerifier(FirebaseProperties properties) {
         String path = properties.credentialsPath();
         if (!StringUtils.hasText(path)) {
-            log.warn("Firebase credentials not configured (quitqos.firebase.credentials-path is blank); "
-                    + "using STUB verifier. Do NOT use this in production.");
-            return new StubFirebaseTokenVerifier();
+            throw new IllegalStateException(
+                    "quitqos.firebase.credentials-path is not set. Auth requires a Firebase "
+                            + "service-account JSON; set FIREBASE_CREDENTIALS to its path.");
         }
         FirebaseApp app = initializeApp(path);
         return new RealFirebaseTokenVerifier(FirebaseAuth.getInstance(app));
@@ -60,7 +67,13 @@ public class FirebaseConfig {
         if (!FirebaseApp.getApps().isEmpty()) {
             return FirebaseApp.getInstance();
         }
-        try (FileInputStream credentials = new FileInputStream(credentialsPath)) {
+        // Resolved via ResourceLoader so it works regardless of the working directory (IDE Run vs.
+        // terminal): supports `classpath:` (the default), `file:`, and plain filesystem paths.
+        Resource resource = resourceLoader.getResource(credentialsPath);
+        if (!resource.exists()) {
+            throw new IllegalStateException("Firebase service-account not found at " + credentialsPath);
+        }
+        try (InputStream credentials = resource.getInputStream()) {
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(credentials))
                     .build();
