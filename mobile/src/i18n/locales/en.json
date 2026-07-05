@@ -101,7 +101,10 @@
     "progressSummary": "{{done}} of {{total}} recovered",
     "statusDone": "Reached",
     "statusNext": "In progress",
+    "statusNow": "Now",
     "statusUpcoming": "Upcoming",
+    "stepsSummary": "{{done}} / {{total}} steps",
+    "nowEta": "{{pct}}% · {{remaining}} left",
     "reachedAfter": "After {{title}}",
     "emptyTitle": "Start your streak to track recovery",
     "emptyBody": "Once you begin, you'll see your body heal step by step."
@@ -118,6 +121,8 @@
   "auth": {
     "title": "Sign in",
     "subtitle": "Save your streak, sync across devices, and join the leaderboard.",
+    "registerSubtitle": "Create an account so your progress is saved to the cloud and never lost.",
+    "passwordHint": "Password (at least 6 characters)",
     "google": "Continue with Google",
     "apple": "Continue with Apple",
     "continueAsGuest": "Continue as guest",

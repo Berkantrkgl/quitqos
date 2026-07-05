@@ -47,6 +47,11 @@ function authErrorKey(err: unknown): AuthErrorKey {
   return FIREBASE_ERROR_KEYS[code as keyof typeof FIREBASE_ERROR_KEYS] ?? 'auth.error';
 }
 
+/**
+ * Login & register — the "Sükût" design (see design/sukut/login.html). One
+ * screen; a toggle switches sign-in ↔ register. Google/Apple + email/password +
+ * continue-as-guest. Auth logic is unchanged from before the restyle.
+ */
 export default function LoginScreen() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -73,6 +78,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
 
   const anyBusy = busy !== null;
+  const isRegister = mode === 'register';
 
   async function run(action: () => Promise<unknown>, which: Busy) {
     setBusy(which);
@@ -103,12 +109,15 @@ export default function LoginScreen() {
     }
     run(
       () =>
-        mode === 'register'
+        isRegister
           ? registerWithEmail(mail, password, pendingAttempts, clearAfterSync)
           : signInWithEmail(mail, password, pendingAttempts, clearAfterSync),
       'email',
     );
   }
+
+  // Error highlight for the email/password fields (any error while typing credentials).
+  const fieldError = error !== null && busy === null;
 
   return (
     <ThemedView style={styles.container}>
@@ -128,9 +137,11 @@ export default function LoginScreen() {
                 onPress={() => router.back()}
                 hitSlop={12}
                 disabled={anyBusy}
+                accessibilityRole="button"
+                accessibilityLabel={t('common.close')}
                 style={({ pressed }) => [
                   styles.closeButton,
-                  { backgroundColor: theme.backgroundElement, opacity: pressed ? 0.7 : 1 },
+                  { backgroundColor: theme.backgroundElement, borderColor: theme.border, opacity: pressed ? 0.7 : 1 },
                 ]}
               >
                 <ThemedText type="smallBold" themeColor="textSecondary">
@@ -139,19 +150,19 @@ export default function LoginScreen() {
               </Pressable>
             </View>
 
-            {/* Brand + copy */}
+            {/* Brand wordmark + copy */}
             <View style={styles.hero}>
-              <ThemedText style={styles.logo}>🚭</ThemedText>
-              <ThemedText type="subtitle" style={styles.title}>
-                {t('auth.title')}
+              <ThemedText style={styles.wordmark}>
+                Quit
+                <ThemedText style={[styles.wordmark, { color: theme.primaryText }]}>QOS</ThemedText>
               </ThemedText>
-              <ThemedText type="small" themeColor="textSecondary" style={styles.subtitle}>
-                {t('auth.subtitle')}
+              <ThemedText type="small" themeColor="textSecondary" style={styles.tagline}>
+                {isRegister ? t('auth.registerSubtitle') : t('auth.subtitle')}
               </ThemedText>
             </View>
 
             {error ? (
-              <ThemedText type="small" themeColor="danger" style={styles.error}>
+              <ThemedText type="smallBold" themeColor="danger" style={styles.error}>
                 {error}
               </ThemedText>
             ) : null}
@@ -181,7 +192,7 @@ export default function LoginScreen() {
             {/* Divider */}
             <View style={styles.divider}>
               <View style={[styles.line, { backgroundColor: theme.border }]} />
-              <ThemedText type="eyebrow" themeColor="textSecondary">
+              <ThemedText type="eyebrow" themeColor="textTertiary">
                 {t('auth.or')}
               </ThemedText>
               <View style={[styles.line, { backgroundColor: theme.border }]} />
@@ -190,9 +201,16 @@ export default function LoginScreen() {
             {/* Email + password */}
             <View style={styles.form}>
               <TextInput
-                style={[styles.input, { borderColor: theme.border, color: theme.text, backgroundColor: theme.backgroundElement }]}
+                style={[
+                  styles.input,
+                  {
+                    borderColor: fieldError ? theme.danger : theme.border,
+                    color: theme.text,
+                    backgroundColor: theme.backgroundElement,
+                  },
+                ]}
                 placeholder={t('auth.email')}
-                placeholderTextColor={theme.textSecondary}
+                placeholderTextColor={theme.textTertiary}
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
@@ -202,14 +220,21 @@ export default function LoginScreen() {
                 editable={!anyBusy}
               />
               <TextInput
-                style={[styles.input, { borderColor: theme.border, color: theme.text, backgroundColor: theme.backgroundElement }]}
-                placeholder={t('auth.password')}
-                placeholderTextColor={theme.textSecondary}
+                style={[
+                  styles.input,
+                  {
+                    borderColor: fieldError ? theme.danger : theme.border,
+                    color: theme.text,
+                    backgroundColor: theme.backgroundElement,
+                  },
+                ]}
+                placeholder={isRegister ? t('auth.passwordHint') : t('auth.password')}
+                placeholderTextColor={theme.textTertiary}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
                 autoCapitalize="none"
-                textContentType={mode === 'register' ? 'newPassword' : 'password'}
+                textContentType={isRegister ? 'newPassword' : 'password'}
                 editable={!anyBusy}
               />
               <Pressable
@@ -217,47 +242,50 @@ export default function LoginScreen() {
                 disabled={anyBusy}
                 style={({ pressed }) => [
                   styles.submit,
-                  { backgroundColor: theme.primary, opacity: anyBusy && busy !== 'email' ? 0.5 : pressed ? 0.85 : 1 },
+                  { backgroundColor: theme.primary, opacity: anyBusy && busy !== 'email' ? 0.5 : pressed ? 0.9 : 1 },
                 ]}
               >
                 {busy === 'email' ? (
                   <ActivityIndicator color={theme.onPrimary} />
                 ) : (
-                  <ThemedText type="smallBold" themeColor="onPrimary">
-                    {mode === 'register' ? t('auth.emailRegister') : t('auth.emailSignIn')}
+                  <ThemedText type="smallBold" themeColor="onPrimary" style={styles.submitText}>
+                    {isRegister ? t('auth.emailRegister') : t('auth.emailSignIn')}
                   </ThemedText>
                 )}
               </Pressable>
 
               <Pressable
                 onPress={() => {
-                  setMode(mode === 'signIn' ? 'register' : 'signIn');
+                  setMode(isRegister ? 'signIn' : 'register');
                   setError(null);
                 }}
                 disabled={anyBusy}
                 hitSlop={8}
-                style={styles.toggle}
+                style={styles.switch}
               >
-                <ThemedText type="small" themeColor="primary">
-                  {mode === 'signIn' ? t('auth.toggleToRegister') : t('auth.toggleToSignIn')}
+                <ThemedText type="smallBold" themeColor="primaryText">
+                  {isRegister ? t('auth.toggleToSignIn') : t('auth.toggleToRegister')}
                 </ThemedText>
               </Pressable>
             </View>
 
-            <Pressable
-              onPress={() => router.back()}
-              disabled={anyBusy}
-              hitSlop={8}
-              style={styles.guest}
-            >
-              <ThemedText type="smallBold" themeColor="textSecondary">
-                {t('auth.continueAsGuest')}
-              </ThemedText>
-            </Pressable>
+            {/* Guest + legal pinned to the bottom */}
+            <View style={styles.footer}>
+              <Pressable
+                onPress={() => router.back()}
+                disabled={anyBusy}
+                hitSlop={8}
+                style={styles.guest}
+              >
+                <ThemedText type="smallBold" themeColor="textSecondary">
+                  {t('auth.continueAsGuest')}
+                </ThemedText>
+              </Pressable>
 
-            <ThemedText type="small" themeColor="textSecondary" style={styles.legal}>
-              {t('auth.legal')}
-            </ThemedText>
+              <ThemedText type="small" themeColor="textTertiary" style={styles.legal}>
+                {t('auth.legal')}
+              </ThemedText>
+            </View>
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -274,12 +302,14 @@ type ProviderButtonProps = {
   variant: 'light' | 'dark';
 };
 
-/** A branded social sign-in button: white/bordered (Google) or black (Apple). */
+/** A branded social sign-in button: filled neutral (Google) or solid ink (Apple). */
 function ProviderButton({ label, icon, busy, disabled, onPress, variant }: ProviderButtonProps) {
   const theme = useTheme();
   const isDark = variant === 'dark';
-  const bg = isDark ? '#000000' : theme.background;
-  const fg = isDark ? '#FFFFFF' : theme.text;
+  // Light variant: a filled surface with a stronger border so it reads clearly
+  // against the near-white page (a hairline alone all but disappeared).
+  const bg = isDark ? theme.text : theme.backgroundElement;
+  const fg = isDark ? theme.background : theme.text;
 
   return (
     <Pressable
@@ -289,7 +319,8 @@ function ProviderButton({ label, icon, busy, disabled, onPress, variant }: Provi
         styles.provider,
         {
           backgroundColor: bg,
-          borderColor: isDark ? '#000000' : theme.border,
+          borderColor: isDark ? theme.text : theme.borderStrong,
+          borderWidth: isDark ? StyleSheet.hairlineWidth : 1,
           opacity: disabled && !busy ? 0.5 : pressed ? 0.85 : 1,
         },
       ]}
@@ -312,32 +343,38 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   flex: { flex: 1 },
   safeArea: { flex: 1, paddingHorizontal: Spacing.four },
-  scroll: { flexGrow: 1, paddingBottom: Spacing.four },
+  scroll: { flexGrow: 1, paddingBottom: Spacing.three },
   topBar: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingVertical: Spacing.two,
   },
   closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 34,
+    height: 34,
+    borderRadius: 11,
+    borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
   },
   hero: {
     alignItems: 'center',
-    gap: Spacing.one,
-    paddingVertical: Spacing.four,
+    paddingTop: Spacing.two,
+    paddingBottom: Spacing.five,
   },
-  logo: {
-    fontSize: 48,
-    lineHeight: 56,
-    marginBottom: Spacing.one,
+  wordmark: {
+    fontSize: 28,
+    lineHeight: 34,
+    fontWeight: '800',
+    letterSpacing: -0.6,
   },
-  title: { textAlign: 'center' },
-  subtitle: { textAlign: 'center', maxWidth: 300 },
-  error: { textAlign: 'center', marginBottom: Spacing.two },
+  tagline: {
+    textAlign: 'center',
+    maxWidth: 280,
+    marginTop: Spacing.two + 2,
+    lineHeight: 20,
+  },
+  error: { textAlign: 'center', marginBottom: Spacing.three },
   buttons: { gap: Spacing.three },
   provider: {
     flexDirection: 'row',
@@ -345,12 +382,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: Spacing.two,
     height: 52,
-    borderRadius: Spacing.three,
+    borderRadius: 14,
     borderWidth: StyleSheet.hairlineWidth,
   },
   providerIcon: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 17,
+    fontWeight: '800',
     width: 20,
     textAlign: 'center',
   },
@@ -365,22 +402,30 @@ const styles = StyleSheet.create({
   input: {
     height: 52,
     borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: Spacing.three,
+    borderRadius: 12,
     paddingHorizontal: Spacing.three,
-    fontSize: 16,
+    fontSize: 15,
   },
   submit: {
     height: 52,
-    borderRadius: Spacing.three,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: Spacing.half,
   },
-  toggle: { alignItems: 'center', paddingVertical: Spacing.two },
+  submitText: {
+    fontSize: 15,
+    lineHeight: 20,
+  },
+  switch: { alignItems: 'center', paddingVertical: Spacing.three, paddingBottom: Spacing.one },
+  footer: {
+    marginTop: 'auto',
+    paddingTop: Spacing.four,
+  },
   guest: { alignItems: 'center', paddingVertical: Spacing.three },
   legal: {
     textAlign: 'center',
-    paddingBottom: Spacing.two,
-    fontSize: 11,
+    marginTop: Spacing.two,
     lineHeight: 16,
   },
 });

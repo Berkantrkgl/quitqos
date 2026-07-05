@@ -101,7 +101,10 @@
     "progressSummary": "{{total}} adımdan {{done}} tanesi tamamlandı",
     "statusDone": "Ulaşıldı",
     "statusNext": "Devam ediyor",
+    "statusNow": "Şu an",
     "statusUpcoming": "Yaklaşıyor",
+    "stepsSummary": "{{done}} / {{total}} adım",
+    "nowEta": "%{{pct}} · {{remaining}} kaldı",
     "reachedAfter": "{{title}} sonra",
     "emptyTitle": "İyileşmeni görmek için streak'ini başlat",
     "emptyBody": "Başladığında vücudunun adım adım iyileştiğini göreceksin."
@@ -118,6 +121,8 @@
   "auth": {
     "title": "Giriş yap",
     "subtitle": "Streak'ini kaydet, cihazların arasında senkronla ve sıralamaya katıl.",
+    "registerSubtitle": "Hesap oluştur; ilerlemen buluta kaydedilsin, hiç kaybolmasın.",
+    "passwordHint": "Şifre (en az 6 karakter)",
     "google": "Google ile devam et",
     "apple": "Apple ile devam et",
     "continueAsGuest": "Misafir olarak devam et",

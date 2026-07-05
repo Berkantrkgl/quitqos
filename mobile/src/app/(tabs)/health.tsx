@@ -1,5 +1,7 @@
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { type LayoutChangeEvent, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PlaceholderScreen } from '@/components/placeholder-screen';
@@ -11,61 +13,102 @@ import { useElapsedTime } from '@/hooks/use-elapsed-time';
 import { useQuitStreak } from '@/hooks/use-quit-streak';
 import { useTheme } from '@/hooks/use-theme';
 
-type ItemStatus = 'done' | 'next' | 'upcoming';
+type ItemStatus = 'done' | 'now' | 'upcoming';
 
+type Row = {
+  milestone: Milestone;
+  status: ItemStatus;
+  /** Fill fraction 0–1 for the "now" step. */
+  progress: number;
+  /** Minutes remaining until this (upcoming/now) milestone. */
+  minutesLeft: number;
+};
+
+/**
+ * Health — the "Sükût" recovery timeline (see design/sukut/health.html).
+ * One continuous vertical line in chronological order (20 min at the top, 1 year
+ * at the bottom). On open, the list scrolls so the "now" step is near the top —
+ * past achievements above, upcoming steps below. Kept minimal to match Home: a
+ * soft tint (no card border) marks the "now" step.
+ */
 export default function HealthScreen() {
   const { t } = useTranslation();
   const { attempt } = useQuitStreak();
   const elapsed = useElapsedTime(attempt?.startedAt ?? null);
 
-  // No active streak → invite the user to start (mirrors the empty state).
+  const scrollRef = useRef<ScrollView>(null);
+  // Y offset of the "now" row within the scrolled rail; used to auto-position it.
+  const nowY = useRef<number | null>(null);
+  // Guards a single auto-scroll per focus; reset each time the tab regains focus.
+  const didScroll = useRef(false);
+
+  // Re-center "now" every time the tab regains focus (not just first mount). If
+  // the layout is already measured, scroll now; otherwise onNowLayout will.
+  useFocusEffect(
+    useCallback(() => {
+      didScroll.current = false;
+      if (nowY.current != null) {
+        didScroll.current = true;
+        scrollRef.current?.scrollTo({ y: nowScrollTarget(nowY.current), animated: false });
+      }
+    }, []),
+  );
+
   if (!attempt || !elapsed) {
-    return (
-      <PlaceholderScreen title={t('health.emptyTitle')} hint={t('health.emptyBody')} icon="🫀" />
-    );
+    return <PlaceholderScreen title={t('health.emptyTitle')} hint={t('health.emptyBody')} icon="🫀" />;
   }
 
   const total = elapsed.totalMinutes;
   const doneCount = MILESTONES.filter((m) => m.offsetMinutes <= total).length;
   const nextIndex = MILESTONES.findIndex((m) => m.offsetMinutes > total);
 
+  // Chronological order (top = 20 min, bottom = 1 year).
+  const rows: Row[] = MILESTONES.map((m, i) => {
+    const status: ItemStatus =
+      m.offsetMinutes <= total ? 'done' : i === nextIndex ? 'now' : 'upcoming';
+    const prevOffset = i > 0 ? MILESTONES[i - 1].offsetMinutes : 0;
+    const progress =
+      status === 'now'
+        ? Math.min(1, Math.max(0, (total - prevOffset) / (m.offsetMinutes - prevOffset)))
+        : 0;
+    return { milestone: m, status, progress, minutesLeft: Math.max(0, m.offsetMinutes - total) };
+  });
+
+  // Scroll "now" near the top once its offset is known (a little breathing room
+  // above so a done step peeks in as context). Runs once.
+  function maybeScrollToNow() {
+    if (didScroll.current || nowY.current == null) return;
+    didScroll.current = true;
+    scrollRef.current?.scrollTo({ y: nowScrollTarget(nowY.current), animated: false });
+  }
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
+        {/* Header stays pinned; only the timeline rail scrolls. */}
+        <Header doneCount={doneCount} total={MILESTONES.length} />
         <ScrollView
+          ref={scrollRef}
+          style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.header}>
-            <ThemedText type="subtitle">{t('health.title')}</ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
-              {t('health.subtitle')}
-            </ThemedText>
-            <ThemedText type="eyebrow" themeColor="primary" style={styles.summary}>
-              {t('health.progressSummary', { done: doneCount, total: MILESTONES.length })}
-            </ThemedText>
-          </View>
-
-          <View style={styles.timeline}>
-            {MILESTONES.map((m, i) => {
-              const status: ItemStatus =
-                m.offsetMinutes <= total ? 'done' : i === nextIndex ? 'next' : 'upcoming';
-              // Fill fraction for the "next" node: from previous milestone to this one.
-              const prevOffset = i > 0 ? MILESTONES[i - 1].offsetMinutes : 0;
-              const progress =
-                status === 'next'
-                  ? Math.min(1, Math.max(0, (total - prevOffset) / (m.offsetMinutes - prevOffset)))
-                  : 0;
-              return (
-                <TimelineItem
-                  key={m.key}
-                  milestone={m}
-                  status={status}
-                  progress={progress}
-                  isLast={i === MILESTONES.length - 1}
-                />
-              );
-            })}
+          <View style={styles.rail}>
+            {rows.map((row, i) => (
+              <TimelineStep
+                key={row.milestone.key}
+                row={row}
+                isLast={i === rows.length - 1}
+                onNowLayout={
+                  row.status === 'now'
+                    ? (y) => {
+                        nowY.current = y;
+                        maybeScrollToNow();
+                      }
+                    : undefined
+                }
+              />
+            ))}
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -73,101 +116,156 @@ export default function HealthScreen() {
   );
 }
 
-/** One recovery step: timeline rail on the left, content card on the right. */
-function TimelineItem({
-  milestone,
-  status,
-  progress,
+/** Screen title + a "N / total steps" summary with a thin progress bar. */
+function Header({ doneCount, total }: { doneCount: number; total: number }) {
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const pct = Math.round((doneCount / total) * 100);
+  return (
+    <View style={styles.header}>
+      <ThemedText type="subtitle" style={styles.title}>
+        {t('health.title')}
+      </ThemedText>
+      <ThemedText type="small" themeColor="textSecondary" style={styles.subtitle}>
+        {t('health.subtitle')}
+      </ThemedText>
+      <View style={styles.sumRow}>
+        <ThemedText type="smallBold" themeColor="primaryText" style={styles.sumText}>
+          {t('health.stepsSummary', { done: doneCount, total })}
+        </ThemedText>
+        <View style={[styles.sumTrack, { backgroundColor: theme.border }]}>
+          <View style={[styles.sumFill, { backgroundColor: theme.primary, width: `${pct}%` }]} />
+        </View>
+      </View>
+    </View>
+  );
+}
+
+/** One recovery step on the continuous rail. */
+function TimelineStep({
+  row,
   isLast,
+  onNowLayout,
 }: {
-  milestone: Milestone;
-  status: ItemStatus;
-  progress: number;
+  row: Row;
   isLast: boolean;
+  /** Reports this row's Y within the rail — set only on the "now" step. */
+  onNowLayout?: (y: number) => void;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { milestone, status, progress } = row;
 
   const done = status === 'done';
-  const next = status === 'next';
+  const now = status === 'now';
 
-  const dotColor = done || next ? theme.primary : theme.border;
   const statusLabel = done
     ? t('health.statusDone')
-    : next
-      ? t('health.statusNext')
+    : now
+      ? t('health.statusNow')
       : t('health.statusUpcoming');
 
+  const handleLayout = onNowLayout
+    ? (e: LayoutChangeEvent) => onNowLayout(e.nativeEvent.layout.y)
+    : undefined;
+
   return (
-    <View style={styles.item}>
-      {/* Left rail: node + connector line. */}
-      <View style={styles.rail}>
+    <View style={styles.step} onLayout={handleLayout}>
+      {/* Left rail: node + connector. */}
+      <View style={styles.railCol}>
         <View
           style={[
-            styles.dot,
-            { borderColor: dotColor, backgroundColor: done ? theme.primary : theme.background },
+            styles.node,
+            done
+              ? { backgroundColor: theme.primary }
+              : now
+                ? { backgroundColor: theme.background, borderColor: theme.primary, borderWidth: 2 }
+                : { backgroundColor: theme.background, borderColor: theme.borderStrong, borderWidth: 2 },
           ]}
         >
           {done ? (
-            <ThemedText type="small" themeColor="onPrimary" style={styles.dotCheck}>
+            <ThemedText type="eyebrow" themeColor="onPrimary" style={styles.check}>
               ✓
             </ThemedText>
           ) : null}
         </View>
         {!isLast ? (
-          <View style={styles.connectorTrack}>
-            <View style={[styles.connectorFill, { backgroundColor: theme.border }]} />
-            {done ? (
-              <View
-                style={[
-                  styles.connectorFill,
-                  styles.connectorOverlay,
-                  { backgroundColor: theme.primary },
-                ]}
-              />
-            ) : null}
-          </View>
+          <View style={[styles.connector, { backgroundColor: done ? theme.primary : theme.border }]} />
         ) : null}
       </View>
 
-      {/* Right: content card. */}
-      <View
-        style={[
-          styles.card,
-          {
-            backgroundColor: theme.backgroundElement,
-            borderColor: next ? theme.primary : 'transparent',
-            opacity: status === 'upcoming' ? 0.55 : 1,
-          },
-        ]}
-      >
-        <View style={styles.cardHead}>
-          <ThemedText type="smallBold">{milestone.title}</ThemedText>
+      {/* Right: content. The "now" step is a self-contained tinted card. */}
+      {now ? (
+        <View style={[styles.nowCard, { backgroundColor: theme.primaryMuted }]}>
+          <View style={styles.nowHead}>
+            <ThemedText type="smallBold" style={styles.nowTitle}>
+              {milestone.title}
+            </ThemedText>
+            <ThemedText type="eyebrow" themeColor="primaryText">
+              {statusLabel}
+            </ThemedText>
+          </View>
+          <ThemedText type="small" themeColor="textSecondary" style={styles.nowDesc}>
+            {milestone.description}
+          </ThemedText>
+          <NowProgress progress={progress} minutesLeft={row.minutesLeft} />
+        </View>
+      ) : (
+        <View style={styles.body}>
+          <View style={styles.bodyTop}>
+            <ThemedText type="smallBold" themeColor={done ? 'text' : 'textSecondary'} style={styles.stepTitle}>
+              {milestone.title}
+            </ThemedText>
+            <ThemedText type="eyebrow" themeColor={done ? 'primaryText' : 'textTertiary'}>
+              {statusLabel}
+            </ThemedText>
+          </View>
           <ThemedText
-            type="eyebrow"
-            themeColor={done ? 'success' : next ? 'primary' : 'textSecondary'}
+            type="small"
+            themeColor={done ? 'textSecondary' : 'textTertiary'}
+            style={styles.stepDesc}
           >
-            {statusLabel}
+            {milestone.description}
           </ThemedText>
         </View>
-        <ThemedText type="small" themeColor="textSecondary">
-          {milestone.description}
-        </ThemedText>
-
-        {/* Progress bar only for the in-progress step. */}
-        {next ? (
-          <View style={[styles.progressTrack, { backgroundColor: theme.border }]}>
-            <View
-              style={[
-                styles.progressFill,
-                { backgroundColor: theme.primary, width: `${Math.round(progress * 100)}%` },
-              ]}
-            />
-          </View>
-        ) : null}
-      </View>
+      )}
     </View>
   );
+}
+
+/** Live progress bar + "%64 · 6 saat kaldı" line for the current step. */
+function NowProgress({ progress, minutesLeft }: { progress: number; minutesLeft: number }) {
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const rem = remaining(minutesLeft);
+  return (
+    <View style={styles.nowProgress}>
+      <View style={[styles.progTrack, { backgroundColor: theme.background }]}>
+        <View style={[styles.progFill, { backgroundColor: theme.primary, width: `${Math.round(progress * 100)}%` }]} />
+      </View>
+      <ThemedText type="smallBold" themeColor="primaryText" style={styles.eta}>
+        {t('health.nowEta', { pct: Math.round(progress * 100), remaining: t(rem.key, { count: rem.count }) })}
+      </ThemedText>
+    </View>
+  );
+}
+
+/**
+ * Scroll offset that lands the "now" card flush at the top of the rail. The card
+ * uses marginTop: -Spacing.one to align with its node, so it visually starts a
+ * few px above the row's layout Y — compensate so its top isn't clipped and no
+ * sliver of the previous step shows.
+ */
+function nowScrollTarget(nowRowY: number): number {
+  return Math.max(0, nowRowY - Spacing.one);
+}
+
+/** Coarse "X kaldı" from minutes: returns i18n key + count (keeps TFunction typing). */
+function remaining(minutesLeft: number): { key: 'home.dashboard.remHour' | 'home.dashboard.remDay'; count: number } {
+  const m = Math.max(0, minutesLeft);
+  if (m < 60) return { key: 'home.dashboard.remHour', count: 1 };
+  if (m < 60 * 48) return { key: 'home.dashboard.remHour', count: Math.round(m / 60) };
+  return { key: 'home.dashboard.remDay', count: Math.round(m / (60 * 24)) };
 }
 
 const styles = StyleSheet.create({
@@ -180,80 +278,141 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: MaxContentWidth,
   },
+  scroll: {
+    flex: 1,
+  },
   scrollContent: {
-    paddingHorizontal: Spacing.four,
+    paddingHorizontal: Spacing.four + Spacing.half,
+    paddingTop: Spacing.two,
     paddingBottom: BottomTabInset + Spacing.four,
   },
   header: {
-    gap: Spacing.one,
+    paddingHorizontal: Spacing.four + Spacing.half,
     paddingTop: Spacing.two,
     paddingBottom: Spacing.four,
   },
-  summary: {
-    marginTop: Spacing.two,
+  title: {
+    fontSize: 26,
+    lineHeight: 32,
+    fontWeight: '800',
+    letterSpacing: -0.5,
   },
-  timeline: {
+  subtitle: {
+    marginTop: Spacing.one,
+    lineHeight: 19,
+  },
+  sumRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+    marginTop: Spacing.four,
+  },
+  sumText: {
+    minWidth: 84,
+    fontVariant: ['tabular-nums'],
+  },
+  sumTrack: {
+    flex: 1,
+    height: 4,
+    borderRadius: 999,
+    overflow: 'hidden',
+  },
+  sumFill: {
+    height: 4,
+    borderRadius: 999,
+  },
+
+  rail: {
     gap: 0,
   },
-  item: {
+  step: {
     flexDirection: 'row',
     gap: Spacing.three,
+    paddingBottom: Spacing.four,
   },
-  rail: {
+  railCol: {
     alignItems: 'center',
-    width: 24,
+    width: 22,
   },
-  dot: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
+  node: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  dotCheck: {
-    fontSize: 12,
-    lineHeight: 16,
+  check: {
+    fontSize: 11,
+    lineHeight: 14,
+    letterSpacing: 0,
   },
-  connectorTrack: {
+  connector: {
     flex: 1,
-    width: 2,
-    marginVertical: 2,
-  },
-  connectorFill: {
-    flex: 1,
-    width: 2,
+    width: StyleSheet.hairlineWidth * 2,
+    marginVertical: 4,
     borderRadius: 1,
+    minHeight: 16,
   },
-  connectorOverlay: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  card: {
+  body: {
     flex: 1,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: Spacing.three,
-    padding: Spacing.three,
-    marginBottom: Spacing.three,
-    gap: Spacing.two,
+    // small nudge so the title baseline aligns with the node
+    paddingTop: 1,
   },
-  cardHead: {
+  // "now" — a self-contained tinted card with even padding on all sides.
+  nowCard: {
+    flex: 1,
+    borderRadius: 16,
+    paddingVertical: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    gap: Spacing.two,
+    // pull up slightly so the title row lines up with the node's center
+    marginTop: -Spacing.one,
+  },
+  nowHead: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: Spacing.two,
   },
-  progressTrack: {
-    height: 6,
-    borderRadius: 3,
-    overflow: 'hidden',
+  nowTitle: {
+    fontSize: 16,
+    lineHeight: 20,
+    fontWeight: '800',
+    letterSpacing: -0.2,
+  },
+  nowDesc: {
+    lineHeight: 19,
+  },
+  bodyTop: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    gap: Spacing.two,
+  },
+  stepTitle: {
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: '800',
+    letterSpacing: -0.2,
+  },
+  stepDesc: {
+    marginTop: 3,
+    lineHeight: 19,
+  },
+  nowProgress: {
+    gap: Spacing.two,
     marginTop: Spacing.one,
   },
-  progressFill: {
-    height: 6,
-    borderRadius: 3,
+  progTrack: {
+    height: 5,
+    borderRadius: 999,
+    overflow: 'hidden',
+  },
+  progFill: {
+    height: 5,
+    borderRadius: 999,
+  },
+  eta: {
+    fontVariant: ['tabular-nums'],
   },
 });
