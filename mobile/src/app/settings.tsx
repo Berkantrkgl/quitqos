@@ -15,6 +15,7 @@ import { useQuitStreak } from '@/hooks/use-quit-streak';
 import { useTheme } from '@/hooks/use-theme';
 import { type AppLanguage, SUPPORTED_LANGUAGES } from '@/i18n';
 import { useLanguage } from '@/i18n/language-provider';
+import { getMyRank } from '@/lib/api';
 import { type ThemePreference, useAppTheme } from '@/theme/theme-provider';
 
 type ThemeOption = {
@@ -131,11 +132,13 @@ function CloseButton({ onPress }: { onPress: () => void }) {
 function ProfileMasthead({ username }: { username: string }) {
   const { t } = useTranslation();
   const th = useTheme();
+  const { accessToken } = useAuth();
   const { attempt } = useQuitStreak();
   const elapsed = useElapsedTime(attempt?.startedAt ?? null);
 
   const currentDays = elapsed?.days ?? 0;
   const badges = getEarnedMilestoneCount(elapsed?.totalMinutes ?? 0);
+  const longestDays = useLongestStreakDays(accessToken, currentDays);
 
   return (
     <>
@@ -160,12 +163,44 @@ function ProfileMasthead({ username }: { username: string }) {
       <View style={[styles.stats, { borderBottomColor: th.border }]}>
         <Stat value={currentDays} label={t('settings.statCurrent')} />
         <Divider />
-        <Stat value={currentDays} label={t('settings.statLongest')} />
+        <Stat value={longestDays} label={t('settings.statLongest')} />
         <Divider />
         <Stat value={badges} label={t('settings.statBadges')} />
       </View>
     </>
   );
+}
+
+/**
+ * The caller's longest-ever streak (in whole days) from the leaderboard's `longest` metric.
+ * Falls back to `currentDays` until it loads (and on error), so the stat is never shown as less
+ * than the current streak or as a 0-flash. Registered-only — the masthead only renders with a user.
+ */
+function useLongestStreakDays(accessToken: string | null, currentDays: number): number {
+  const [longestDays, setLongestDays] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!accessToken) return;
+    let cancelled = false;
+    getMyRank(accessToken, 'longest')
+      .then((me) => {
+        if (!cancelled) setLongestDays(daysFromSeconds(me.streakSeconds));
+      })
+      .catch(() => {
+        // Non-fatal: keep the fallback (current) rather than surfacing an error in a stat tile.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken]);
+
+  // Guard: the fetched longest can lag the live current streak by a day, so never show less.
+  return Math.max(longestDays ?? 0, currentDays);
+}
+
+/** Whole days from a streak duration in seconds. */
+function daysFromSeconds(seconds: number): number {
+  return Math.floor(seconds / 86400);
 }
 
 function Stat({ value, label }: { value: number; label: string }) {

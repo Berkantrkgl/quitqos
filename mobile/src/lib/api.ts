@@ -228,3 +228,23 @@ export function getMyRank(
 ): Promise<LeaderboardMeResponse> {
   return apiFetch<LeaderboardMeResponse>(`/leaderboard/me?metric=${metric}`, { accessToken });
 }
+
+/** One podium row in the public summary — no userId (served to guests). */
+export type SummaryLeader = {
+  rank: number;
+  username: string;
+  streakSeconds: number;
+};
+
+/** GET /leaderboard/summary — public community numbers + top 3 for the guest screen. */
+export type LeaderboardSummaryResponse = {
+  totalRacers: number;
+  longestSeconds: number;
+  joinedToday: number;
+  top: SummaryLeader[];
+};
+
+/** GET /leaderboard/summary — public (no auth): aggregate numbers a guest can see before joining. */
+export function getLeaderboardSummary(): Promise<LeaderboardSummaryResponse> {
+  return apiFetch<LeaderboardSummaryResponse>('/leaderboard/summary');
+}

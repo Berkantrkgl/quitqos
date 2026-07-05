@@ -7,109 +7,146 @@
  * is earned; content is Turkish to match the backend.
  */
 
+import {
+  Activity,
+  CalendarDays,
+  Droplets,
+  Dumbbell,
+  Flower2,
+  Footprints,
+  Heart,
+  ScanFace,
+  Sun,
+  Trophy,
+  UtensilsCrossed,
+  Wind,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react-native';
+
 export type Milestone = {
   /** Stable key — mirrors the backend milestone identity (fixed offsets). */
   key: string;
   /** Elapsed minutes from streak start at which this milestone is earned. */
   offsetMinutes: number;
   title: string;
+  /** Compact label for tight layouts (badge chips): "20 dk", "12 sa". */
+  short: string;
   description: string;
-  /** Emoji shown as the badge face on the Badges grid. */
-  icon: string;
+  /**
+   * Line-drawn Lucide icon shown as the badge face. Replaces the old emoji so
+   * badges render pixel-identically on iOS/Android and follow the theme color
+   * (see design/sukut/badges-impeccable.html, direction D). Each glyph is chosen
+   * to match the milestone's health fact.
+   */
+  Icon: LucideIcon;
 };
 
-/** The 9 fixed milestones, ordered by offset (ascending). */
+/** The 13 fixed milestones, ordered by offset (ascending). */
 export const MILESTONES: readonly Milestone[] = [
   {
     key: '20min',
     offsetMinutes: 20,
     title: '20 dakika',
+    short: '20 dk',
     description: 'Nabzın ve tansiyonun, nikotinin yol açtığı yükselmenin ardından düşmeye başlıyor.',
-    icon: '💗',
+    Icon: Heart,
   },
   {
     key: '12h',
     offsetMinutes: 720,
     title: '12 saat',
+    short: '12 sa',
     description: 'Kandaki karbonmonoksit normale iniyor; oksijen taşıma kapasiten düzeliyor.',
-    icon: '🫧',
+    Icon: Droplets,
   },
   {
     key: '24h',
     offsetMinutes: 1440,
     title: '24 saat',
+    short: '24 sa',
     description: 'Kandaki nikotin seviyesi neredeyse sıfıra indi.',
-    icon: '☀️',
+    Icon: Sun,
   },
   {
     key: '48h',
     offsetMinutes: 2880,
     title: '48 saat',
+    short: '48 sa',
     description: 'Tat ve koku duyuların keskinleşmeye başlıyor.',
-    icon: '👃',
+    Icon: ScanFace,
   },
   {
     key: '72h',
     offsetMinutes: 4320,
     title: '72 saat',
+    short: '72 sa',
     description: 'Bronşların gevşiyor, nefes almak kolaylaşıyor.',
-    icon: '🫁',
+    Icon: Wind,
   },
   {
     key: '5days',
     offsetMinutes: 7200,
     title: '5 gün',
+    short: '5 gün',
     description: 'Yoksunluğun en yoğun günleri geride kaldı — en zor kısmı devirdin.',
-    icon: '💪',
+    Icon: Dumbbell,
   },
   {
     key: '1week',
     offsetMinutes: 10080,
     title: '1 hafta',
+    short: '1 hf',
     description: 'Vücudun nikotinsiz düzene uyum sağlamaya başlıyor.',
-    icon: '🗓️',
+    Icon: CalendarDays,
   },
   {
     key: '10days',
     offsetMinutes: 14400,
     title: '10 gün',
+    short: '10 gün',
     description: 'Tat ve koku almaya belirgin biçimde başlıyorsun; yemekler daha lezzetli.',
-    icon: '🍽️',
+    Icon: UtensilsCrossed,
   },
   {
     key: '2weeks',
     offsetMinutes: 20160,
     title: '2 hafta',
+    short: '2 hf',
     description: 'Dolaşımın düzeliyor; yürüyüş ve hareket etmek kolaylaşıyor.',
-    icon: '🩸',
+    Icon: Activity,
   },
   {
     key: '1month',
     offsetMinutes: 43200,
     title: '1 ay',
+    short: '1 ay',
     description: 'Akciğer fonksiyonun düzeliyor, öksürük azalıyor ve enerjin toparlanmaya başlıyor.',
-    icon: '⚡',
+    Icon: Zap,
   },
   {
     key: '3months',
     offsetMinutes: 129600,
     title: '3 ay',
+    short: '3 ay',
     description: 'Dolaşımın ve akciğer fonksiyonun belirgin biçimde iyileşiyor.',
-    icon: '🏃',
+    Icon: Footprints,
   },
   {
     key: '6months',
     offsetMinutes: 259200,
     title: '6 ay',
+    short: '6 ay',
     description: 'Stres ve gerginliğin azalıyor; ruh halin daha dengeli hale geliyor.',
-    icon: '🧘',
+    Icon: Flower2,
   },
   {
     key: '1year',
     offsetMinutes: 525600,
     title: '1 yıl',
+    short: '1 yıl',
     description: 'Koroner kalp hastalığı fazla riskin, içmeye devam edenlerin yarısına iniyor.',
-    icon: '🏆',
+    Icon: Trophy,
   },
 ] as const;
 

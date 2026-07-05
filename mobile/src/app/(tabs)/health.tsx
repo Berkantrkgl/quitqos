@@ -1,10 +1,11 @@
 import { useFocusEffect } from 'expo-router';
+import { HeartPulse } from 'lucide-react-native';
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type LayoutChangeEvent, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { PlaceholderScreen } from '@/components/placeholder-screen';
+import { StreakEmptyState } from '@/components/streak-empty-state';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MILESTONES, type Milestone } from '@/constants/milestones';
@@ -55,7 +56,16 @@ export default function HealthScreen() {
   );
 
   if (!attempt || !elapsed) {
-    return <PlaceholderScreen title={t('health.emptyTitle')} hint={t('health.emptyBody')} icon="🫀" />;
+    return (
+      <StreakEmptyState
+        eyebrow={t('health.eyebrow')}
+        screenTitle={t('health.title')}
+        icon={HeartPulse}
+        title={t('health.emptyTitle')}
+        body={t('health.emptyBody')}
+        cta={t('health.startButton')}
+      />
+    );
   }
 
   const total = elapsed.totalMinutes;
