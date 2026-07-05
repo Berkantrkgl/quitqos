@@ -9,6 +9,8 @@ import com.dayzerosoft.quitqos.backend.web.ApiException;
 import com.dayzerosoft.quitqos.backend.web.dto.LeaderboardDtos.LeaderboardItem;
 import com.dayzerosoft.quitqos.backend.web.dto.LeaderboardDtos.LeaderboardMeResponse;
 import com.dayzerosoft.quitqos.backend.web.dto.LeaderboardDtos.LeaderboardResponse;
+import com.dayzerosoft.quitqos.backend.web.dto.LeaderboardDtos.LeaderboardSummaryResponse;
+import com.dayzerosoft.quitqos.backend.web.dto.LeaderboardDtos.SummaryLeader;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -58,6 +60,29 @@ public class LeaderboardService {
             }
         }
         return new LeaderboardMeResponse(0, 0, metricName(metric));
+    }
+
+    /**
+     * Public community summary + the top 3 by the current metric. Served to unauthenticated callers
+     * (guests) so they can see what they'd join; deliberately exposes no user ids.
+     */
+    @Transactional(readOnly = true)
+    public LeaderboardSummaryResponse summary() {
+        List<LeaderboardEntry> topRows = quitAttempts.leaderboardByCurrent(PageRequest.of(0, 3));
+
+        List<SummaryLeader> top = new java.util.ArrayList<>(topRows.size());
+        for (int i = 0; i < topRows.size(); i++) {
+            top.add(new SummaryLeader(i + 1, topRows.get(i).getUsername(), topRows.get(i).getStreakSeconds()));
+        }
+
+        // The board is ordered longest-live-streak first, so the #1 row is the current record.
+        long longestSeconds = topRows.isEmpty() ? 0 : topRows.get(0).getStreakSeconds();
+
+        return new LeaderboardSummaryResponse(
+                quitAttempts.countActiveRacers(),
+                longestSeconds,
+                quitAttempts.countStartedToday(),
+                top);
     }
 
     /** Parse the query param, defaulting to CURRENT; unknown values → 400. */

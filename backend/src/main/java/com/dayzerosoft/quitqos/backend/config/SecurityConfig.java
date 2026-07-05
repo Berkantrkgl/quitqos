@@ -30,6 +30,8 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
+                        // Public community summary for the guest leaderboard (no user ids exposed).
+                        .requestMatchers(HttpMethod.GET, "/api/v1/leaderboard/summary").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(e -> e.authenticationEntryPoint(entryPoint))
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService),

@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.dayzerosoft.quitqos.backend.service.LeaderboardService;
 import com.dayzerosoft.quitqos.backend.web.dto.LeaderboardDtos.LeaderboardMeResponse;
 import com.dayzerosoft.quitqos.backend.web.dto.LeaderboardDtos.LeaderboardResponse;
+import com.dayzerosoft.quitqos.backend.web.dto.LeaderboardDtos.LeaderboardSummaryResponse;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,5 +43,14 @@ public class LeaderboardController {
     public LeaderboardMeResponse myRank(@AuthenticationPrincipal UUID userId,
                                         @RequestParam(required = false) String metric) {
         return service.myRank(userId, service.parseMetric(metric));
+    }
+
+    /**
+     * Public community summary (total racers, current record, joined today) + the top 3, so guests
+     * can see what they'd join. No auth — {@code SecurityConfig} permits this path.
+     */
+    @GetMapping("/summary")
+    public LeaderboardSummaryResponse summary() {
+        return service.summary();
     }
 }

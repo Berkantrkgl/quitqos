@@ -56,4 +56,15 @@ public interface QuitAttemptRepository extends JpaRepository<QuitAttempt, UUID> 
             ORDER BY streakSeconds DESC
             """, nativeQuery = true)
     List<LeaderboardEntry> leaderboardByLongest(Pageable pageable);
+
+    /** Public summary: how many users currently have an ACTIVE streak (= size of the current board). */
+    @Query(value = "SELECT count(*) FROM quit_attempt WHERE status = 'ACTIVE'", nativeQuery = true)
+    long countActiveRacers();
+
+    /** Public summary: ACTIVE streaks started today (UTC). "Bugün katılan" — new quitters today. */
+    @Query(value = """
+            SELECT count(*) FROM quit_attempt
+            WHERE status = 'ACTIVE' AND started_at >= date_trunc('day', now())
+            """, nativeQuery = true)
+    long countStartedToday();
 }
