@@ -28,7 +28,7 @@ module.exports = {
       policy: 'appVersion',
     },
     ios: {
-      icon: './assets/expo.icon',
+      icon: './assets/images/icon.png',
       supportsTablet: true,
       bundleIdentifier: BUNDLE_ID,
       usesAppleSignIn: true,
@@ -49,13 +49,16 @@ module.exports = {
     },
     android: {
       adaptiveIcon: {
-        backgroundColor: '#E6F4FE',
+        backgroundColor: '#E4F5EF',
         foregroundImage: './assets/images/android-icon-foreground.png',
         backgroundImage: './assets/images/android-icon-background.png',
         monochromeImage: './assets/images/android-icon-monochrome.png',
       },
       predictiveBackGestureEnabled: false,
       package: ANDROID_PACKAGE,
+      // Android 13+ requires this to be declared before the app can request/show notifications
+      // (guest local milestones + registered FCM pushes). Neither plugin adds it automatically.
+      permissions: ['android.permission.POST_NOTIFICATIONS'],
       // Firebase config for Android. Gitignored (real values), so the file may be absent on a
       // fresh clone — RNFirebase's config plugin only needs it at native build time.
       googleServicesFile: process.env.GOOGLE_SERVICES_JSON || './google-services.json',
@@ -69,19 +72,39 @@ module.exports = {
       [
         'expo-splash-screen',
         {
-          backgroundColor: '#208AEF',
+          // "Sükût" calm-white splash. Mark is composited over these bg colors
+          // (light/dark auto). imageWidth ~ the mark's rendered width on screen.
+          backgroundColor: '#FBFDFC',
+          dark: {
+            backgroundColor: '#0C1210',
+          },
+          image: './assets/images/splash-icon.png',
+          imageWidth: 120,
           android: {
             image: './assets/images/splash-icon.png',
-            imageWidth: 76,
+            imageWidth: 120,
           },
         },
       ],
       'expo-localization',
       'expo-apple-authentication',
+      // Native date picker for the "quit earlier" (backdated) sheet.
+      '@react-native-community/datetimepicker',
+      // Local (guest) milestone notifications. Sets the Android small-icon + accent color so the
+      // scheduled notifications match the brand. Guests get 13 pre-scheduled local notifications;
+      // registered users receive milestone pushes via FCM instead (see src/lib/notifications.ts).
+      [
+        'expo-notifications',
+        {
+          icon: './assets/images/android-icon-monochrome.png',
+          color: '#0E9E77',
+        },
+      ],
       // Firebase + Google Sign-In native modules (config plugins wire the Gradle/pod setup so we
       // don't touch native files by hand). These require a fresh dev-client build to take effect.
       '@react-native-firebase/app',
       '@react-native-firebase/auth',
+      '@react-native-firebase/messaging',
       '@react-native-google-signin/google-signin',
     ],
     experiments: {

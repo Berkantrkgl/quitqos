@@ -15,7 +15,12 @@ import { useQuitStreak } from '@/hooks/use-quit-streak';
 import { useTheme } from '@/hooks/use-theme';
 import { type AppLanguage, SUPPORTED_LANGUAGES } from '@/i18n';
 import { useLanguage } from '@/i18n/language-provider';
-import { getMyRank } from '@/lib/api';
+import { getMyRank, updateMe } from '@/lib/api';
+import {
+  cancelGuestMilestones,
+  NOTIF_PREF_KEY,
+  scheduleGuestMilestones,
+} from '@/lib/notifications';
 import { type ThemePreference, useAppTheme } from '@/theme/theme-provider';
 
 type ThemeOption = {
@@ -35,8 +40,6 @@ const LANGUAGE_META: Record<AppLanguage, { labelKey: 'language.tr' | 'language.e
   en: { labelKey: 'language.en', flag: '🇬🇧' },
 };
 
-/** Local persistence for the notifications toggle (real PATCH /users/me wiring is a later step). */
-const NOTIF_KEY = 'quitqos.notificationsEnabled';
 
 /**
  * Settings & Profile — the "Sükût" design (see design/sukut/settings.html).
@@ -258,14 +261,21 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-/** Notifications on/off. Persists locally for now (backend wiring is a later step). */
+/**
+ * Notifications on/off. Persists the preference locally (shared key with the notifications
+ * service). For **guests** the toggle immediately (re)schedules or cancels their local milestone
+ * notifications. For **registered** users it also PATCHes `/users/me { notificationsEnabled }` so
+ * the backend skips (or resumes) FCM pushes.
+ */
 function NotificationsRow({ initial }: { initial: boolean }) {
   const { t } = useTranslation();
   const th = useTheme();
+  const { user, accessToken } = useAuth();
+  const { attempt } = useQuitStreak();
   const [enabled, setEnabled] = useState(initial);
 
   useEffect(() => {
-    AsyncStorage.getItem(NOTIF_KEY).then((v) => {
+    AsyncStorage.getItem(NOTIF_PREF_KEY).then((v) => {
       if (v != null) setEnabled(v === 'true');
     });
   }, []);
@@ -273,7 +283,16 @@ function NotificationsRow({ initial }: { initial: boolean }) {
   function toggle() {
     const next = !enabled;
     setEnabled(next);
-    AsyncStorage.setItem(NOTIF_KEY, String(next));
+    AsyncStorage.setItem(NOTIF_PREF_KEY, String(next));
+
+    if (user && accessToken) {
+      // Registered: the backend decides whether to send the FCM push, so persist the choice there.
+      updateMe(accessToken, { notificationsEnabled: next }).catch(() => undefined);
+    } else {
+      // Guest: reflect the choice in the actually-scheduled local notifications right away.
+      if (next && attempt) void scheduleGuestMilestones(new Date(attempt.startedAt));
+      else if (!next) void cancelGuestMilestones();
+    }
   }
 
   return (

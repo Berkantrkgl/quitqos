@@ -1,0 +1,43 @@
+/* ============================================================================
+   SÜKÛT — QuitQOS design system (v8 "Sakin" promoted to a named system).
+   Shared tokens for every screen mockup in this folder. Derived from
+   mobile/src/constants/theme.ts, contrast-verified (body ≥4.5:1).
+   Light is default; dark overrides under [data-scheme="dark"].
+   ============================================================================ */
+:root {
+  color-scheme: light;
+  --ink: #0C1613;        /* primary text */
+  --ink2: #4C5C55;       /* secondary text, ≥4.5:1 on --bg */
+  --ink3: #86978F;       /* tertiary / labels, large or decorative */
+  --bg: #FBFDFC;         /* page */
+  --surface: #F2F5F3;    /* raised neutral (segments, tiles) */
+  --line: #E6ECE9;       /* hairline */
+  --lineHi: #D2DCD7;     /* stronger hairline / hover */
+  --primary: #0E9E77;    /* brand teal — fills, active, CTA */
+  --primaryText: #0A7458;/* teal AS TEXT on light, ≥4.5:1 */
+  --primaryMuted: #E4F5EF;
+  --onPrimary: #FFFFFF;
+  --amber: #C77A0A;      /* milestone / streak accent, legible as text */
+  --amberMuted: #FBEEDA;
+  --danger: #C4433A;
+  --font: "SF Pro Text", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --num: "SF Pro Display", var(--font);
+  --r-sm: 9px; --r-md: 12px; --r-lg: 16px; --r-xl: 22px;
+}
+[data-scheme="dark"] {
+  color-scheme: dark;
+  --ink: #ECF3F0;
+  --ink2: #A6B6AF;
+  --ink3: #6F817A;
+  --bg: #0C1210;
+  --surface: #151E1A;
+  --line: #1E2A25;
+  --lineHi: #30403A;
+  --primary: #34E3AD;
+  --primaryText: #52ECBE;
+  --primaryMuted: #123028;
+  --onPrimary: #04130E;
+  --amber: #F0B429;
+  --amberMuted: #2A2410;
+  --danger: #EF8880;
+}

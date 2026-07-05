@@ -34,6 +34,22 @@
     "startTitle": "Ready to quit?",
     "startButton": "I'm quitting now",
     "backdated": "I quit earlier",
+    "backdatedSheet": {
+      "title": "When did you quit?",
+      "lede": "Pick a quick range, or set the exact day from the calendar.",
+      "chipYesterday": "Yesterday",
+      "chip3d": "3 days",
+      "chip1w": "1 week",
+      "chip2w": "2 weeks",
+      "chip1m": "1 month",
+      "chip3m": "3 months",
+      "pickDate": "Pick a date",
+      "relToday": "Today",
+      "relDays_one": "{{count}} day ago",
+      "relDays_other": "{{count}} days ago",
+      "confirm": "Start counter",
+      "cancel": "Cancel"
+    },
     "streak": {
       "days_one": "{{count}} day",
       "days_other": "{{count}} days",

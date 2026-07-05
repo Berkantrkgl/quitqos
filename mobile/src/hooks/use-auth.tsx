@@ -14,7 +14,7 @@ import {
   statusCodes,
   isErrorWithCode,
 } from '@react-native-google-signin/google-signin';
-import { createContext, use, useEffect, useState, type ReactNode } from 'react';
+import { createContext, use, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Platform } from 'react-native';
 
 import { requestStreakChoice } from '@/components/streak-conflict-modal';
@@ -29,6 +29,7 @@ import {
   type AuthUser,
   type SyncAttempt,
 } from '@/lib/api';
+import { registerFcmToken } from '@/lib/notifications';
 
 const ACCESS_KEY = 'quitqos.auth.access';
 const REFRESH_KEY = 'quitqos.auth.refresh';
@@ -181,6 +182,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * the race where a manual refresh runs before the new token has propagated.
    */
   const [sessionVersion, setSessionVersion] = useState(0);
+
+  // Latest access token, read lazily by the FCM token-refresh listener so it never PUTs a stale one.
+  const tokenRef = useRef<string | null>(null);
+  tokenRef.current = accessToken;
+
+  // While signed in, register this device's FCM token with the backend (and re-register on token
+  // refresh) so it can push milestone notifications. Guests skip this — they use local scheduling.
+  useEffect(() => {
+    if (!user || !accessToken) return;
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+    registerFcmToken(() => tokenRef.current).then((off) => {
+      if (cancelled) off();
+      else unsubscribe = off;
+    });
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
+    // Re-run when the signed-in user changes (fresh device/token per account).
+  }, [user?.id, accessToken]);
 
   // Restore a persisted session on mount; refresh the access token if we have a refresh token.
   useEffect(() => {

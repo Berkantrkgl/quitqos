@@ -1,0 +1,126 @@
+<title>Sükût — Tab Bar · Yüzen Dock (Lucide)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    color-scheme:light;
+    --ink:#0C1613;--ink2:#4C5C55;--ink3:#86978F;
+    --bg:#FBFDFC;--surface:#F2F5F3;--line:#E6ECE9;--lineHi:#D2DCD7;
+    --primary:#0E9E77;--primaryText:#0A7458;--primaryMuted:#E4F5EF;--onPrimary:#FFFFFF;
+    --font:"SF Pro Text",-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  [data-scheme="dark"]{
+    color-scheme:dark;
+    --ink:#ECF3F0;--ink2:#A6B6AF;--ink3:#6F817A;
+    --bg:#0C1210;--surface:#151E1A;--line:#1E2A25;--lineHi:#30403A;
+    --primary:#34E3AD;--primaryText:#52ECBE;--primaryMuted:#123028;--onPrimary:#04130E;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;padding:44px 18px 90px;transition:background .3s}
+  .wrap{max-width:760px;margin:0 auto}
+  .pagehead{text-align:center}
+  .pagehead .k{font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--ink3)}
+  .pagehead .big{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-top:8px}
+  .pagehead .big em{font-style:normal;color:var(--primaryText)}
+  .pagehead p{color:var(--ink2);font-size:14px;margin-top:10px;max-width:560px;margin-inline:auto;line-height:1.55}
+  .toggle{display:inline-flex;gap:4px;margin:22px auto 46px;padding:4px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+  .toggle button{border:0;background:transparent;color:var(--ink2);font:inherit;font-size:13px;font-weight:700;padding:8px 18px;border-radius:9px;cursor:pointer}
+  .toggle button[aria-pressed="true"]{background:var(--bg);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.14)}
+
+  .stage{display:flex;justify-content:center}
+
+  /* full phone so the floating dock reads in context */
+  .phone{width:346px;border-radius:44px;padding:11px;background:#050b09;box-shadow:0 40px 80px -30px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04) inset}
+  .screen{position:relative;border-radius:34px;overflow:hidden;height:640px;background:var(--bg);display:flex;flex-direction:column}
+  .body{flex:1;padding:26px 24px}
+  .body .fh{height:14px;width:52%;background:var(--surface);border-radius:7px;margin:8px 0 18px}
+  .body .fl{height:10px;background:var(--surface);border-radius:5px;margin-bottom:10px}
+  .body .fl.s{width:78%}.body .fl.m{width:90%}.body .fl.l{width:96%}
+
+  /* ---- floating dock ---- */
+  .dock-wrap{position:absolute;left:0;right:0;bottom:0;padding:0 16px 16px;pointer-events:none}
+  .dock{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:24px;padding:10px 8px;
+    box-shadow:0 14px 34px -14px rgba(0,0,0,.30), 0 2px 8px -4px rgba(0,0,0,.12);pointer-events:auto}
+  [data-scheme="dark"] .dock{background:var(--surface);box-shadow:0 16px 40px -12px rgba(0,0,0,.7)}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 0;cursor:pointer;border-radius:16px;transition:background .18s}
+  .tab .lb{font-size:11px;font-weight:700;color:var(--ink2);transition:color .18s}
+  .tab svg{width:24px;height:24px;stroke:var(--ink2);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transition:stroke .18s}
+  .tab.on svg{stroke:var(--primary);stroke-width:2.1}
+  .tab.on .lb{color:var(--primaryText)}
+  .tab.on{background:var(--primaryMuted)}
+
+  .icons{margin:40px auto 0;max-width:640px;border:1px solid var(--line);border-radius:18px;padding:22px;background:var(--surface)}
+  .icons h3{font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin-bottom:16px;text-align:center}
+  .iconrow{display:flex;justify-content:space-around;gap:12px;flex-wrap:wrap}
+  .ic{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .ic svg{width:30px;height:30px;stroke:var(--primary);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .ic .cap{font-size:12px;font-weight:700;color:var(--ink2)}
+  .ic .sub{font-size:11px;color:var(--ink3)}
+
+  .note{max-width:640px;margin:44px auto 0;color:var(--ink2);font-size:13px;line-height:1.7;text-align:center}.note b{color:var(--ink)}
+</style>
+
+<div class="wrap">
+  <div class="pagehead">
+    <div class="k">Sükût · Bileşen</div>
+    <div class="big">Yüzen Dock <em>· Lucide ikonlar</em></div>
+    <p>Ekrandan kopuk, yuvarlak köşeli yüzen bar + yumuşak gölge. Tüm sekmeler her zaman etiketli.
+       Aktif sekme teal kapsül + teal ikon/etiket ile belli olur. İkonlar Lucide (iOS/Android birebir SVG).</p>
+  </div>
+
+  <div style="text-align:center">
+    <div class="toggle" role="group" aria-label="Tema">
+      <button id="bl" aria-pressed="true">☀️ Açık</button>
+      <button id="bd" aria-pressed="false">🌙 Koyu</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="phone"><div class="screen">
+      <div class="body">
+        <div class="fh"></div>
+        <div class="fl l"></div><div class="fl m"></div><div class="fl s"></div>
+        <div class="fl m"></div><div class="fl l"></div><div class="fl s"></div>
+      </div>
+      <div class="dock-wrap"><div class="dock" id="dock"></div></div>
+    </div></div>
+  </div>
+
+  <div class="icons">
+    <h3>Lucide ikon seti (sekme eşlemesi)</h3>
+    <div class="iconrow" id="iconRef"></div>
+  </div>
+
+  <p class="note"><b>Neden Lucide:</b> tutarlı, modern line ikonlar; her ikisi de SVG olduğu için iOS/Android
+     pixel-identik. Sağlık için düz kalp yerine <b>heart-pulse</b> (nabızlı kalp) seçtim — bırakma/iyileşmeye
+    çok daha uygun. Ana sayfa <b>house</b>, Rozetler <b>award</b>, Sıralama <b>trophy</b>.
+    RN'de <code>lucide-react-native</code> ile birebir gelir.</p>
+</div>
+
+<script>
+  const LUCIDE = {
+    house: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    heartPulse: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>',
+    award: '<path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/>',
+    trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+  };
+  const TABS = [
+    { key:'house', label:'Ana sayfa' },
+    { key:'heartPulse', label:'Sağlık' },
+    { key:'award', label:'Rozetler' },
+    { key:'trophy', label:'Sıralama' },
+  ];
+  const svg = key => `<svg viewBox="0 0 24 24">${LUCIDE[key]}</svg>`;
+
+  document.getElementById('dock').innerHTML = TABS.map((t,i)=>
+    `<div class="tab ${i===0?'on':''}">${svg(t.key)}<span class="lb">${t.label}</span></div>`
+  ).join('');
+
+  document.getElementById('iconRef').innerHTML = [
+    ['house','house'],['heartPulse','heart-pulse'],['award','award'],['trophy','trophy'],
+  ].map(([k,name],i)=>`<div class="ic">${svg(k)}<span class="cap">${TABS[i].label}</span><span class="sub">${name}</span></div>`).join('');
+
+  const root=document.documentElement,bl=document.getElementById('bl'),bd=document.getElementById('bd');
+  const set=s=>{root.setAttribute('data-scheme',s);bl.setAttribute('aria-pressed',s==='light');bd.setAttribute('aria-pressed',s==='dark')};
+  bl.onclick=()=>set('light');bd.onclick=()=>set('dark');
+  set(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+</script>

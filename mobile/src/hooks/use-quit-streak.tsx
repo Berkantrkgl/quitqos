@@ -8,6 +8,7 @@ import {
   relapseAttempt,
   type QuitAttemptResponse,
 } from '@/lib/api';
+import { cancelGuestMilestones, scheduleGuestMilestones } from '@/lib/notifications';
 
 const STORAGE_KEY = 'quitqos.streak';
 
@@ -93,7 +94,11 @@ export function QuitStreakProvider({ children }: { children: ReactNode }) {
         const stored = await AsyncStorage.getItem(STORAGE_KEY);
         const parsed = stored ? (JSON.parse(stored) as QuitAttempt) : null;
         // Only an ACTIVE attempt represents a live streak.
-        setAttempt(parsed && parsed.status === 'ACTIVE' ? parsed : null);
+        const active = parsed && parsed.status === 'ACTIVE' ? parsed : null;
+        setAttempt(active);
+        // Re-arm local milestone notifications for an existing guest streak (idempotent). Covers
+        // permission granted after starting, a reinstall, or the OS clearing scheduled items.
+        if (active) void scheduleGuestMilestones(new Date(active.startedAt));
       }
     } catch {
       // Network/parse failure → treat as no streak.
@@ -151,6 +156,8 @@ export function QuitStreakProvider({ children }: { children: ReactNode }) {
         status: 'ACTIVE',
         isBackdated,
       });
+      // Guests get their milestone notifications as local, pre-scheduled ones (no backend/FCM).
+      void scheduleGuestMilestones(startedAt);
     },
     [isRegistered, accessToken],
   );
@@ -164,10 +171,14 @@ export function QuitStreakProvider({ children }: { children: ReactNode }) {
       return;
     }
     persistLocal(null);
+    // Guest streak ended — drop its scheduled local notifications.
+    void cancelGuestMilestones();
   }, [isRegistered, accessToken, backendId]);
 
   const clearAfterSync = useCallback(() => {
     persistLocal(null);
+    // Data moved to the account; the backend (FCM) owns notifications from here.
+    void cancelGuestMilestones();
   }, []);
 
   return (

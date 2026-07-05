@@ -1,0 +1,213 @@
+<style>
+  /* ============================================================================
+     SÜKÛT — QuitQOS brand-mark: "Orbit Q" (direction N) refined into 3 finalists.
+     Inner Q = the person; outer ring = elapsed time orbiting; shared tail links them.
+     Tokens inline from theme.ts. Light default; dark under [data-scheme="dark"].
+     ============================================================================ */
+  :root {
+    color-scheme: light;
+    --ink: #0C1613; --ink2: #4C5C55; --ink3: #86978F;
+    --bg: #FBFDFC; --surface: #F2F5F3; --line: #E6ECE9; --lineHi: #D2DCD7;
+    --primary: #0E9E77; --primaryText: #0A7458; --primaryMuted: #E4F5EF; --onPrimary: #FFFFFF;
+    --amber: #C77A0A;
+    --font: "SF Pro Text", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --r-lg: 16px;
+  }
+  [data-scheme="dark"] {
+    color-scheme: dark;
+    --ink: #ECF3F0; --ink2: #A6B6AF; --ink3: #6F817A;
+    --bg: #0C1210; --surface: #151E1A; --line: #1E2A25; --lineHi: #30403A;
+    --primary: #34E3AD; --primaryText: #52ECBE; --primaryMuted: #123028; --onPrimary: #04130E;
+    --amber: #F0B429;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font); background: var(--bg); color: var(--ink);
+         -webkit-font-smoothing: antialiased; transition: background .3s ease; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 40px 24px 96px; }
+  header.top { display: flex; align-items: baseline; justify-content: space-between;
+               gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
+  header.top h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin: 0; }
+  header.top p { margin: 4px 0 0; color: var(--ink2); font-size: 13.5px; max-width: 64ch; line-height: 1.55; }
+  header.top p b { color: var(--ink); font-weight: 700; }
+  .toggle { display: inline-flex; gap: 2px; background: var(--surface); border: 1px solid var(--line);
+            padding: 3px; border-radius: 999px; }
+  .toggle button { border: 0; background: transparent; color: var(--ink2); font: inherit;
+                   font-size: 12.5px; font-weight: 600; padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+  .toggle button.on { background: var(--bg); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+
+  .finalist { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--bg);
+              padding: 30px; margin-top: 22px; }
+  .finalist .row { display: grid; grid-template-columns: 200px 1fr; gap: 34px; align-items: center; }
+  @media (max-width: 640px) { .finalist .row { grid-template-columns: 1fr; gap: 22px; } }
+  .finalist .hero { display: grid; place-items: center; height: 168px; background: var(--surface);
+                    border-radius: 12px; }
+  .finalist h3 { margin: 0 0 6px; font-size: 17px; font-weight: 800; letter-spacing: -0.3px; }
+  .finalist .lede { margin: 0 0 16px; font-size: 13.5px; line-height: 1.55; color: var(--ink2); }
+  .finalist .lede b { color: var(--ink); font-weight: 700; }
+
+  /* the size ladder + icon tiles + wordmark, all in the detail column */
+  .specs { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
+  .specset { display: flex; align-items: center; gap: 14px; }
+  .specset .cap { font-size: 10.5px; color: var(--ink3); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  .squircle { border-radius: 27%; display: grid; place-items: center; }
+  .divider { width: 1px; align-self: stretch; background: var(--line); }
+  .wm-row { display: flex; align-items: center; gap: 12px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .wordmark { font-weight: 800; letter-spacing: -0.6px; line-height: 1; display: inline-flex; align-items: baseline; font-size: 26px; }
+  .wordmark .qos { color: var(--primaryText); }
+  .tag { display:inline-block; font-size: 11px; font-weight: 700; color: var(--primaryText);
+         background: var(--primaryMuted); padding: 3px 9px; border-radius: 999px; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>QuitQOS — Yörünge Q · üç finalist</h1>
+      <p><b>İç Q = sen</b> (yörüngenin merkezi), <b>dış halka = etrafında dönen geçen zaman</b>, tek kuyruk ikisini bağlar. Üç ifade: sade / dönen nokta / dolu. Gerçek Sükût teal, light + dark. Her satırda büyük · app icon · küçük · wordmark.</p>
+    </div>
+    <div class="toggle" role="tablist" aria-label="Tema">
+      <button class="on" onclick="setScheme('light',this)">Açık</button>
+      <button onclick="setScheme('dark',this)">Koyu</button>
+    </div>
+  </header>
+
+  <!-- ============ N1: Clean orbit ============ -->
+  <div class="finalist">
+    <div class="row">
+      <div class="hero">
+        <svg width="112" height="112" viewBox="0 0 100 100" fill="none" aria-label="N1">
+          <!-- outer orbit: near-full ring with a clean elapsed-segment gap upper-right -->
+          <path d="M64 23 A30 30 0 1 1 50 20" stroke="var(--ink3)" stroke-width="6.5" stroke-linecap="round" fill="none"/>
+          <!-- inner Q core (teal) -->
+          <circle cx="50" cy="50" r="14.5" stroke="var(--primary)" stroke-width="8" fill="none"/>
+          <!-- shared tail from inner Q outward through the lower-right -->
+          <path d="M60 60 L82 82" stroke="var(--bg)" stroke-width="13" stroke-linecap="round"/>
+          <path d="M61 61 L80 80" stroke="var(--primary)" stroke-width="8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <h3>N1 — Sade Yörünge <span class="tag" style="margin-left:8px;">en sessiz</span></h3>
+        <p class="lede">Dış halka nötr (ink3), iç Q teal. Üstteki dilim boşluğu = geçen zaman. En sakin, Sükût'un hairline diline en yakın. Küçükte iki halka rahat ayrışır.</p>
+        <div class="specs">
+          <div class="specset">
+            <span class="cap">40</span>
+            <svg width="40" height="40" viewBox="0 0 100 100" fill="none"><path d="M64 23 A30 30 0 1 1 50 20" stroke="var(--ink3)" stroke-width="6.5" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="14.5" stroke="var(--primary)" stroke-width="8" fill="none"/><path d="M60 60 L82 82" stroke="var(--bg)" stroke-width="13" stroke-linecap="round"/><path d="M61 61 L80 80" stroke="var(--primary)" stroke-width="8" stroke-linecap="round"/></svg>
+            <span class="cap">24</span>
+            <svg width="24" height="24" viewBox="0 0 100 100" fill="none"><path d="M64 23 A30 30 0 1 1 50 20" stroke="var(--ink3)" stroke-width="8" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="14.5" stroke="var(--primary)" stroke-width="10" fill="none"/><path d="M61 61 L80 80" stroke="var(--primary)" stroke-width="10" stroke-linecap="round"/></svg>
+          </div>
+          <div class="divider"></div>
+          <div class="specset">
+            <span class="cap">icon</span>
+            <div class="squircle" style="width:64px;height:64px;background:var(--primaryMuted);">
+              <svg width="46" height="46" viewBox="0 0 100 100" fill="none"><path d="M64 23 A30 30 0 1 1 50 20" stroke="var(--ink3)" stroke-width="6.5" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="14.5" stroke="var(--primary)" stroke-width="8" fill="none"/><path d="M60 60 L82 82" stroke="var(--primaryMuted)" stroke-width="13" stroke-linecap="round"/><path d="M61 61 L80 80" stroke="var(--primary)" stroke-width="8" stroke-linecap="round"/></svg>
+            </div>
+            <div class="squircle" style="width:64px;height:64px;background:var(--primary);">
+              <svg width="46" height="46" viewBox="0 0 100 100" fill="none"><path d="M64 23 A30 30 0 1 1 50 20" stroke="rgba(255,255,255,.55)" stroke-width="6.5" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="14.5" stroke="var(--onPrimary)" stroke-width="8" fill="none"/><path d="M60 60 L82 82" stroke="var(--primary)" stroke-width="13" stroke-linecap="round"/><path d="M61 61 L80 80" stroke="var(--onPrimary)" stroke-width="8" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="wm-row">
+          <svg width="40" height="40" viewBox="0 0 100 100" fill="none"><path d="M64 23 A30 30 0 1 1 50 20" stroke="var(--ink3)" stroke-width="6.5" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="14.5" stroke="var(--primary)" stroke-width="8" fill="none"/><path d="M60 60 L82 82" stroke="var(--bg)" stroke-width="13" stroke-linecap="round"/><path d="M61 61 L80 80" stroke="var(--primary)" stroke-width="8" stroke-linecap="round"/></svg>
+          <span class="wordmark">Quit<span class="qos">QOS</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ N2: Orbit with a traveling dot ============ -->
+  <div class="finalist">
+    <div class="row">
+      <div class="hero">
+        <svg width="112" height="112" viewBox="0 0 100 100" fill="none" aria-label="N2">
+          <!-- full outer orbit ring, thin -->
+          <circle cx="50" cy="50" r="30" stroke="var(--line)" stroke-width="5"/>
+          <!-- traveled arc (teal) from top clockwise to the dot -->
+          <path d="M50 20 A30 30 0 0 1 76.5 34.5" stroke="var(--primary)" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <!-- the traveling dot = where time is now, on the orbit -->
+          <circle cx="76.5" cy="34.5" r="6.5" fill="var(--bg)"/>
+          <circle cx="76.5" cy="34.5" r="5" fill="var(--amber)"/>
+          <!-- inner Q core -->
+          <circle cx="50" cy="50" r="13.5" stroke="var(--primary)" stroke-width="8" fill="none"/>
+          <path d="M59 59 L74 74" stroke="var(--bg)" stroke-width="12" stroke-linecap="round"/>
+          <path d="M60 60 L72 72" stroke="var(--primary)" stroke-width="8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <h3>N2 — Dönen Nokta <span class="tag" style="margin-left:8px;">anlatısı en güçlü</span></h3>
+        <p class="lede">Dış yörünge üzerinde <b>dönen tek amber nokta</b> = zamanın şu anki yeri; teal yay = kat edilen yol. İç Q sabit merkez. Uygulamanın hikâyesini (biriken zaman) doğrudan anlatır. Amber = streak rengiyle rimli.</p>
+        <div class="specs">
+          <div class="specset">
+            <span class="cap">40</span>
+            <svg width="40" height="40" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="30" stroke="var(--line)" stroke-width="5"/><path d="M50 20 A30 30 0 0 1 76.5 34.5" stroke="var(--primary)" stroke-width="5" stroke-linecap="round" fill="none"/><circle cx="76.5" cy="34.5" r="6.5" fill="var(--bg)"/><circle cx="76.5" cy="34.5" r="5" fill="var(--amber)"/><circle cx="50" cy="50" r="13.5" stroke="var(--primary)" stroke-width="8" fill="none"/><path d="M59 59 L74 74" stroke="var(--bg)" stroke-width="12" stroke-linecap="round"/><path d="M60 60 L72 72" stroke="var(--primary)" stroke-width="8" stroke-linecap="round"/></svg>
+            <span class="cap">24</span>
+            <svg width="24" height="24" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="30" stroke="var(--line)" stroke-width="6"/><path d="M50 20 A30 30 0 0 1 76.5 34.5" stroke="var(--primary)" stroke-width="6" stroke-linecap="round" fill="none"/><circle cx="76.5" cy="34.5" r="7" fill="var(--amber)"/><circle cx="50" cy="50" r="13.5" stroke="var(--primary)" stroke-width="9" fill="none"/><path d="M60 60 L72 72" stroke="var(--primary)" stroke-width="9" stroke-linecap="round"/></svg>
+          </div>
+          <div class="divider"></div>
+          <div class="specset">
+            <span class="cap">icon</span>
+            <div class="squircle" style="width:64px;height:64px;background:var(--bg);border:1px solid var(--line);">
+              <svg width="48" height="48" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="30" stroke="var(--line)" stroke-width="5"/><path d="M50 20 A30 30 0 0 1 76.5 34.5" stroke="var(--primary)" stroke-width="5" stroke-linecap="round" fill="none"/><circle cx="76.5" cy="34.5" r="6.5" fill="var(--bg)"/><circle cx="76.5" cy="34.5" r="5" fill="var(--amber)"/><circle cx="50" cy="50" r="13.5" stroke="var(--primary)" stroke-width="8" fill="none"/><path d="M59 59 L74 74" stroke="var(--bg)" stroke-width="12" stroke-linecap="round"/><path d="M60 60 L72 72" stroke="var(--primary)" stroke-width="8" stroke-linecap="round"/></svg>
+            </div>
+            <div class="squircle" style="width:64px;height:64px;background:var(--ink);">
+              <svg width="48" height="48" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="30" stroke="var(--lineHi)" stroke-width="5"/><path d="M50 20 A30 30 0 0 1 76.5 34.5" stroke="var(--primary)" stroke-width="5" stroke-linecap="round" fill="none"/><circle cx="76.5" cy="34.5" r="6.5" fill="var(--ink)"/><circle cx="76.5" cy="34.5" r="5" fill="var(--amber)"/><circle cx="50" cy="50" r="13.5" stroke="var(--primary)" stroke-width="8" fill="none"/><path d="M59 59 L74 74" stroke="var(--ink)" stroke-width="12" stroke-linecap="round"/><path d="M60 60 L72 72" stroke="var(--primary)" stroke-width="8" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="wm-row">
+          <svg width="40" height="40" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="30" stroke="var(--line)" stroke-width="5"/><path d="M50 20 A30 30 0 0 1 76.5 34.5" stroke="var(--primary)" stroke-width="5" stroke-linecap="round" fill="none"/><circle cx="76.5" cy="34.5" r="6.5" fill="var(--bg)"/><circle cx="76.5" cy="34.5" r="5" fill="var(--amber)"/><circle cx="50" cy="50" r="13.5" stroke="var(--primary)" stroke-width="8" fill="none"/><path d="M59 59 L74 74" stroke="var(--bg)" stroke-width="12" stroke-linecap="round"/><path d="M60 60 L72 72" stroke="var(--primary)" stroke-width="8" stroke-linecap="round"/></svg>
+          <span class="wordmark">Quit<span class="qos">QOS</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ N3: Solid orbit ============ -->
+  <div class="finalist">
+    <div class="row">
+      <div class="hero">
+        <svg width="112" height="112" viewBox="0 0 100 100" fill="none" aria-label="N3">
+          <!-- solid teal orbit ring (thick), with elapsed gap upper-right -->
+          <path d="M66 22 A32 32 0 1 1 50 18" stroke="var(--primary)" stroke-width="11" stroke-linecap="round" fill="none"/>
+          <!-- inner solid Q dot core with a knocked-out micro counter to keep the Q read -->
+          <circle cx="50" cy="50" r="12" fill="var(--primary)"/>
+          <!-- tail: from core through the ring gap area, knocked into bg then teal -->
+          <path d="M58 58 L80 80" stroke="var(--bg)" stroke-width="15" stroke-linecap="round"/>
+          <path d="M59 59 L78 78" stroke="var(--primary)" stroke-width="10" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <h3>N3 — Dolu Yörünge <span class="tag" style="margin-left:8px;">en güçlü / icon-first</span></h3>
+        <p class="lede">Kalın teal yörünge + dolu teal çekirdek. Tümüyle marka renginde, en yüksek görünürlük. App icon'da uzaktan bile net; wordmark yanında biraz daha baskın. Tek renk, tek kütle.</p>
+        <div class="specs">
+          <div class="specset">
+            <span class="cap">40</span>
+            <svg width="40" height="40" viewBox="0 0 100 100" fill="none"><path d="M66 22 A32 32 0 1 1 50 18" stroke="var(--primary)" stroke-width="11" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="12" fill="var(--primary)"/><path d="M58 58 L80 80" stroke="var(--bg)" stroke-width="15" stroke-linecap="round"/><path d="M59 59 L78 78" stroke="var(--primary)" stroke-width="10" stroke-linecap="round"/></svg>
+            <span class="cap">24</span>
+            <svg width="24" height="24" viewBox="0 0 100 100" fill="none"><path d="M66 22 A32 32 0 1 1 50 18" stroke="var(--primary)" stroke-width="13" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="12" fill="var(--primary)"/><path d="M58 58 L80 80" stroke="var(--bg)" stroke-width="16" stroke-linecap="round"/><path d="M59 59 L78 78" stroke="var(--primary)" stroke-width="12" stroke-linecap="round"/></svg>
+          </div>
+          <div class="divider"></div>
+          <div class="specset">
+            <span class="cap">icon</span>
+            <div class="squircle" style="width:64px;height:64px;background:var(--bg);border:1px solid var(--line);">
+              <svg width="46" height="46" viewBox="0 0 100 100" fill="none"><path d="M66 22 A32 32 0 1 1 50 18" stroke="var(--primary)" stroke-width="11" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="12" fill="var(--primary)"/><path d="M58 58 L80 80" stroke="var(--bg)" stroke-width="15" stroke-linecap="round"/><path d="M59 59 L78 78" stroke="var(--primary)" stroke-width="10" stroke-linecap="round"/></svg>
+            </div>
+            <div class="squircle" style="width:64px;height:64px;background:var(--primary);">
+              <svg width="46" height="46" viewBox="0 0 100 100" fill="none"><path d="M66 22 A32 32 0 1 1 50 18" stroke="var(--onPrimary)" stroke-width="11" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="12" fill="var(--onPrimary)"/><path d="M58 58 L80 80" stroke="var(--primary)" stroke-width="15" stroke-linecap="round"/><path d="M59 59 L78 78" stroke="var(--onPrimary)" stroke-width="10" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="wm-row">
+          <svg width="40" height="40" viewBox="0 0 100 100" fill="none"><path d="M66 22 A32 32 0 1 1 50 18" stroke="var(--primary)" stroke-width="11" stroke-linecap="round" fill="none"/><circle cx="50" cy="50" r="12" fill="var(--primary)"/><path d="M58 58 L80 80" stroke="var(--bg)" stroke-width="15" stroke-linecap="round"/><path d="M59 59 L78 78" stroke="var(--primary)" stroke-width="10" stroke-linecap="round"/></svg>
+          <span class="wordmark">Quit<span class="qos">QOS</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function setScheme(s, btn){
+    document.documentElement.setAttribute('data-scheme', s === 'dark' ? 'dark' : 'light');
+    for (const b of btn.parentElement.children) b.classList.toggle('on', b === btn);
+  }
+</script>

@@ -1,0 +1,110 @@
+<style>
+  :root {
+    color-scheme: light;
+    --ink: #0C1613; --ink2: #4C5C55; --ink3: #86978F;
+    --bg: #FBFDFC; --surface: #F2F5F3; --line: #E6ECE9; --lineHi: #D2DCD7;
+    --primary: #0E9E77; --primaryText: #0A7458; --primaryMuted: #E4F5EF; --onPrimary: #FFFFFF;
+    --amber: #C77A0A;
+    --font: "SF Pro Text", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  [data-scheme="dark"] {
+    color-scheme: dark;
+    --ink: #ECF3F0; --ink2: #A6B6AF; --ink3: #6F817A;
+    --bg: #0C1210; --surface: #151E1A; --line: #1E2A25; --lineHi: #30403A;
+    --primary: #34E3AD; --primaryText: #52ECBE; --primaryMuted: #123028; --onPrimary: #04130E;
+    --amber: #F0B429;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font); background: var(--bg); color: var(--ink);
+         -webkit-font-smoothing: antialiased; transition: background .3s ease; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 40px 24px 96px; }
+  header.top { display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap; }
+  header.top h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin: 0; }
+  header.top p { margin: 4px 0 0; color: var(--ink2); font-size: 13.5px; max-width: 64ch; line-height: 1.55; }
+  header.top p b { color: var(--ink); font-weight: 700; }
+  .toggle { display:inline-flex; gap:2px; background:var(--surface); border:1px solid var(--line); padding:3px; border-radius:999px; }
+  .toggle button { border:0; background:transparent; color:var(--ink2); font:inherit; font-size:12.5px; font-weight:600; padding:6px 14px; border-radius:999px; cursor:pointer; }
+  .toggle button.on { background:var(--bg); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.06); }
+  .lbl { font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--ink3); margin:46px 0 16px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:20px; }
+  .cell { border:1px solid var(--line); border-radius:16px; background:var(--bg); padding:20px; text-align:center; }
+  .cell img { display:block; margin:0 auto; }
+  .cell .rounded { border-radius:22%; overflow:hidden; }
+  .cell figcaption { margin-top:14px; font-size:12px; color:var(--ink2); line-height:1.45; }
+  .cell figcaption b { color:var(--ink); font-weight:700; display:block; margin-bottom:2px; font-size:12.5px; }
+  .wordmark { font-weight:800; letter-spacing:-0.6px; line-height:1; display:inline-flex; align-items:baseline; }
+  .wordmark .qos { color:var(--primaryText); }
+  .lockup { display:flex; align-items:center; gap:14px; }
+  .phone { width:220px; border-radius:34px; border:1px solid var(--lineHi); background:var(--bg); padding:10px; box-shadow:0 18px 50px -22px rgba(0,0,0,.30); }
+  .phone .screen { border-radius:26px; height:440px; position:relative; overflow:hidden; border:1px solid var(--line); display:grid; place-items:center; background:var(--bg); }
+  .phone .foot { position:absolute; bottom:24px; left:0; right:0; text-align:center; font-size:12px; color:var(--ink3); }
+  .sizerow { display:flex; align-items:flex-end; gap:26px; flex-wrap:wrap; }
+  .sizerow figure { margin:0; text-align:center; }
+  .sizerow figcaption { margin-top:8px; font-size:11px; color:var(--ink3); font-weight:600; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>QuitQOS — üretilen marka assetleri</h1>
+      <p><b>Yörünge Q (N2)</b> tüm formatlara uygulandı. Aşağıdakiler <b>gerçekten üretilen dosyalar</b> (mobile/assets/images), tek kaynak SVG'den rasterize edildi. Android + iOS + web + splash + bildirim.</p>
+    </div>
+    <div class="toggle" role="tablist" aria-label="Tema">
+      <button class="on" onclick="setScheme('light',this)">Açık</button>
+      <button onclick="setScheme('dark',this)">Koyu</button>
+    </div>
+  </header>
+
+  <div class="lbl">App icon · gerçek dosyalar</div>
+  <div class="grid">
+    <figure class="cell">
+      <img class="rounded" src="__ICON__" width="128" height="128" alt="iOS icon"/>
+      <figcaption><b>iOS / genel</b>icon.png · 1024², beyaz zemin</figcaption>
+    </figure>
+    <figure class="cell">
+      <img class="rounded" src="__ADAPTIVE__" width="128" height="128" alt="Android adaptive"/>
+      <figcaption><b>Android adaptive</b>foreground + teal-tint bg, güvenli bölgede</figcaption>
+    </figure>
+    <figure class="cell">
+      <img class="rounded" src="__MONO__" width="128" height="128" alt="Monochrome"/>
+      <figcaption><b>Monochrome</b>themed icon + bildirim small-icon</figcaption>
+    </figure>
+    <figure class="cell">
+      <img src="__SPLASH__" width="96" height="96" alt="Splash mark"/>
+      <figcaption><b>Splash mark</b>şeffaf · bg üstüne biner</figcaption>
+    </figure>
+  </div>
+
+  <div class="lbl">Ölçek testi · mark her boyutta okunur mu</div>
+  <div class="sizerow">
+    <figure><img src="__SPLASH__" width="72" height="72"/><figcaption>72</figcaption></figure>
+    <figure><img src="__SPLASH__" width="48" height="48"/><figcaption>48</figcaption></figure>
+    <figure><img src="__SPLASH__" width="32" height="32"/><figcaption>32</figcaption></figure>
+    <figure><img src="__SPLASH__" width="24" height="24"/><figcaption>24 (tab/favicon)</figcaption></figure>
+    <figure><img src="__SPLASH__" width="18" height="18"/><figcaption>18</figcaption></figure>
+  </div>
+
+  <div class="lbl">Wordmark kilidi · uygulama içi (react-native-svg)</div>
+  <div class="lockup" style="margin-top:6px;">
+    <img src="__SPLASH__" width="44" height="44"/>
+    <span class="wordmark" style="font-size:30px;">Quit<span class="qos">QOS</span></span>
+  </div>
+
+  <div class="lbl">Splash / açılış ekranı — sakin beyaz</div>
+  <div class="phone">
+    <div class="screen">
+      <div style="display:grid; place-items:center; gap:18px;">
+        <img src="__SPLASH__" width="96" height="96"/>
+        <span class="wordmark" style="font-size:24px;">Quit<span class="qos">QOS</span></span>
+      </div>
+      <div class="foot">Sükût · sakin başlangıç</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setScheme(s, btn){
+    document.documentElement.setAttribute('data-scheme', s === 'dark' ? 'dark' : 'light');
+    for (const b of btn.parentElement.children) b.classList.toggle('on', b === btn);
+  }
+</script>

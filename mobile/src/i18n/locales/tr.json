@@ -34,6 +34,22 @@
     "startTitle": "Bırakmaya hazır mısın?",
     "startButton": "Şimdi bırakıyorum",
     "backdated": "Daha önce bıraktım",
+    "backdatedSheet": {
+      "title": "Ne zaman bıraktın?",
+      "lede": "Hızlı bir aralık seç ya da tam günü takvimden gir.",
+      "chipYesterday": "Dün",
+      "chip3d": "3 gün",
+      "chip1w": "1 hafta",
+      "chip2w": "2 hafta",
+      "chip1m": "1 ay",
+      "chip3m": "3 ay",
+      "pickDate": "Takvimden seç",
+      "relToday": "Bugün",
+      "relDays_one": "{{count}} gün önce",
+      "relDays_other": "{{count}} gün önce",
+      "confirm": "Sayacı başlat",
+      "cancel": "Vazgeç"
+    },
     "streak": {
       "days_one": "{{count}} gün",
       "days_other": "{{count}} gün",

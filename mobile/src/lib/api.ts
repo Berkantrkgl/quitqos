@@ -110,6 +110,25 @@ export function logout(refreshToken: string): Promise<void> {
   return apiFetch<void>('/auth/logout', { method: 'POST', body: { refreshToken } });
 }
 
+// ---- User (registered) ----------------------------------------------------
+
+/** PATCH /users/me — partial profile update. Send only the fields you want to change. */
+export function updateMe(
+  accessToken: string,
+  patch: { username?: string; displayName?: string; notificationsEnabled?: boolean },
+): Promise<AuthUser> {
+  return apiFetch<AuthUser>('/users/me', { method: 'PATCH', body: patch, accessToken });
+}
+
+/** PUT /users/me/fcm-token — register this device's FCM token so the backend can push to it. */
+export function updateFcmToken(accessToken: string, fcmToken: string): Promise<void> {
+  return apiFetch<void>('/users/me/fcm-token', {
+    method: 'PUT',
+    body: { fcmToken },
+    accessToken,
+  });
+}
+
 // ---- Quit attempts (registered) -------------------------------------------
 
 export type QuitStatus = 'ACTIVE' | 'RELAPSED';

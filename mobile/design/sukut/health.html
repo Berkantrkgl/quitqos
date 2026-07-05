@@ -1,0 +1,141 @@
+<title>Sükût — Sağlık Tabı</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    color-scheme:light;
+    --ink:#0C1613;--ink2:#4C5C55;--ink3:#86978F;
+    --bg:#FBFDFC;--surface:#F2F5F3;--line:#E6ECE9;--lineHi:#D2DCD7;
+    --primary:#0E9E77;--primaryText:#0A7458;--primaryMuted:#E4F5EF;--onPrimary:#FFFFFF;
+    --amber:#C77A0A;--danger:#C4433A;
+    --font:"SF Pro Text",-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --num:"SF Pro Display",var(--font);
+  }
+  [data-scheme="dark"]{
+    color-scheme:dark;
+    --ink:#ECF3F0;--ink2:#A6B6AF;--ink3:#6F817A;
+    --bg:#0C1210;--surface:#151E1A;--line:#1E2A25;--lineHi:#30403A;
+    --primary:#34E3AD;--primaryText:#52ECBE;--primaryMuted:#123028;--onPrimary:#04130E;
+    --amber:#F0B429;--danger:#EF8880;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;padding:44px 18px 90px;transition:background .3s}
+  .wrap{max-width:760px;margin:0 auto}
+  .pagehead{text-align:center}
+  .pagehead .k{font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--ink3)}
+  .pagehead .big{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-top:8px}
+  .pagehead .big em{font-style:normal;color:var(--primaryText)}
+  .pagehead p{color:var(--ink2);font-size:14px;margin-top:10px;max-width:560px;margin-inline:auto;line-height:1.55}
+  .toggle{display:inline-flex;gap:4px;margin:22px auto 46px;padding:4px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+  .toggle button{border:0;background:transparent;color:var(--ink2);font:inherit;font-size:13px;font-weight:700;padding:8px 18px;border-radius:9px;cursor:pointer}
+  .toggle button[aria-pressed="true"]{background:var(--bg);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.14)}
+
+  .stage{display:flex;justify-content:center}
+  .phone{width:360px;border-radius:46px;padding:11px;background:#050b09;box-shadow:0 40px 80px -30px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04) inset}
+  .screen{position:relative;border-radius:36px;overflow:hidden;height:760px;background:var(--bg);display:flex;flex-direction:column;padding:24px 24px 0}
+
+  .thead{flex:none;padding-bottom:16px}
+  .thead h1{font-size:26px;font-weight:800;letter-spacing:-.5px}
+  .thead .sub{font-size:13.5px;color:var(--ink2);margin-top:4px;line-height:1.4}
+  .sumRow{display:flex;align-items:center;gap:12px;margin-top:14px}
+  .sumRow .pct{font-family:var(--num);font-size:14px;font-weight:800;color:var(--primaryText);font-variant-numeric:tabular-nums;min-width:84px}
+  .sumRow .bar{flex:1;height:4px;border-radius:999px;background:var(--line);overflow:hidden}
+  .sumRow .bar i{display:block;height:100%;background:var(--primary);border-radius:999px}
+
+  /* scroll area; scrolled so "now" is near the top on open */
+  .scroll{flex:1;overflow-y:auto;position:relative;padding-top:4px}
+  .scroll::-webkit-scrollbar{width:0}
+
+  .rail{padding-left:2px}
+  .step{position:relative;display:flex;gap:16px;padding-bottom:20px}
+  /* connector from this node down to the next; teal once THIS node is done */
+  .step::before{content:"";position:absolute;left:12px;top:24px;bottom:-4px;width:2px;background:var(--line)}
+  .step.done::before{background:var(--primary)}
+  .step:last-child::before{display:none}
+
+  .node{width:24px;height:24px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:11px;font-weight:800;z-index:1;background:var(--bg)}
+  .node.done{background:var(--primary);color:var(--onPrimary)}
+  .node.now{background:var(--bg);border:2.5px solid var(--primary)}
+  .node.now::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--primary)}
+  .node.up{background:var(--bg);border:2px solid var(--lineHi)}
+
+  .body{flex:1;min-width:0;padding-top:1px}
+  .body .top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .body .ti{font-size:15px;font-weight:800;letter-spacing:-.2px}
+  .body .st{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;flex:none}
+  .st.done{color:var(--primaryText)}.st.now{color:var(--primaryText)}.st.up{color:var(--ink3)}
+  .body .de{font-size:13px;color:var(--ink2);line-height:1.45;margin-top:3px}
+  .step.up .ti{color:var(--ink2)}.step.up .de{color:var(--ink3)}
+
+  /* NOW: soft tint, no border; bigger title + live progress */
+  .step.now .body{background:var(--primaryMuted);border-radius:14px;padding:12px 14px;margin-top:-4px}
+  .step.now .ti{font-size:17px}
+  .step.now .prog{height:5px;border-radius:999px;background:var(--bg);overflow:hidden;margin-top:11px}
+  .step.now .prog i{display:block;height:100%;background:var(--primary);border-radius:999px}
+  .step.now .eta{font-size:12px;font-weight:800;color:var(--primaryText);margin-top:8px;font-variant-numeric:tabular-nums}
+
+  .note{max-width:640px;margin:44px auto 0;color:var(--ink2);font-size:13px;line-height:1.7;text-align:center}.note b{color:var(--ink)}
+</style>
+
+<div class="wrap">
+  <div class="pagehead">
+    <div class="k">Sükût · Sağlık Tabı</div>
+    <div class="big">Adım Adım <em>İyileşme</em></div>
+    <p>Kronolojik tek dikey çizgi: 20 dakika en üstte, 1 yıl en altta. Açılışta ekran <b>“şu an”</b> adımına
+       konumlanır; yukarı kaydırınca geçtiğin başarılar, aşağı kaydırınca gelecek adımlar.</p>
+  </div>
+
+  <div style="text-align:center">
+    <div class="toggle" role="group" aria-label="Tema">
+      <button id="bl" aria-pressed="true">☀️ Açık</button>
+      <button id="bd" aria-pressed="false">🌙 Koyu</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="phone"><div class="screen">
+      <div class="thead">
+        <h1>İyileşme</h1>
+        <div class="sub">Bıraktıktan sonra vücudun adım adım nasıl iyileşiyor</div>
+        <div class="sumRow"><span class="pct">5 / 13 adım</span><span class="bar"><i style="width:38%"></i></span></div>
+      </div>
+
+      <div class="scroll" id="scroll"><div class="rail">
+        <!-- chronological: 20 min (top) → 1 year (bottom) -->
+        <div class="step done"><div class="node done">✓</div><div class="body"><div class="top"><span class="ti">20 dakika</span><span class="st done">Ulaşıldı</span></div><div class="de">Nabzın ve tansiyonun düşmeye başladı.</div></div></div>
+        <div class="step done"><div class="node done">✓</div><div class="body"><div class="top"><span class="ti">12 saat</span><span class="st done">Ulaşıldı</span></div><div class="de">Kandaki karbonmonoksit normale indi.</div></div></div>
+        <div class="step done"><div class="node done">✓</div><div class="body"><div class="top"><span class="ti">24 saat</span><span class="st done">Ulaşıldı</span></div><div class="de">Kandaki nikotin seviyesi neredeyse sıfıra indi.</div></div></div>
+        <div class="step done"><div class="node done">✓</div><div class="body"><div class="top"><span class="ti">48 saat</span><span class="st done">Ulaşıldı</span></div><div class="de">Tat ve koku duyuların keskinleşti.</div></div></div>
+
+        <!-- NOW -->
+        <div class="step now" id="nowStep"><div class="node now"></div><div class="body"><div class="top"><span class="ti">72 saat</span><span class="st now">Şu an</span></div><div class="de">Bronşların gevşiyor, nefes almak kolaylaşıyor.</div><div class="prog"><i style="width:64%"></i></div><div class="eta">%64 · 6 saat kaldı</div></div></div>
+
+        <!-- upcoming -->
+        <div class="step up"><div class="node up"></div><div class="body"><div class="top"><span class="ti">5 gün</span><span class="st up">Yaklaşıyor</span></div><div class="de">Yoksunluğun en yoğun günleri geride kalır.</div></div></div>
+        <div class="step up"><div class="node up"></div><div class="body"><div class="top"><span class="ti">1 hafta</span><span class="st up">Yaklaşıyor</span></div><div class="de">Vücudun nikotinsiz düzene uyum sağlamaya başlar.</div></div></div>
+        <div class="step up"><div class="node up"></div><div class="body"><div class="top"><span class="ti">10 gün</span><span class="st up">Yaklaşıyor</span></div><div class="de">Tat ve koku belirginleşir; yemekler daha lezzetli.</div></div></div>
+        <div class="step up"><div class="node up"></div><div class="body"><div class="top"><span class="ti">2 hafta</span><span class="st up">Yaklaşıyor</span></div><div class="de">Dolaşımın düzelir; hareket etmek kolaylaşır.</div></div></div>
+        <div class="step up"><div class="node up"></div><div class="body"><div class="top"><span class="ti">1 ay</span><span class="st up">Yaklaşıyor</span></div><div class="de">Akciğer fonksiyonun düzelir, öksürük azalır.</div></div></div>
+        <div class="step up"><div class="node up"></div><div class="body"><div class="top"><span class="ti">3 ay</span><span class="st up">Yaklaşıyor</span></div><div class="de">Dolaşımın ve akciğer fonksiyonun belirgin iyileşir.</div></div></div>
+        <div class="step up"><div class="node up"></div><div class="body"><div class="top"><span class="ti">6 ay</span><span class="st up">Yaklaşıyor</span></div><div class="de">Stres ve gerginliğin azalır; ruh halin dengelenir.</div></div></div>
+        <div class="step up"><div class="node up"></div><div class="body"><div class="top"><span class="ti">1 yıl</span><span class="st up">Yaklaşıyor</span></div><div class="de">Koroner kalp hastalığı riskin yarıya iner.</div></div></div>
+      </div></div>
+    </div></div>
+  </div>
+
+  <p class="note"><b>Kronolojik + otomatik konum.</b> 20 dakika üstte, 1 yıl altta. Açılışta ekran “şu an” adımına
+     kayar (geçmiş yukarıda, gelecek aşağıda erişilebilir). Geçilenler ✓ dolu teal, bağlantı çizgisi geçilen yolda
+     teal / gelecekte gri. “Şu an” minimal: hafif tint, border yok, canlı ilerleme. 13 milestone, theme.ts renkleri.</p>
+</div>
+
+<script>
+  // On open, position the scroll so the "now" step sits near the top (like the app will).
+  function positionNow(){
+    const sc=document.getElementById('scroll'), now=document.getElementById('nowStep');
+    if(sc&&now) sc.scrollTop = now.offsetTop - 8;
+  }
+  const root=document.documentElement,bl=document.getElementById('bl'),bd=document.getElementById('bd');
+  const set=s=>{root.setAttribute('data-scheme',s);bl.setAttribute('aria-pressed',s==='light');bd.setAttribute('aria-pressed',s==='dark')};
+  bl.onclick=()=>set('light');bd.onclick=()=>set('dark');
+  set(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  positionNow();
+</script>

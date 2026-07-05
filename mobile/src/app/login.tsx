@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BrandMark } from '@/components/brand-mark';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
@@ -150,9 +151,10 @@ export default function LoginScreen() {
               </Pressable>
             </View>
 
-            {/* Brand wordmark + copy */}
+            {/* Brand mark + wordmark + copy */}
             <View style={styles.hero}>
-              <ThemedText style={styles.wordmark}>
+              <BrandMark size={56} />
+              <ThemedText style={[styles.wordmark, styles.wordmarkSpaced]}>
                 Quit
                 <ThemedText style={[styles.wordmark, { color: theme.primaryText }]}>QOS</ThemedText>
               </ThemedText>
@@ -367,6 +369,9 @@ const styles = StyleSheet.create({
     lineHeight: 34,
     fontWeight: '800',
     letterSpacing: -0.6,
+  },
+  wordmarkSpaced: {
+    marginTop: Spacing.three,
   },
   tagline: {
     textAlign: 'center',

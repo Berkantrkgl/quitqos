@@ -1,8 +1,11 @@
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BackdatedSheet } from '@/components/backdated-sheet';
+import { BrandMark } from '@/components/brand-mark';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import {
@@ -45,10 +48,13 @@ function Header() {
 
   return (
     <View style={styles.header}>
-      <ThemedText style={styles.wordmark}>
-        Quit
-        <ThemedText style={[styles.wordmark, { color: theme.primaryText }]}>QOS</ThemedText>
-      </ThemedText>
+      <View style={styles.brand}>
+        <BrandMark size={26} />
+        <ThemedText style={styles.wordmark}>
+          Quit
+          <ThemedText style={[styles.wordmark, { color: theme.primaryText }]}>QOS</ThemedText>
+        </ThemedText>
+      </View>
       <Pressable
         onPress={() => router.push('/settings')}
         hitSlop={8}
@@ -72,15 +78,7 @@ function StartPrompt() {
   const { t } = useTranslation();
   const theme = useTheme();
   const { startStreak } = useQuitStreak();
-
-  function handleBackdated() {
-    Alert.alert(t('home.backdated'), undefined, [
-      { text: t('common.cancel'), style: 'cancel' },
-      { text: '1', onPress: () => startStreak(daysAgo(1)) },
-      { text: '3', onPress: () => startStreak(daysAgo(3)) },
-      { text: '7', onPress: () => startStreak(daysAgo(7)) },
-    ]);
-  }
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   return (
     <View style={styles.pre}>
@@ -100,11 +98,20 @@ function StartPrompt() {
         </ThemedText>
       </Pressable>
 
-      <Pressable onPress={handleBackdated} hitSlop={8}>
+      <Pressable onPress={() => setSheetOpen(true)} hitSlop={8}>
         <ThemedText type="small" themeColor="textSecondary">
           {t('home.backdated')}
         </ThemedText>
       </Pressable>
+
+      <BackdatedSheet
+        visible={sheetOpen}
+        onConfirm={(date) => {
+          setSheetOpen(false);
+          startStreak(date);
+        }}
+        onCancel={() => setSheetOpen(false)}
+      />
     </View>
   );
 }
@@ -308,12 +315,6 @@ function pad(n: number): string {
   return String(n).padStart(2, '0');
 }
 
-function daysAgo(n: number): Date {
-  const d = new Date();
-  d.setDate(d.getDate() - n);
-  return d;
-}
-
 /**
  * Coarse "X kaldı" from minutes remaining: returns the i18n key + count so the
  * caller runs `t` (keeps TFunction's literal-key typing intact).
@@ -343,6 +344,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingTop: Spacing.two,
     paddingBottom: Spacing.two,
+  },
+  brand: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
   },
   wordmark: {
     fontSize: 18,

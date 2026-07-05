@@ -1,0 +1,155 @@
+<title>Sükût — Streak Çakışması Modalı</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    color-scheme:light;
+    --ink:#0C1613;--ink2:#4C5C55;--ink3:#86978F;
+    --bg:#FBFDFC;--surface:#F2F5F3;--line:#E6ECE9;--lineHi:#D2DCD7;
+    --primary:#0E9E77;--primaryText:#0A7458;--primaryMuted:#E4F5EF;--onPrimary:#FFFFFF;
+    --danger:#C4433A;
+    --font:"SF Pro Text",-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --num:"SF Pro Display",var(--font);
+  }
+  [data-scheme="dark"]{
+    color-scheme:dark;
+    --ink:#ECF3F0;--ink2:#A6B6AF;--ink3:#6F817A;
+    --bg:#0C1210;--surface:#151E1A;--line:#1E2A25;--lineHi:#30403A;
+    --primary:#34E3AD;--primaryText:#52ECBE;--primaryMuted:#123028;--onPrimary:#04130E;
+    --danger:#EF8880;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;padding:44px 18px 90px;transition:background .3s}
+  .wrap{max-width:900px;margin:0 auto}
+  .pagehead{text-align:center}
+  .pagehead .k{font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--ink3)}
+  .pagehead .big{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-top:8px}
+  .pagehead .big em{font-style:normal;color:var(--primaryText)}
+  .pagehead p{color:var(--ink2);font-size:14px;margin-top:10px;max-width:560px;margin-inline:auto;line-height:1.55}
+  .toggle{display:inline-flex;gap:4px;margin:22px auto 46px;padding:4px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+  .toggle button{border:0;background:transparent;color:var(--ink2);font:inherit;font-size:13px;font-weight:700;padding:8px 18px;border-radius:9px;cursor:pointer}
+  .toggle button[aria-pressed="true"]{background:var(--bg);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.14)}
+
+  .stage{display:flex;justify-content:center;gap:48px;flex-wrap:wrap}
+  .col{display:flex;flex-direction:column;align-items:center}
+  .frameLabel{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);margin-bottom:16px}
+
+  /* phone showing the modal over a dimmed home */
+  .phone{width:360px;border-radius:46px;padding:11px;background:#050b09;box-shadow:0 40px 80px -30px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04) inset}
+  .screen{position:relative;border-radius:36px;overflow:hidden;height:740px;background:var(--bg)}
+  /* dimmed backdrop hint of home behind */
+  .backdrop{position:absolute;inset:0;background:var(--bg)}
+  .backdrop .fh{height:14px;width:52%;background:var(--surface);border-radius:7px;margin:70px 26px 18px}
+  .backdrop .fl{height:10px;background:var(--surface);border-radius:5px;margin:0 26px 10px}
+  .backdrop .fl.s{width:78%}.backdrop .fl.m{width:90%}
+  .scrim{position:absolute;inset:0;background:rgba(4,10,8,.55);backdrop-filter:blur(2px)}
+  [data-scheme="light"] .scrim{background:rgba(10,20,16,.4)}
+
+  /* bottom-sheet modal */
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:var(--bg);border-radius:28px 28px 0 0;
+    padding:10px 22px 26px;box-shadow:0 -20px 50px -12px rgba(0,0,0,.4)}
+  .grabber{width:38px;height:4px;border-radius:999px;background:var(--lineHi);margin:0 auto 18px}
+  .sheet h2{font-size:20px;font-weight:800;letter-spacing:-.4px;text-align:center}
+  .sheet .lede{font-size:13px;color:var(--ink2);line-height:1.5;text-align:center;margin-top:8px;max-width:34ch;margin-inline:auto}
+
+  .choices{display:flex;flex-direction:column;gap:12px;margin-top:22px}
+  .choice{display:flex;align-items:center;gap:14px;border:1.5px solid var(--line);border-radius:16px;padding:16px;cursor:pointer;background:var(--bg);transition:border-color .15s,background .15s;text-align:left;width:100%;font:inherit}
+  .choice:hover{border-color:var(--lineHi)}
+  .choice.sel{border-color:var(--primary);background:var(--primaryMuted)}
+  .choice .ic{width:44px;height:44px;border-radius:13px;flex:none;display:grid;place-items:center;font-size:20px;background:var(--surface)}
+  .choice.sel .ic{background:var(--bg)}
+  .choice .meta{flex:1;min-width:0}
+  .choice .src{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--ink3)}
+  .choice.sel .src{color:var(--primaryText)}
+  .choice .days{font-family:var(--num);font-size:20px;font-weight:800;letter-spacing:-.4px;margin-top:2px;font-variant-numeric:tabular-nums}
+  .choice .date{font-size:12.5px;color:var(--ink2);margin-top:2px}
+  .choice .radio{width:22px;height:22px;border-radius:50%;border:2px solid var(--lineHi);flex:none;display:grid;place-items:center}
+  .choice.sel .radio{border-color:var(--primary)}
+  .choice.sel .radio::after{content:"";width:11px;height:11px;border-radius:50%;background:var(--primary)}
+
+  .warn{font-size:12px;color:var(--ink3);line-height:1.5;text-align:center;margin-top:16px}
+  .confirm{width:100%;margin-top:18px;background:var(--primary);color:var(--onPrimary);border:0;font:inherit;font-weight:800;font-size:16px;padding:16px;border-radius:14px;cursor:pointer;transition:filter .15s,transform .06s}
+  .confirm:hover{filter:brightness(1.06)}.confirm:active{transform:translateY(1px)}
+
+  .note{max-width:720px;margin:44px auto 0;color:var(--ink2);font-size:13px;line-height:1.7;text-align:center}.note b{color:var(--ink)}
+  @media (max-width:820px){.stage{gap:30px}.phone{transform:scale(.92);transform-origin:top center}}
+</style>
+
+<div class="wrap">
+  <div class="pagehead">
+    <div class="k">Sükût · Modal</div>
+    <div class="big">Streak <em>Çakışması</em></div>
+    <p>Alert yerine bir alt-sayfa (bottom sheet). İki streak karşılaştırmalı gösterilir; kullanıcı birini
+       seçip onaylar. Diğeri geçmişe kaydedilir. Seçenekler arasında geçiş yapmayı dene.</p>
+  </div>
+
+  <div style="text-align:center">
+    <div class="toggle" role="group" aria-label="Tema">
+      <button id="bl" aria-pressed="true">☀️ Açık</button>
+      <button id="bd" aria-pressed="false">🌙 Koyu</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="col">
+      <div class="frameLabel">Çakışma anı</div>
+      <div class="phone"><div class="screen">
+        <div class="backdrop">
+          <div class="fh"></div><div class="fl m"></div><div class="fl s"></div><div class="fl m"></div>
+        </div>
+        <div class="scrim"></div>
+
+        <div class="sheet">
+          <div class="grabber"></div>
+          <h2>İki streak'in var</h2>
+          <p class="lede">Hangisiyle devam etmek istersin? Seçmediğin streak geçmişine kaydedilir.</p>
+
+          <div class="choices">
+            <button class="choice sel" data-c="account">
+              <div class="ic">☁️</div>
+              <div class="meta">
+                <div class="src">Hesabındaki</div>
+                <div class="days">40 gün</div>
+                <div class="date">28 Mayıs 2026'da başladı</div>
+              </div>
+              <div class="radio"></div>
+            </button>
+
+            <button class="choice" data-c="local">
+              <div class="ic">📱</div>
+              <div class="meta">
+                <div class="src">Bu cihazdaki</div>
+                <div class="days">2 gün</div>
+                <div class="date">3 Temmuz 2026'da başladı</div>
+              </div>
+              <div class="radio"></div>
+            </button>
+          </div>
+
+          <div class="warn">Bu seçim geri alınamaz. Seçmediğin streak “bırakma denemesi” olarak geçmişte saklanır.</div>
+          <button class="confirm" id="confirmBtn">Hesabındaki ile devam et</button>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <p class="note"><b>Neden alt-sayfa:</b> karşılaştırmalı iki kart Alert'e sığmaz; bottom sheet her ikisini de
+     (gün sayısı + başlangıç tarihi + kaynak ikonu) net gösterir. Varsayılan seçim <b>Hesabındaki</b> (genelde
+     uzun, zor kazanılmış streak). Onay butonu seçime göre metin değiştirir. Kapatılırsa güvenli varsayılan =
+     Hesabındaki. Copy sync.* anahtarlarına eklenecek; renkler theme.ts'ten.</p>
+</div>
+
+<script>
+  const choices=[...document.querySelectorAll('.choice')];
+  const btn=document.getElementById('confirmBtn');
+  const LABEL={account:'Hesabındaki ile devam et',local:'Cihazdaki ile devam et'};
+  function select(c){
+    choices.forEach(ch=>ch.classList.toggle('sel',ch.dataset.c===c));
+    btn.textContent=LABEL[c];
+  }
+  choices.forEach(ch=>ch.onclick=()=>select(ch.dataset.c));
+
+  const root=document.documentElement,bl=document.getElementById('bl'),bd=document.getElementById('bd');
+  const set=s=>{root.setAttribute('data-scheme',s);bl.setAttribute('aria-pressed',s==='light');bd.setAttribute('aria-pressed',s==='dark')};
+  bl.onclick=()=>set('light');bd.onclick=()=>set('dark');
+  set(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+</script>

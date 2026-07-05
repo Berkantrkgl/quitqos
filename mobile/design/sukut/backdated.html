@@ -1,0 +1,256 @@
+<title>Sükût — Geriye Dönük Başlangıç</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    color-scheme:light;
+    --ink:#0C1613;--ink2:#4C5C55;--ink3:#86978F;
+    --bg:#FBFDFC;--surface:#F2F5F3;--line:#E6ECE9;--lineHi:#D2DCD7;
+    --primary:#0E9E77;--primaryText:#0A7458;--primaryMuted:#E4F5EF;--onPrimary:#FFFFFF;
+    --amber:#C77A0A;--amberMuted:#FBEEDA;--danger:#C4433A;
+    --scrim:rgba(6,12,10,.55);
+    --font:"SF Pro Text",-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --num:"SF Pro Display",var(--font);
+  }
+  [data-scheme="dark"]{
+    color-scheme:dark;
+    --ink:#ECF3F0;--ink2:#A6B6AF;--ink3:#6F817A;
+    --bg:#0C1210;--surface:#151E1A;--line:#1E2A25;--lineHi:#30403A;
+    --primary:#34E3AD;--primaryText:#52ECBE;--primaryMuted:#123028;--onPrimary:#04130E;
+    --amber:#F0B429;--amberMuted:#2A2410;--danger:#EF8880;
+    --scrim:rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;padding:44px 18px 90px;transition:background .3s,color .3s}
+  .wrap{max-width:1240px;margin:0 auto}
+  .pagehead{text-align:center}
+  .pagehead .k{font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--ink3)}
+  .pagehead .big{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-top:8px}
+  .pagehead .big em{font-style:normal;color:var(--primaryText)}
+  .pagehead p{color:var(--ink2);font-size:14px;margin-top:10px;max-width:640px;margin-inline:auto;line-height:1.55}
+  .toggle{display:inline-flex;gap:4px;margin:22px auto 40px;padding:4px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+  .toggle button{border:0;background:transparent;color:var(--ink2);font:inherit;font-size:13px;font-weight:700;padding:8px 18px;border-radius:9px;cursor:pointer}
+  .toggle button[aria-pressed="true"]{background:var(--bg);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.14)}
+  :focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:8px}
+
+  .frames{display:flex;gap:44px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .col{display:flex;flex-direction:column;align-items:center;max-width:400px}
+  .frameLabel{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--primaryText);margin-bottom:6px}
+  .frameDesc{font-size:12.5px;color:var(--ink2);line-height:1.5;text-align:center;margin-bottom:16px;max-width:38ch}
+
+  /* phone shell showing the home pre-streak behind a bottom sheet */
+  .phone{width:360px;border-radius:46px;padding:11px;background:#050b09;box-shadow:0 40px 80px -30px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04) inset}
+  .screen{position:relative;border-radius:36px;overflow:hidden;height:720px;background:var(--bg);display:flex;flex-direction:column}
+
+  /* dimmed pre-streak behind the sheet */
+  .behind{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:26px;gap:14px}
+  .behind .huge{font-family:var(--num);font-size:34px;font-weight:800;line-height:1.05;letter-spacing:-1.2px;max-width:12ch}
+  .behind .huge em{font-style:normal;color:var(--primaryText)}
+  .behind p{color:var(--ink2);font-size:14px;line-height:1.5;max-width:24ch}
+  .scrim{position:absolute;inset:0;background:var(--scrim)}
+
+  /* SHEET (Sükût bottom-sheet chrome — matches streak-conflict-modal) */
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:var(--bg);border-top-left-radius:28px;border-top-right-radius:28px;
+    padding:8px 24px 30px;box-shadow:0 -12px 30px rgba(0,0,0,.4)}
+  .grab{width:38px;height:4px;border-radius:999px;background:var(--lineHi);margin:0 auto 18px}
+  .sheet h2{font-size:20px;font-weight:800;letter-spacing:-.4px;text-align:center}
+  .sheet .lede{text-align:center;color:var(--ink2);font-size:13px;line-height:1.5;margin-top:8px}
+
+  /* live preview of the resolved date */
+  .preview{margin:18px 0 6px;text-align:center;padding:14px;border-radius:16px;background:var(--primaryMuted)}
+  .preview .d{font-family:var(--num);font-size:19px;font-weight:800;color:var(--primaryText);letter-spacing:-.3px}
+  .preview .rel{font-size:12.5px;color:var(--ink2);margin-top:3px}
+
+  /* quick relative chips */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{flex:1 0 calc(33.333% - 8px);border:1px solid var(--line);background:var(--surface);color:var(--ink);
+    font:inherit;font-size:13px;font-weight:700;padding:11px 6px;border-radius:12px;cursor:pointer;text-align:center;transition:.12s}
+  .chip[aria-pressed="true"]{background:var(--primaryMuted);border-color:var(--primary);color:var(--primaryText)}
+
+  /* unit stepper */
+  .stepWrap{margin-top:16px}
+  .segRow{display:flex;gap:4px;padding:4px;border-radius:12px;background:var(--surface)}
+  .segRow button{flex:1;border:0;background:transparent;color:var(--ink2);font:inherit;font-size:13px;font-weight:700;padding:9px 0;border-radius:9px;cursor:pointer}
+  .segRow button[aria-pressed="true"]{background:var(--bg);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.14)}
+  .stepper{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding:6px;border:1px solid var(--line);border-radius:14px}
+  .stepper button{width:46px;height:46px;border:0;border-radius:11px;background:var(--surface);color:var(--ink);font-size:24px;font-weight:700;cursor:pointer;display:grid;place-items:center;line-height:1}
+  .stepper button:active{background:var(--primaryMuted)}
+  .stepper .val{font-family:var(--num);font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+  .stepper .val small{font-size:14px;font-weight:700;color:var(--ink2);margin-left:4px}
+
+  /* calendar trigger (variant C) */
+  .dateBtn{margin-top:14px;width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
+    border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:15px;font-weight:700;
+    padding:15px 16px;border-radius:14px;cursor:pointer}
+  .dateBtn .cal{color:var(--primaryText)}
+  .dateBtn .chev{color:var(--ink3)}
+  .ic{width:20px;height:20px;stroke-width:1.8;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}
+
+  .actions{display:flex;gap:10px;margin-top:22px}
+  .btnGhost{flex:1;border:1px solid var(--line);background:transparent;color:var(--ink2);font:inherit;font-weight:700;font-size:15px;padding:15px 0;border-radius:14px;cursor:pointer}
+  .btnPrimary{flex:2;border:0;background:var(--primary);color:var(--onPrimary);font:inherit;font-weight:800;font-size:15px;padding:15px 0;border-radius:14px;cursor:pointer}
+  .hint{font-size:11.5px;color:var(--ink3);text-align:center;margin-top:12px}
+
+  .note{max-width:820px;margin:44px auto 0;color:var(--ink2);font-size:13px;line-height:1.7;text-align:center}.note b{color:var(--ink)}.note code{font-family:var(--num);color:var(--primaryText);font-weight:700}
+  @media (max-width:820px){.phone{transform:scale(.92);transform-origin:top center}.frames{gap:26px}}
+</style>
+
+<div class="wrap">
+  <div class="pagehead">
+    <div class="k">Sükût · Geriye Dönük Başlangıç</div>
+    <div class="big">“Daha Önce <em>Bıraktım</em>”</div>
+    <p>Eski Alert (sadece 1/3/7 gün) yerine düzgün bir Sükût bottom-sheet. Kullanıcı hızlı bir aralık
+       seçebilsin ya da ince ayar yapabilsin; seçtiği ne olursa olsun <b>çözülen tarih canlı önizlemede</b>
+       görünür. Gelecek tarih seçilemez. Üç yaklaşım — hangisi?</p>
+  </div>
+
+  <div style="text-align:center">
+    <div class="toggle" role="group" aria-label="Tema">
+      <button id="bl" aria-pressed="true">☀️ Açık</button>
+      <button id="bd" aria-pressed="false">🌙 Koyu</button>
+    </div>
+  </div>
+
+  <div class="frames">
+
+    <!-- ============ A: CHIPS + FINE STEPPER (combination) ============ -->
+    <div class="col">
+      <div class="frameLabel">Yön A — Hızlı çip + ince ayar</div>
+      <div class="frameDesc">Üstte sık kullanılan aralıklar (çip). Altında birim + −/+ stepper ile ince ayar.
+        İkisi tek değeri besler; önizleme her an çözülen tarihi gösterir. En esnek.</div>
+      <div class="phone"><div class="screen">
+        <div class="behind"><div class="huge">Sayaç <em>ilk saniyeni</em> bekliyor.</div><p>Bıraktığın anı işaretle.</p></div>
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <h2>Ne zaman bıraktın?</h2>
+          <div class="lede">Sayaç o ana kadar geçen süreyi hesaplasın.</div>
+
+          <div class="preview"><div class="d" id="aDate">14 Nisan 2026</div><div class="rel" id="aRel">23 gün önce · Salı</div></div>
+
+          <div class="chips" role="group" aria-label="Hızlı seçim">
+            <button class="chip" data-d="1">Dün</button>
+            <button class="chip" data-d="3">3 gün</button>
+            <button class="chip" data-d="7">1 hafta</button>
+            <button class="chip" data-d="14">2 hafta</button>
+            <button class="chip" data-d="30">1 ay</button>
+            <button class="chip" aria-pressed="true" data-d="23">Özel</button>
+          </div>
+
+          <div class="stepWrap">
+            <div class="segRow" role="group" aria-label="Birim">
+              <button aria-pressed="true">Gün</button><button>Hafta</button><button>Ay</button>
+            </div>
+            <div class="stepper">
+              <button aria-label="Azalt">−</button>
+              <span class="val">23<small>gün önce</small></span>
+              <button aria-label="Artır">+</button>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btnGhost">Vazgeç</button>
+            <button class="btnPrimary">Sayacı başlat</button>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ B: SEGMENT UNIT + BIG STEPPER (simple) ============ -->
+    <div class="col">
+      <div class="frameLabel">Yön B — Birim + büyük stepper</div>
+      <div class="frameDesc">Çip yok. Önce birim (Gün/Hafta/Ay), sonra tek büyük sayı stepper'ı. En sade,
+        en az seçenek; “kaç birim önce” tek soruya iner. Net tarih önizlemede.</div>
+      <div class="phone"><div class="screen">
+        <div class="behind"><div class="huge">Sayaç <em>ilk saniyeni</em> bekliyor.</div><p>Bıraktığın anı işaretle.</p></div>
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <h2>Ne zaman bıraktın?</h2>
+          <div class="lede">Kaç süre önce bıraktığını seç.</div>
+
+          <div class="stepWrap">
+            <div class="segRow" role="group" aria-label="Birim">
+              <button>Gün</button><button aria-pressed="true">Hafta</button><button>Ay</button>
+            </div>
+            <div class="stepper" style="margin-top:16px;padding:10px">
+              <button aria-label="Azalt">−</button>
+              <span class="val" style="font-size:34px">3<small style="font-size:16px">hafta önce</small></span>
+              <button aria-label="Artır">+</button>
+            </div>
+          </div>
+
+          <div class="preview" style="margin-top:20px"><div class="d">24 Mart 2026</div><div class="rel">21 gün önce · Salı</div></div>
+
+          <div class="actions">
+            <button class="btnGhost">Vazgeç</button>
+            <button class="btnPrimary">Sayacı başlat</button>
+          </div>
+          <div class="hint">Tam gün önemliyse takvimden seçebilirsin</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ C: CHIPS + REAL CALENDAR ============ -->
+    <div class="col">
+      <div class="frameLabel">Yön C — Çip + takvim</div>
+      <div class="frameDesc">Hızlı çipler + “Takvimden seç” ile sistem tarih seçicisi. Yaklaşık için çip,
+        kesin gün için takvim. En tanıdık; ince ayar stepper yok.</div>
+      <div class="phone"><div class="screen">
+        <div class="behind"><div class="huge">Sayaç <em>ilk saniyeni</em> bekliyor.</div><p>Bıraktığın anı işaretle.</p></div>
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <h2>Ne zaman bıraktın?</h2>
+          <div class="lede">Hızlı bir aralık seç ya da tam günü takvimden gir.</div>
+
+          <div class="preview"><div class="d">6 Nisan 2026</div><div class="rel">1 hafta önce · Pazartesi</div></div>
+
+          <div class="chips" role="group" aria-label="Hızlı seçim">
+            <button class="chip" data-d="1">Dün</button>
+            <button class="chip" data-d="3">3 gün</button>
+            <button class="chip" aria-pressed="true" data-d="7">1 hafta</button>
+            <button class="chip" data-d="14">2 hafta</button>
+            <button class="chip" data-d="30">1 ay</button>
+            <button class="chip" data-d="90">3 ay</button>
+          </div>
+
+          <button class="dateBtn">
+            <span><svg class="ic cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg> Takvimden seç</span>
+            <svg class="ic chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+
+          <div class="actions">
+            <button class="btnGhost">Vazgeç</button>
+            <button class="btnPrimary">Sayacı başlat</button>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+  </div>
+
+  <p class="note"><b>Ortak kurallar:</b> çözülen tarih hep <code>preview</code>'da (tam tarih + “N gün önce · gün adı”),
+     böylece belirsizlik yok. <b>Gelecek tarih engelli</b> (backend 422 verir — stepper/takvim bugünden ileri gitmez).
+     Grabber, scrim, 28px köşe = mevcut <code>streak-conflict-modal</code> deseni. <b>A</b> en esnek (çip + ince ayar),
+     <b>B</b> en sade, <b>C</b> en tanıdık (gerçek takvim). Kombinasyon istiyorsan A ya da C.</p>
+</div>
+
+<script>
+  const root=document.documentElement,bl=document.getElementById('bl'),bd=document.getElementById('bd');
+  const set=s=>{root.setAttribute('data-scheme',s);bl.setAttribute('aria-pressed',s==='light');bd.setAttribute('aria-pressed',s==='dark')};
+  bl.onclick=()=>set('light');bd.onclick=()=>set('dark');
+  set(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  // light chip interactivity for the demo (visual only)
+  document.querySelectorAll('.chips').forEach(group=>{
+    group.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+      group.querySelectorAll('.chip').forEach(x=>x.removeAttribute('aria-pressed'));
+      c.setAttribute('aria-pressed','true');
+    });
+  });
+  document.querySelectorAll('.segRow').forEach(group=>{
+    group.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+      group.querySelectorAll('button').forEach(x=>x.removeAttribute('aria-pressed'));
+      b.setAttribute('aria-pressed','true');
+    });
+  });
+</script>
