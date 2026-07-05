@@ -79,7 +79,9 @@ export default function LoginScreen() {
     setError(null);
     try {
       await action();
-      router.back();
+      // Sign-in (and any streak merge) is done. The quit-streak provider re-reads
+      // backend data off the auth sessionVersion bump, so we just land on Home.
+      router.replace('/');
     } catch (err) {
       // Cancelling a native sheet (Google/Apple) is a no-op, not an error — leave the screen alone.
       if (isSignInCancellation(err)) return;

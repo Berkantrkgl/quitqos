@@ -17,10 +17,14 @@ import {
 import { createContext, use, useEffect, useState, type ReactNode } from 'react';
 import { Platform } from 'react-native';
 
+import { requestStreakChoice } from '@/components/streak-conflict-modal';
 import {
+  createAttempt,
+  getCurrentAttempt,
   loginWithFirebase,
   logout as apiLogout,
   refreshTokens,
+  relapseAttempt,
   syncQuitAttempts,
   type AuthUser,
   type SyncAttempt,
@@ -66,6 +70,8 @@ type AuthContextValue = {
   /** Create a new email/password account. */
   registerWithEmail: (email: string, password: string, pendingAttempts?: SyncAttempt[], onSynced?: () => void) => Promise<AuthUser>;
   signOut: () => Promise<void>;
+  /** Increments once each sign-in (and any streak merge) fully settles. */
+  sessionVersion: number;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -113,10 +119,68 @@ async function appleFirebaseIdToken(): Promise<string> {
   return getIdToken(userCredential.user);
 }
 
+/**
+ * Merge the guest's on-device attempts into the freshly-signed-in account.
+ *
+ * The tricky case is a conflict: the account already has an ACTIVE streak AND
+ * the device has one too (the user quit, logged out, started fresh, logged back
+ * in). We can't guess which is "real" — only the user knows whether they
+ * relapsed — so we ask. Their choice decides which streak survives; the other is
+ * relapsed. When there's no conflict, we just sync (the backend's "earliest
+ * wins" merge is harmless when only one side is active).
+ *
+ * Any failure is non-fatal: the session still stands and the local copy is kept
+ * for a later retry rather than lost.
+ */
+async function mergeGuestAttempts(
+  accessToken: string,
+  pendingAttempts: SyncAttempt[],
+  onSynced?: () => void,
+) {
+  try {
+    const localActive = pendingAttempts.find((a) => a.status === 'ACTIVE');
+    const accountActive = localActive ? await getCurrentAttempt(accessToken) : null;
+
+    // Conflict: both sides have a live streak. Let the user decide.
+    if (localActive && accountActive) {
+      const choice = await requestStreakChoice({
+        localStartedAt: localActive.startedAt,
+        accountStartedAt: accountActive.startedAt,
+      });
+
+      if (choice === 'account') {
+        // Keep the server streak; discard the device one without syncing it.
+        onSynced?.();
+        return;
+      }
+      // Keep the device streak: relapse the account's, then start the local one fresh.
+      await relapseAttempt(accessToken, accountActive.id);
+      await createAttempt(
+        accessToken,
+        localActive.isBackdated ? localActive.startedAt : undefined,
+      );
+      onSynced?.();
+      return;
+    }
+
+    // No conflict → normal merge.
+    await syncQuitAttempts(accessToken, pendingAttempts);
+    onSynced?.();
+  } catch {
+    // Non-fatal: the session stands; local data is preserved for a retry.
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  /**
+   * Bumped after a sign-in + any streak merge fully completes. Consumers (the
+   * quit-streak provider) depend on it to re-read backend data once — this avoids
+   * the race where a manual refresh runs before the new token has propagated.
+   */
+  const [sessionVersion, setSessionVersion] = useState(0);
 
   // Restore a persisted session on mount; refresh the access token if we have a refresh token.
   useEffect(() => {
@@ -171,15 +235,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(res.user);
 
     if (pendingAttempts && pendingAttempts.length > 0) {
-      // Merge on-device history, then let the caller drop the local copy — but only on success, so
-      // a failed sync keeps the data on-device for a later retry rather than losing it.
-      try {
-        await syncQuitAttempts(res.accessToken, pendingAttempts);
-        onSynced?.();
-      } catch {
-        // Non-fatal: the session stands; local data is preserved.
-      }
+      await mergeGuestAttempts(res.accessToken, pendingAttempts, onSynced);
     }
+    // Signal consumers that the session (and any merge) is settled, so they can
+    // re-read backend data now that the token has propagated.
+    setSessionVersion((v) => v + 1);
     return res.user;
   }
 
@@ -227,7 +287,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext
-      value={{ user, isLoading, accessToken, signIn, signInWithEmail, registerWithEmail, signOut }}
+      value={{ user, isLoading, accessToken, signIn, signInWithEmail, registerWithEmail, signOut, sessionVersion }}
     >
       {children}
     </AuthContext>

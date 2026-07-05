@@ -16,7 +16,15 @@
     "themeHint": "Light or dark?",
     "themeSystem": "System",
     "themeLight": "Light",
-    "themeDark": "Dark"
+    "themeDark": "Dark",
+    "notifications": "Notifications",
+    "notificationsTitle": "Motivation notifications",
+    "notificationsHint": "We'll let you know at every milestone",
+    "statCurrent": "Current",
+    "statLongest": "Longest",
+    "statBadges": "Badges",
+    "noStreak": "No streak yet",
+    "version": "version {{version}}"
   },
   "language": {
     "en": "English",
@@ -70,6 +78,16 @@
       "rankFootnote": "#{{rank}}",
       "rankFootnoteNone": "Leaderboard"
     }
+  },
+  "sync": {
+    "conflictTitle": "You have two streaks",
+    "conflictLede": "Which one do you want to keep? The other is saved to your history.",
+    "sourceAccount": "Your account",
+    "sourceLocal": "This device",
+    "startedOn": "Started {{date}}",
+    "conflictWarn": "This can't be undone. The streak you don't keep is saved to your history.",
+    "confirmAccount": "Keep account streak",
+    "confirmLocal": "Keep device streak"
   },
   "relapse": {
     "button": "Unfortunately, I smoked",

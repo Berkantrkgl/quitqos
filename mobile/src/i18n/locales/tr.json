@@ -16,7 +16,15 @@
     "themeHint": "Aydınlık mı, karanlık mı?",
     "themeSystem": "Sistem",
     "themeLight": "Açık",
-    "themeDark": "Koyu"
+    "themeDark": "Koyu",
+    "notifications": "Bildirimler",
+    "notificationsTitle": "Motivasyon bildirimleri",
+    "notificationsHint": "Her kazanımda seni haberdar edelim",
+    "statCurrent": "Güncel",
+    "statLongest": "En uzun",
+    "statBadges": "Rozet",
+    "noStreak": "Henüz streak başlatmadın",
+    "version": "sürüm {{version}}"
   },
   "language": {
     "en": "English",
@@ -70,6 +78,16 @@
       "rankFootnote": "#{{rank}}. sıra",
       "rankFootnoteNone": "Sıralama"
     }
+  },
+  "sync": {
+    "conflictTitle": "İki streak'in var",
+    "conflictLede": "Hangisiyle devam etmek istersin? Seçmediğin streak geçmişine kaydedilir.",
+    "sourceAccount": "Hesabındaki",
+    "sourceLocal": "Bu cihazdaki",
+    "startedOn": "{{date}}'da başladı",
+    "conflictWarn": "Bu seçim geri alınamaz. Seçmediğin streak geçmişte saklanır.",
+    "confirmAccount": "Hesabındaki ile devam et",
+    "confirmLocal": "Cihazdaki ile devam et"
   },
   "relapse": {
     "button": "Maalesef içtim",

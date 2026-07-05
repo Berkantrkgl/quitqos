@@ -41,6 +41,8 @@ type QuitStreakContextValue = {
    * meaning. Used on guest→registered upgrade: the backend becomes the source of truth.
    */
   clearAfterSync: () => void;
+  /** Re-read the current attempt from the source of truth (backend or storage). */
+  refresh: () => Promise<void>;
 };
 
 const QuitStreakContext = createContext<QuitStreakContextValue | undefined>(undefined);
@@ -65,7 +67,7 @@ function fromBackend(a: QuitAttemptResponse): QuitAttempt {
 }
 
 export function QuitStreakProvider({ children }: { children: ReactNode }) {
-  const { user, accessToken } = useAuth();
+  const { user, accessToken, sessionVersion } = useAuth();
   const [attempt, setAttempt] = useState<QuitAttempt | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   // Backend id of the active attempt, needed to relapse it. Null for guests.
@@ -73,53 +75,42 @@ export function QuitStreakProvider({ children }: { children: ReactNode }) {
 
   const isRegistered = !!(user && accessToken);
 
-  // Source of truth switches with auth: backend when registered, on-device storage for guests.
-  useEffect(() => {
-    let cancelled = false;
+  /**
+   * Load the current attempt from the source of truth for the current auth
+   * state (backend when registered, on-device storage for guests). Exposed as
+   * `refresh` so callers can re-sync after a login/merge changes server data
+   * without an accessToken change (e.g. the streak-conflict resolution).
+   */
+  const loadAttempt = useCallback(async () => {
     setIsLoading(true);
-
-    if (isRegistered && accessToken) {
-      getCurrentAttempt(accessToken)
-        .then((a) => {
-          if (cancelled) return;
-          setAttempt(a ? fromBackend(a) : null);
-          setBackendId(a?.id ?? null);
-        })
-        .catch(() => {
-          if (!cancelled) {
-            setAttempt(null);
-            setBackendId(null);
-          }
-        })
-        .finally(() => {
-          if (!cancelled) setIsLoading(false);
-        });
-    } else {
+    try {
+      if (isRegistered && accessToken) {
+        const a = await getCurrentAttempt(accessToken);
+        setAttempt(a ? fromBackend(a) : null);
+        setBackendId(a?.id ?? null);
+      } else {
+        setBackendId(null);
+        const stored = await AsyncStorage.getItem(STORAGE_KEY);
+        const parsed = stored ? (JSON.parse(stored) as QuitAttempt) : null;
+        // Only an ACTIVE attempt represents a live streak.
+        setAttempt(parsed && parsed.status === 'ACTIVE' ? parsed : null);
+      }
+    } catch {
+      // Network/parse failure → treat as no streak.
+      setAttempt(null);
       setBackendId(null);
-      AsyncStorage.getItem(STORAGE_KEY)
-        .then((stored) => {
-          if (cancelled) return;
-          if (stored) {
-            const parsed = JSON.parse(stored) as QuitAttempt;
-            // Only an ACTIVE attempt represents a live streak.
-            setAttempt(parsed.status === 'ACTIVE' ? parsed : null);
-          } else {
-            setAttempt(null);
-          }
-        })
-        .catch(() => {
-          // Corrupt/unreadable value → treat as no streak.
-          if (!cancelled) setAttempt(null);
-        })
-        .finally(() => {
-          if (!cancelled) setIsLoading(false);
-        });
+    } finally {
+      setIsLoading(false);
     }
+    // sessionVersion is intentionally a dep: a sign-in + streak merge changes
+    // backend data without changing the token, so we re-read when it settles.
+  }, [isRegistered, accessToken, sessionVersion]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [isRegistered, accessToken]);
+  // Reload whenever auth state changes (guest ↔ registered, token rotation) or a
+  // sign-in/merge settles (sessionVersion bump).
+  useEffect(() => {
+    void loadAttempt();
+  }, [loadAttempt]);
 
   /** Persist a guest attempt to storage and state. */
   function persistLocal(next: QuitAttempt | null) {
@@ -180,7 +171,7 @@ export function QuitStreakProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <QuitStreakContext value={{ attempt, isLoading, startStreak, relapse, clearAfterSync }}>
+    <QuitStreakContext value={{ attempt, isLoading, startStreak, relapse, clearAfterSync, refresh: loadAttempt }}>
       {children}
     </QuitStreakContext>
   );
