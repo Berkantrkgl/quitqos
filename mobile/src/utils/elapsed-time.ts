@@ -40,6 +40,53 @@ const DAYS_PER_YEAR = 365;
  * @param startedAt streak start (ms epoch, ISO string, or Date)
  * @param now       reference time (ms epoch), defaults to Date.now()
  */
+/**
+ * Which unit leads the hero number on the home screen, plus the leftover
+ * breakdown shown quietly beneath it. Pure — the UI supplies the unit words.
+ *
+ * - < 30 days     → hero: `days` (unit "gün"),   remainder: none
+ * - < 365 days    → hero: `months` (unit "ay"),  remainder: dayOfMonth (+hours)
+ * - >= 365 days   → hero: `years` (unit "yıl"),  remainder: months + dayOfMonth (+hours)
+ *
+ * Rationale: the big number always shows the most meaningful unit so it stays
+ * legible; the precise leftover lives in a secondary line. See sukut/home.html.
+ */
+export type StreakScale = 'days' | 'months' | 'years';
+
+export type StreakFigure = {
+  /** The leading unit for the hero number. */
+  scale: StreakScale;
+  /** The hero number's value (days, whole months, or whole years). */
+  heroValue: number;
+  /** Remainder parts to render beneath, largest first (empty for the days scale). */
+  remainder: Array<{ unit: 'months' | 'days' | 'hours'; value: number }>;
+};
+
+export function streakFigure(e: Elapsed): StreakFigure {
+  if (e.days >= DAYS_PER_YEAR) {
+    return {
+      scale: 'years',
+      heroValue: e.years,
+      remainder: [
+        { unit: 'months', value: e.months },
+        { unit: 'days', value: e.dayOfMonth },
+        { unit: 'hours', value: e.hours },
+      ].filter((p) => p.value > 0 || p.unit === 'days') as StreakFigure['remainder'],
+    };
+  }
+  if (e.days >= DAYS_PER_MONTH) {
+    return {
+      scale: 'months',
+      heroValue: e.months + e.years * 12, // years is 0 here, kept for safety
+      remainder: [
+        { unit: 'days', value: e.dayOfMonth },
+        { unit: 'hours', value: e.hours },
+      ].filter((p) => p.value > 0 || p.unit === 'days') as StreakFigure['remainder'],
+    };
+  }
+  return { scale: 'days', heroValue: e.days, remainder: [] };
+}
+
 export function elapsedFrom(startedAt: number | string | Date, now: number = Date.now()): Elapsed {
   const startMs =
     startedAt instanceof Date

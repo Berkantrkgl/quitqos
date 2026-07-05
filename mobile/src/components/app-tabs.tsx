@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { useAppTheme } from '@/theme/theme-provider';
 
 import {
   BadgesIcon,
@@ -34,8 +35,10 @@ const TABS: TabDef[] = [
 ];
 
 /**
- * Custom bottom tab bar built on expo-router/ui's headless Tabs. Rendered
- * identically on iOS and Android with SVG icons that follow the theme (see M4).
+ * Custom bottom tab bar built on expo-router/ui's headless Tabs. The bar is a
+ * floating dock ("Sükût" system, see design/sukut/tabbar.html): detached from
+ * the edges, rounded, shadowed, with a tinted capsule behind the active tab.
+ * Rendered identically on iOS and Android with Lucide SVG icons.
  */
 export default function AppTabs() {
   return (
@@ -54,24 +57,32 @@ export default function AppTabs() {
   );
 }
 
-/** The floating bar container; honors the bottom safe-area inset. */
+/**
+ * The floating dock container: absolutely positioned above the content with a
+ * side inset, rounded corners, and a soft shadow. Honors the bottom safe-area.
+ */
 function TabBar({ children, ...props }: { children: ReactNode }) {
   const theme = useTheme();
+  const { scheme } = useAppTheme();
   const insets = useSafeAreaInsets();
 
   return (
     <View
       {...props}
-      style={[
-        styles.bar,
-        {
-          backgroundColor: theme.background,
-          borderTopColor: theme.border,
-          paddingBottom: Math.max(insets.bottom, Spacing.two),
-        },
-      ]}
+      pointerEvents="box-none"
+      style={[styles.wrap, { paddingBottom: Math.max(insets.bottom, Spacing.three) }]}
     >
-      {children}
+      <View
+        style={[
+          styles.dock,
+          {
+            backgroundColor: scheme === 'dark' ? theme.backgroundElement : theme.background,
+            borderColor: theme.border,
+          },
+        ]}
+      >
+        {children}
+      </View>
     </View>
   );
 }
@@ -81,7 +92,7 @@ type TabButtonProps = TabTriggerSlotProps & {
   Icon: (props: TabIconProps) => ReactNode;
 };
 
-/** A single tab: SVG icon + label, tinted by focus state. */
+/** A single tab: SVG icon + label, with a tinted capsule when focused. */
 const TabButton = forwardRef<View, TabButtonProps>(function TabButton(
   { label, Icon, isFocused, ...props },
   ref,
@@ -94,10 +105,17 @@ const TabButton = forwardRef<View, TabButtonProps>(function TabButton(
     <Pressable
       ref={ref}
       {...props}
-      style={({ pressed }) => [styles.tab, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.tab,
+        isFocused && { backgroundColor: theme.primaryMuted },
+        pressed && styles.pressed,
+      ]}
     >
       <Icon color={color} size={24} focused={isFocused} />
-      <ThemedText type="small" style={[styles.label, { color }]}>
+      <ThemedText
+        type="small"
+        style={[styles.label, { color: isFocused ? theme.primaryText : theme.textSecondary }]}
+      >
         {t(label)}
       </ThemedText>
     </Pressable>
@@ -105,17 +123,34 @@ const TabButton = forwardRef<View, TabButtonProps>(function TabButton(
 });
 
 const styles = StyleSheet.create({
-  bar: {
-    flexDirection: 'row',
+  // Full-width wrapper pinned to the bottom; lets touches pass through the gaps.
+  wrap: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: Spacing.four,
     paddingTop: Spacing.two,
-    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  dock: {
+    flexDirection: 'row',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 24,
+    padding: Spacing.two,
+    // Soft lift so the dock reads as a floating surface.
+    shadowColor: '#000',
+    shadowOpacity: 0.18,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 12,
   },
   tab: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 2,
-    paddingVertical: Spacing.one,
+    gap: 3,
+    paddingVertical: Spacing.two,
+    borderRadius: 16,
   },
   pressed: {
     opacity: 0.6,
@@ -123,5 +158,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 11,
     lineHeight: 14,
+    fontWeight: '700',
   },
 });

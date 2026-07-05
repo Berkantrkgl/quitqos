@@ -17,42 +17,51 @@ import { Platform } from 'react-native';
  */
 export const Colors = {
   light: {
-    // nötr
-    text: '#11181C',
-    textSecondary: '#60646C',
-    background: '#FFFFFF',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    border: '#E2E4E9',
+    // nötr — "Sükût" sistemi: nötr tonlar teal'a doğru çok hafif kaydırıldı
+    // (saf gri yerine seçilmiş nötr). Metin renkleri ≥4.5:1 kontrast.
+    text: '#0C1613',
+    textSecondary: '#4C5C55',
+    textTertiary: '#86978F', // etiketler/dipnotlar (büyük veya ikincil)
+    background: '#FBFDFC',
+    backgroundElement: '#F2F5F3',
+    backgroundSelected: '#E6ECE9',
+    border: '#E6ECE9',
+    borderStrong: '#D2DCD7', // hover / güçlü hairline
     // marka
-    primary: '#10B981',
-    primaryMuted: '#D1FAE5',
+    primary: '#0E9E77',
+    primaryText: '#0A7458', // teal'ı METİN olarak kullanırken (kontrast için koyu)
+    primaryMuted: '#E4F5EF',
     onPrimary: '#FFFFFF',
     // semantic
-    streak: '#F59E0B',
-    success: '#22C55E',
-    warning: '#F59E0B',
-    danger: '#EF4444',
-    dangerMuted: '#FEE2E2',
+    streak: '#C77A0A', // amber, metin olarak okunur olacak şekilde koyulaştırıldı
+    streakMuted: '#FBEEDA',
+    success: '#0E9E77',
+    warning: '#C77A0A',
+    danger: '#C4433A',
+    dangerMuted: '#FBE7E5',
   },
   dark: {
     // nötr — softer slate (not near-black) so it's easier on the eyes and
     // elevated surfaces read as distinct layers.
-    text: '#E6E8EA',
-    textSecondary: '#9BA1A8',
-    background: '#15181C',
-    backgroundElement: '#20242A',
-    backgroundSelected: '#2C3138',
-    border: '#333A42',
+    text: '#ECF3F0',
+    textSecondary: '#A6B6AF',
+    textTertiary: '#6F817A',
+    background: '#0C1210',
+    backgroundElement: '#151E1A',
+    backgroundSelected: '#1E2A25',
+    border: '#1E2A25',
+    borderStrong: '#30403A',
     // marka
-    primary: '#2DD4A7',
-    primaryMuted: '#12362E',
+    primary: '#34E3AD',
+    primaryText: '#52ECBE',
+    primaryMuted: '#123028',
     onPrimary: '#04130E',
     // semantic
-    streak: '#FBBF24',
-    success: '#34D399',
-    warning: '#FBBF24',
-    danger: '#F87171',
+    streak: '#F0B429',
+    streakMuted: '#2A2410',
+    success: '#34E3AD',
+    warning: '#F0B429',
+    danger: '#EF8880',
     dangerMuted: '#3A1A1A',
   },
 } as const;
@@ -95,5 +104,11 @@ export const Spacing = {
   six: 64,
 } as const;
 
-export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
+/**
+ * Space to reserve at the bottom of scrollable screens so content clears the
+ * floating dock (see components/app-tabs.tsx). Larger than a standard tab bar
+ * because the dock is detached, has its own padding + shadow, and sits above
+ * the safe-area inset. Screens add their own extra spacing on top of this.
+ */
+export const BottomTabInset = Platform.select({ ios: 96, android: 100 }) ?? 96;
 export const MaxContentWidth = 800;

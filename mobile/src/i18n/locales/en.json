@@ -50,7 +50,25 @@
       "badgesValue_one": "{{count}} badge",
       "badgesValue_other": "{{count}} badges",
       "leaderboardTitle": "Leaderboard",
-      "leaderboardLocked": "Sign in"
+      "leaderboardLocked": "Sign in",
+      "label": "IQOS-free",
+      "heroYear_one": "year",
+      "heroYear_other": "years",
+      "heroMonth_one": "month",
+      "heroMonth_other": "months",
+      "heroDay_one": "day",
+      "heroDay_other": "days",
+      "remMonth_one": "{{count}} month",
+      "remMonth_other": "{{count}} months",
+      "remDay_one": "{{count}} day",
+      "remDay_other": "{{count}} days",
+      "remHour_one": "{{count}} hour",
+      "remHour_other": "{{count}} hours",
+      "nextGoal": "Next: {{title}} · {{remaining}} left",
+      "badgesFootnote_one": "{{count}} badge",
+      "badgesFootnote_other": "{{count}} badges",
+      "rankFootnote": "#{{rank}}",
+      "rankFootnoteNone": "Leaderboard"
     }
   },
   "relapse": {

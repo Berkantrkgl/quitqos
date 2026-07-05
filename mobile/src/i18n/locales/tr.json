@@ -50,7 +50,25 @@
       "badgesValue_one": "{{count}} rozet",
       "badgesValue_other": "{{count}} rozet",
       "leaderboardTitle": "Sıralama",
-      "leaderboardLocked": "Giriş yap"
+      "leaderboardLocked": "Giriş yap",
+      "label": "IQOS'suz",
+      "heroYear_one": "yıl",
+      "heroYear_other": "yıl",
+      "heroMonth_one": "ay",
+      "heroMonth_other": "ay",
+      "heroDay_one": "gün",
+      "heroDay_other": "gün",
+      "remMonth_one": "{{count}} ay",
+      "remMonth_other": "{{count}} ay",
+      "remDay_one": "{{count}} gün",
+      "remDay_other": "{{count}} gün",
+      "remHour_one": "{{count}} saat",
+      "remHour_other": "{{count}} saat",
+      "nextGoal": "Sıradaki: {{title}} · {{remaining}} kaldı",
+      "badgesFootnote_one": "{{count}} rozet",
+      "badgesFootnote_other": "{{count}} rozet",
+      "rankFootnote": "#{{rank}}. sıra",
+      "rankFootnoteNone": "Sıralama"
     }
   },
   "relapse": {
