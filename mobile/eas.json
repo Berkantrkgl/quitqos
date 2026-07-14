@@ -11,12 +11,12 @@
     },
     "preview": {
       "distribution": "store",
-      "prebuildCommand": "cp $GOOGLE_SERVICES_PLIST ./GoogleService-Info.plist"
+      "prebuildCommand": "/bin/cp $GOOGLE_SERVICES_PLIST ./GoogleService-Info.plist"
     },
     "production": {
       "autoIncrement": true,
       "channel": "production",
-      "prebuildCommand": "cp $GOOGLE_SERVICES_PLIST ./GoogleService-Info.plist"
+      "prebuildCommand": "/bin/cp $GOOGLE_SERVICES_PLIST ./GoogleService-Info.plist"
     }
   },
   "submit": {
