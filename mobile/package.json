@@ -53,7 +53,8 @@
     "android": "JAVA_HOME=\"$HOME/.jdks/jdk-17.0.13+11\" PATH=\"$HOME/.jdks/jdk-17.0.13+11/bin:$PATH\" expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "postinstall": "node ./scripts/setup-firebase-files.js"
   },
   "private": true
 }

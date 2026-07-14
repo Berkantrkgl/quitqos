@@ -10,13 +10,11 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "store",
-      "prebuildCommand": "/bin/cp $GOOGLE_SERVICES_PLIST ./GoogleService-Info.plist"
+      "distribution": "store"
     },
     "production": {
       "autoIncrement": true,
-      "channel": "production",
-      "prebuildCommand": "/bin/cp $GOOGLE_SERVICES_PLIST ./GoogleService-Info.plist"
+      "channel": "production"
     }
   },
   "submit": {
