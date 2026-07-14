@@ -10,11 +10,13 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "store"
+      "distribution": "store",
+      "prebuildCommand": "echo \"PLIST value: $GOOGLE_SERVICES_PLIST\" && ([ -f \"$GOOGLE_SERVICES_PLIST\" ] && cp \"$GOOGLE_SERVICES_PLIST\" ./GoogleService-Info.plist || echo \"$GOOGLE_SERVICES_PLIST\" > ./GoogleService-Info.plist)"
     },
     "production": {
       "autoIncrement": true,
-      "channel": "production"
+      "channel": "production",
+      "prebuildCommand": "echo \"PLIST value: $GOOGLE_SERVICES_PLIST\" && ([ -f \"$GOOGLE_SERVICES_PLIST\" ] && cp \"$GOOGLE_SERVICES_PLIST\" ./GoogleService-Info.plist || echo \"$GOOGLE_SERVICES_PLIST\" > ./GoogleService-Info.plist)"
     }
   },
   "submit": {
