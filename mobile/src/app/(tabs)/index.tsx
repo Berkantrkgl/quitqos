@@ -407,7 +407,7 @@ const styles = StyleSheet.create({
   },
   heroNum: {
     fontSize: 132,
-    lineHeight: 132 * 0.9,
+    lineHeight: 132 * 1.05,
     letterSpacing: -6,
     fontVariant: ['tabular-nums'],
   },

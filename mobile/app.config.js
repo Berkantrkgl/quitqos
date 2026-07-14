@@ -7,8 +7,8 @@ const IS_PRODUCTION = process.env.EAS_BUILD_PROFILE === 'production';
 // Placeholder fallbacks only — the real identifiers live in .env (gitignored).
 const BUNDLE_ID = process.env.EXPO_PUBLIC_IOS_BUNDLE_ID || 'com.example.quitqos';
 const ANDROID_PACKAGE = process.env.EXPO_PUBLIC_ANDROID_PACKAGE || 'com.example.quitqos';
-const EAS_PROJECT_ID = process.env.EXPO_PUBLIC_EAS_PROJECT_ID || 'your-eas-project-id';
-const EXPO_OWNER = process.env.EXPO_PUBLIC_EXPO_OWNER || undefined;
+const EAS_PROJECT_ID = process.env.EXPO_PUBLIC_EAS_PROJECT_ID || 'c31466cb-5b7d-4219-a087-1dd618f28693';
+const EXPO_OWNER = process.env.EXPO_PUBLIC_EXPO_OWNER || 'berkantrkgl';
 
 module.exports = {
   expo: {
@@ -105,7 +105,12 @@ module.exports = {
       '@react-native-firebase/app',
       '@react-native-firebase/auth',
       '@react-native-firebase/messaging',
-      '@react-native-google-signin/google-signin',
+      [
+        '@react-native-google-signin/google-signin',
+        {
+          iosUrlScheme: process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME || 'com.googleusercontent.apps.413546581870-vmm8ccj83iqf5qcca5fni8uhfvg9ohki',
+        },
+      ],
     ],
     experiments: {
       typedRoutes: true,
