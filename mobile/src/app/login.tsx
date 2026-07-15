@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BrandMark } from '@/components/brand-mark';
+import { StreakConflictHost } from '@/components/streak-conflict-modal';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
@@ -182,7 +183,7 @@ export default function LoginScreen() {
               {Platform.OS === 'ios' ? (
                 <ProviderButton
                   label={t('auth.apple')}
-                  icon=""
+                  icon={''}
                   busy={busy === 'apple'}
                   disabled={anyBusy}
                   onPress={() => run(() => signIn('apple', pendingAttempts, clearAfterSync), 'apple')}
@@ -291,6 +292,13 @@ export default function LoginScreen() {
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
+
+      {/* Rendered here (not in the root layout): this screen is itself a native modal
+          presentation (Stack.Screen presentation:'modal'), and a sibling overlay mounted
+          at the app root ends up stacked behind that native modal layer on iOS — it would
+          exist and update correctly but never be visible. Mounting inside this screen's own
+          tree keeps it in the same native layer, on top. */}
+      <StreakConflictHost />
     </ThemedView>
   );
 }

@@ -1,6 +1,5 @@
 import { Stack } from 'expo-router';
 
-import { StreakConflictHost } from '@/components/streak-conflict-modal';
 import { AuthProvider } from '@/hooks/use-auth';
 import { QuitStreakProvider } from '@/hooks/use-quit-streak';
 import '@/i18n';
@@ -18,8 +17,6 @@ export default function RootLayout() {
               <Stack.Screen name="settings" options={{ presentation: 'modal' }} />
               <Stack.Screen name="login" options={{ presentation: 'modal' }} />
             </Stack>
-            {/* Global streak-conflict sheet (opened from the auth merge flow). */}
-            <StreakConflictHost />
           </QuitStreakProvider>
         </AuthProvider>
       </LanguageProvider>

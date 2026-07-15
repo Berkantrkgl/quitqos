@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -66,16 +66,17 @@ export function StreakConflictHost() {
     setPending(null);
   }
 
+  if (!pending) return null;
+
+  // A plain absolute-fill overlay, not RN's <Modal>: the login screen is itself
+  // presented as a native modal (Stack.Screen presentation:'modal'), and iOS
+  // silently fails to show a second native modal stacked on top of one already
+  // presented — the sheet would never appear even though this component's state
+  // was updating correctly. An overlay has no such native-stacking limitation.
   return (
-    <Modal
-      visible={pending !== null}
-      transparent
-      animationType="fade"
-      // Android back / dismiss → safe default.
-      onRequestClose={() => settle('account')}
-    >
-      {pending ? <Sheet payload={pending.payload} onChoose={settle} /> : null}
-    </Modal>
+    <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+      <Sheet payload={pending.payload} onChoose={settle} />
+    </View>
   );
 }
 
