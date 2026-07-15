@@ -1,0 +1,19 @@
+services:
+  quitqos-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env.quitqos
+    environment:
+      FIREBASE_CREDENTIALS: file:/app/firebase-service-account.json
+    volumes:
+      - /home/deploy/quitqos-firebase-service-account.json:/app/firebase-service-account.json:ro
+    networks:
+      - shared-edge
+    expose:
+      - "8080"
+
+networks:
+  shared-edge:
+    external: true

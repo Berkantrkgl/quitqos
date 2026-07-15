@@ -1,0 +1,58 @@
+name: Deploy Backend to Hetzner
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - "docker-compose.prod.yml"
+      - ".github/workflows/deploy-backend.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-quitqos-backend
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: SSH deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: deploy
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          port: 22
+          command_timeout: 15m
+          script: |
+            set -euo pipefail
+            REPO=/home/deploy/quitqos
+            cd "$REPO"
+            COMPOSE="docker compose -p quitqos -f docker-compose.prod.yml"
+
+            echo "→ git pull (main)"
+            git fetch origin main
+            git reset --hard origin/main
+            git log -1 --oneline
+
+            echo "→ rebuild quitqos-backend container"
+            $COMPOSE up -d --build quitqos-backend
+
+            echo "→ wait for healthcheck"
+            STATUS="starting"
+            for i in $(seq 1 24); do
+              STATUS=$(docker inspect --format='{{.State.Health.Status}}' quitqos-quitqos-backend-1 2>/dev/null || echo "starting")
+              echo "  [$i/24] health=$STATUS"
+              if [ "$STATUS" = "healthy" ]; then break; fi
+              sleep 5
+            done
+            echo "→ final state"
+            $COMPOSE ps quitqos-backend
+            if [ "$STATUS" != "healthy" ]; then
+              echo "ERROR: quitqos-backend unhealthy after 120s"
+              $COMPOSE logs quitqos-backend --tail 50
+              exit 1
+            fi
+            echo "✓ deploy ok"

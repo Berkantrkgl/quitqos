@@ -8,6 +8,7 @@
 .env
 .env.*
 !.env.example
+!.env.*.example
 *.local
 
 # Firebase service account & credentials (ASLA commit edilmemeli)
@@ -102,3 +103,4 @@ mobile/.env*.local
 # Local-only project guide for Claude (not committed)
 CLAUDE.md
 .claude
+quitqos-cv-summary.md
