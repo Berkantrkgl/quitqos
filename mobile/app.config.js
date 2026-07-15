@@ -111,6 +111,19 @@ module.exports = {
           iosUrlScheme: process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME || 'com.googleusercontent.apps.413546581870-vmm8ccj83iqf5qcca5fni8uhfvg9ohki',
         },
       ],
+      // Firebase's Swift pods (FirebaseAuth, AppCheckCore, ...) require CocoaPods' "framework"
+      // linkage to generate module maps; the RN/Expo default is static libraries, which makes
+      // `pod install` fail with "cannot yet be integrated as static libraries". EAS cloud builds
+      // already set this via a USE_FRAMEWORKS=static env var; this makes local `pod install` /
+      // `expo run:ios` match without needing that env var set by hand every time.
+      [
+        'expo-build-properties',
+        {
+          ios: {
+            useFrameworks: 'static',
+          },
+        },
+      ],
     ],
     experiments: {
       typedRoutes: true,
