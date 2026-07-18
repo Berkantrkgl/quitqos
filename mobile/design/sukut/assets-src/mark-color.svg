@@ -1,15 +1,40 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" fill="none">
-  <!-- QuitQOS "Orbit Q" (N2) — canonical COLOR mark. Transparent background.
-       Inner Q = the person; outer orbit = elapsed time; amber dot = the now.
+  <!-- QuitQOS "Twin Rings" — canonical COLOR mark. Transparent background.
+       Two interlocking rings: left = O, right = Q (amber tail lower-right).
+       They overlap in the middle like chain links; the left ring passes over
+       the right at the lower crossing. The amber tail = "the now / streak".
        This is the single source of truth; every asset derives from it. -->
-  <!-- outer orbit ring (neutral track) -->
-  <circle cx="50" cy="50" r="30" stroke="#86978F" stroke-width="5"/>
-  <!-- traveled arc (teal) from top clockwise to the dot -->
-  <path d="M50 20 A30 30 0 0 1 76.5 34.5" stroke="#0E9E77" stroke-width="5" stroke-linecap="round"/>
-  <!-- traveling dot = the now, on the orbit (amber) -->
-  <circle cx="76.5" cy="34.5" r="5" fill="#C77A0A"/>
-  <!-- inner Q core -->
-  <circle cx="50" cy="50" r="13.5" stroke="#0E9E77" stroke-width="8"/>
-  <!-- Q tail — kept short so it doesn't touch the outer orbit ring -->
-  <path d="M59.5 59.5 L69 69" stroke="#0E9E77" stroke-width="8" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="teal" x1="30" y1="26" x2="66" y2="76" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5FD9B4"/>
+      <stop offset="0.5" stop-color="#2FB58C"/>
+      <stop offset="1" stop-color="#0C7E5E"/>
+    </linearGradient>
+    <linearGradient id="amber" x1="74" y1="61" x2="88" y2="77" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFCF6E"/>
+      <stop offset="1" stop-color="#E5860C"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#F0A020" stop-opacity="0.5"/>
+      <stop offset="0.5" stop-color="#F0A020" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#F0A020" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- soft emboss shadow beneath the whole mark -->
+  <g transform="translate(0 0.7)" opacity="0.28">
+    <circle cx="37" cy="50" r="20" stroke="#04120D" stroke-width="9" fill="none"/>
+    <circle cx="63" cy="50" r="20" stroke="#04120D" stroke-width="9" fill="none"/>
+  </g>
+
+  <!-- RIGHT ring (Q) — drawn first -->
+  <circle cx="63" cy="50" r="20" stroke="url(#teal)" stroke-width="9" fill="none"/>
+  <!-- Q tail: soft radial glow halo (no filter → no bounding-box artefact) + stroke -->
+  <circle cx="80.5" cy="68" r="19" fill="url(#glow)"/>
+  <path d="M74.5 62 L86 73.5" stroke="url(#amber)" stroke-width="9" stroke-linecap="round" fill="none"/>
+
+  <!-- LEFT ring (O) — drawn on top, so it overlaps the right ring cleanly at the
+       crossing (a simple z-order overlap; no re-drawn weave arc, which left a
+       bump at the top intersection). -->
+  <circle cx="37" cy="50" r="20" stroke="url(#teal)" stroke-width="9" fill="none"/>
 </svg>

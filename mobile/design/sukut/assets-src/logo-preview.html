@@ -1,0 +1,183 @@
+<title>QuitQOS — Yeni Logo (İç İçe İki Halka) · Geometri Provası</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    color-scheme:light;
+    --ink:#0C1613; --ink2:#4C5C55; --ink3:#86978F;
+    --bg:#FBFDFC; --surface:#F2F5F3; --line:#E6ECE9; --lineHi:#D2DCD7;
+    --primary:#0E9E77; --primaryText:#0A7458; --primaryMuted:#E4F5EF; --onPrimary:#FFFFFF;
+    --amber:#C77A0A; --amberBright:#F0A020;
+    --iconBg:#0C1210; /* senin görselindeki koyu zemin — kıyas için */
+    --font:"SF Pro Text",-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  :root[data-scheme="dark"]{
+    color-scheme:dark;
+    --ink:#ECF3F0; --ink2:#A6B6AF; --ink3:#6F817A;
+    --bg:#0C1210; --surface:#151E1A; --line:#1E2A25; --lineHi:#30403A;
+    --primary:#34E3AD; --primaryText:#52ECBE; --primaryMuted:#123028; --onPrimary:#04130E;
+    --amber:#F0B429; --amberBright:#FFC24D;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;padding:40px 22px 90px;transition:background .3s}
+  .wrap{max-width:1120px;margin:0 auto}
+  h1{font-size:24px;font-weight:800;letter-spacing:-.6px}
+  h1 em{font-style:normal;color:var(--primaryText)}
+  .lede{color:var(--ink2);font-size:14px;margin-top:8px;max-width:70ch;line-height:1.55}
+  .lede b{color:var(--ink)}
+  .toggle{display:inline-flex;gap:4px;margin:20px 0 34px;padding:4px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+  .toggle button{border:0;background:transparent;color:var(--ink2);font:inherit;font-size:13px;font-weight:700;padding:8px 18px;border-radius:9px;cursor:pointer}
+  .toggle button[aria-pressed="true"]{background:var(--bg);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.14)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+  .card{border:1px solid var(--line);border-radius:18px;padding:22px;background:var(--surface);display:flex;flex-direction:column;align-items:center;gap:14px}
+  .card .cap{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3)}
+  .tile{border-radius:22.37%;display:grid;place-items:center;overflow:hidden} /* iOS squircle superellipse ~ */
+
+  .sizes{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:8px}
+  .sizes .s{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .sizes .s span{font-size:10.5px;color:var(--ink3);font-weight:700}
+
+  .wm-row{display:flex;align-items:center;gap:12px;margin-top:6px}
+  .wordmark{font-weight:800;letter-spacing:-.5px;font-size:28px}.wordmark .qos{color:var(--primaryText)}
+
+  .note{margin-top:30px;color:var(--ink2);font-size:13px;line-height:1.7;max-width:80ch}.note b{color:var(--ink)}
+  section{margin-top:40px}
+  .h2{font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin-bottom:16px}
+</style>
+
+<div class="wrap">
+  <h1>QuitQOS — <em>İç İçe İki Halka</em> · yeni logo</h1>
+  <p class="lede">Referansındaki geometri: <b>iki iç içe geçmiş halka</b> — sol <b>O</b>, sağ <b>Q</b> (amber kuyruk).
+     Zincir gibi birbirinin içinden geçiyorlar. Aşağıda önce <b>düz (flat)</b> versiyon (in-app BrandMark bunu kullanır,
+     tema rengini alır), sonra <b>zengin (bevel + amber glow)</b> app-icon versiyonu. Karşılaştırma için koyu-zeminli
+     de var (senin görselin). Geometri onayınla tüm formatları üretirim.</p>
+
+  <div class="toggle" role="group" aria-label="Tema">
+    <button id="bl" aria-pressed="true">☀️ Açık</button>
+    <button id="bd" aria-pressed="false">🌙 Koyu</button>
+  </div>
+
+  <!-- ═══════════ FLAT (in-app / stroke) ═══════════ -->
+  <section>
+    <div class="h2">Düz · in-app BrandMark (tema rengini alır)</div>
+    <div class="sizes">
+      <div class="s"><span>112</span>
+        <svg width="112" height="112" viewBox="0 0 100 100" fill="none">
+          <use href="#markFlat"/>
+        </svg>
+      </div>
+      <div class="s"><span>40</span>
+        <svg width="40" height="40" viewBox="0 0 100 100" fill="none"><use href="#markFlat"/></svg>
+      </div>
+      <div class="s"><span>26</span>
+        <svg width="26" height="26" viewBox="0 0 100 100" fill="none"><use href="#markFlat"/></svg>
+      </div>
+      <div class="wm-row">
+        <svg width="34" height="34" viewBox="0 0 100 100" fill="none"><use href="#markFlat"/></svg>
+        <span class="wordmark">Quit<span class="qos">QOS</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ APP ICON TILES ═══════════ -->
+  <section>
+    <div class="h2">App icon — zengin (bevel + amber glow)</div>
+    <div class="grid">
+      <div class="card">
+        <div class="cap">Açık zemin (seçtiğin · mevcut)</div>
+        <div class="tile" style="width:150px;height:150px;background:var(--primaryMuted)">
+          <svg width="150" height="150" viewBox="0 0 100 100" fill="none"><use href="#markRich"/></svg>
+        </div>
+        <div class="tile" style="width:60px;height:60px;background:var(--primaryMuted)">
+          <svg width="60" height="60" viewBox="0 0 100 100" fill="none"><use href="#markRich"/></svg>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cap">Koyu zemin (senin görselin · kıyas)</div>
+        <div class="tile" style="width:150px;height:150px;background:var(--iconBg)">
+          <svg width="150" height="150" viewBox="0 0 100 100" fill="none"><use href="#markRichDark"/></svg>
+        </div>
+        <div class="tile" style="width:60px;height:60px;background:var(--iconBg)">
+          <svg width="60" height="60" viewBox="0 0 100 100" fill="none"><use href="#markRichDark"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="note"><b>Geometri notu.</b> Sol halka tam O; sağ halka Q — kuyruğu sağ-alta uzanır (amber). İki halka
+     ortada üst-üste biner (interlocking): birinin stroke'u diğerinin üstünden/altından geçerek zincir hissi verir.
+     Bu HTML'de görüyorsun; onaylarsan aynı geometriyi tüm master SVG'lere işleyip <code>build-icons.sh</code> ile
+     bütün PNG formatlarını (icon 1024², adaptive foreground/bg/monochrome, splash, favicon) üretirim.</p>
+  <p class="note">Referansından bir fark: senin görselin <b>koyu zeminliydi</b>, sen <b>açık zemin (mevcut sistem)</b> seçtin —
+     o yüzden soldaki tile açık, logo koyu-teal çiziliyor. Koyu tile sadece kıyas için. Onay verirsen açık zeminle giderim.</p>
+</div>
+
+<!-- ═══════════════ SVG DEFS — geometri tek yerde ═══════════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- bevel + glow filtreleri (app icon için) -->
+    <linearGradient id="tealBevel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7FE6C4"/>
+      <stop offset="0.5" stop-color="#3FBF95"/>
+      <stop offset="1" stop-color="#0E7E5E"/>
+    </linearGradient>
+    <linearGradient id="tealBevelDark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9CEBD0"/>
+      <stop offset="0.55" stop-color="#5CD3AC"/>
+      <stop offset="1" stop-color="#2A9E7C"/>
+    </linearGradient>
+    <linearGradient id="amberGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFD37A"/>
+      <stop offset="1" stop-color="#E8880E"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="emboss" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1.1" stdDeviation="0.9" flood-color="#000" flood-opacity="0.28"/>
+    </filter>
+
+    <!-- ── FLAT mark: two interlocking rings, currentColor teal + amber tail ── -->
+    <!-- uses currentColor so RN BrandMark can theme it; here currentColor=primary via style -->
+    <g id="markFlat" style="color:var(--primary)">
+      <!-- left ring O -->
+      <circle cx="38" cy="50" r="22" stroke="currentColor" stroke-width="8" fill="none"/>
+      <!-- right ring Q body — knockout where left ring crosses on top (chain), drawn as bg segment -->
+      <circle cx="62" cy="50" r="22" stroke="var(--bg)" stroke-width="13" fill="none"
+              stroke-dasharray="14 200" stroke-dashoffset="-58" transform="rotate(0 62 50)"/>
+      <circle cx="62" cy="50" r="22" stroke="currentColor" stroke-width="8" fill="none"/>
+      <!-- re-draw left ring's crossing arc ON TOP so left goes over right at the lower overlap (chain link) -->
+      <path d="M52.5 66 A22 22 0 0 1 38 72" stroke="currentColor" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <!-- Q tail (amber), from lower-right of right ring outward -->
+      <path d="M75 63 L86 74" stroke="var(--amber)" stroke-width="8" stroke-linecap="round" fill="none"/>
+    </g>
+
+    <!-- ── RICH mark (light-bg icon): gradient teal + glowing amber tail + emboss ── -->
+    <g id="markRich" filter="url(#emboss)">
+      <circle cx="38" cy="50" r="22" stroke="url(#tealBevel)" stroke-width="9" fill="none"/>
+      <circle cx="62" cy="50" r="22" stroke="var(--primaryMuted)" stroke-width="14" fill="none"
+              stroke-dasharray="15 200" stroke-dashoffset="-57"/>
+      <circle cx="62" cy="50" r="22" stroke="url(#tealBevel)" stroke-width="9" fill="none"/>
+      <path d="M52.5 66 A22 22 0 0 1 38 72.2" stroke="url(#tealBevel)" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <path d="M75 63 L86.5 74.5" stroke="url(#amberGrad)" stroke-width="9" stroke-linecap="round" fill="none" filter="url(#glow)"/>
+    </g>
+
+    <!-- ── RICH mark (dark-bg icon): same but knockout uses dark bg ── -->
+    <g id="markRichDark" filter="url(#emboss)">
+      <circle cx="38" cy="50" r="22" stroke="url(#tealBevelDark)" stroke-width="9" fill="none"/>
+      <circle cx="62" cy="50" r="22" stroke="#0C1210" stroke-width="14" fill="none"
+              stroke-dasharray="15 200" stroke-dashoffset="-57"/>
+      <circle cx="62" cy="50" r="22" stroke="url(#tealBevelDark)" stroke-width="9" fill="none"/>
+      <path d="M52.5 66 A22 22 0 0 1 38 72.2" stroke="url(#tealBevelDark)" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <path d="M75 63 L86.5 74.5" stroke="url(#amberGrad)" stroke-width="9" stroke-linecap="round" fill="none" filter="url(#glow)"/>
+    </g>
+  </defs>
+</svg>
+
+<script>
+  const root=document.documentElement,bl=document.getElementById('bl'),bd=document.getElementById('bd');
+  const set=s=>{root.setAttribute('data-scheme',s);bl.setAttribute('aria-pressed',s==='light');bd.setAttribute('aria-pressed',s==='dark')};
+  bl.onclick=()=>set('light');bd.onclick=()=>set('dark');
+  set(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+</script>

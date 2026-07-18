@@ -75,14 +75,19 @@ module.exports = {
           // "Sükût" calm-white splash. Mark is composited over these bg colors
           // (light/dark auto). imageWidth ~ the mark's rendered width on screen.
           backgroundColor: '#FBFDFC',
-          dark: {
-            backgroundColor: '#0C1210',
-          },
           image: './assets/images/splash-icon.png',
           imageWidth: 120,
+          dark: {
+            backgroundColor: '#0C1210',
+            image: './assets/images/splash-icon-dark.png',
+          },
           android: {
             image: './assets/images/splash-icon.png',
             imageWidth: 120,
+            dark: {
+              backgroundColor: '#0C1210',
+              image: './assets/images/splash-icon-dark.png',
+            },
           },
         },
       ],

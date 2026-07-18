@@ -1,14 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" fill="none">
   <!-- MONOCHROME mark — Android themed-icon + notification small-icon.
-       Single solid color (#000 here; the OS tints it). Transparent bg.
-       Strokes are beefed up vs. the color mark so nothing vanishes when the
-       notification icon is rendered tiny (~24dp) and desaturated. Amber dot
-       becomes a plain opaque dot (no colour info survives monochrome anyway).
-       Mark sits in the ~66% safe circle, same as the adaptive foreground. -->
-  <g transform="translate(242 242) scale(5.36)" stroke="#000000" fill="#000000">
-    <circle cx="50" cy="50" r="30" stroke-width="6" fill="none"/>
-    <circle cx="76.5" cy="34.5" r="6" stroke="none"/>
-    <circle cx="50" cy="50" r="13.5" stroke-width="9" fill="none"/>
-    <path d="M59.5 59.5 L69 69" stroke-width="9" stroke-linecap="round" fill="none"/>
+       Single solid colour (#000 here; the OS tints it). Transparent bg. Strokes
+       are beefed up vs. the colour mark so nothing vanishes when rendered tiny
+       (~24dp) and desaturated. The amber tail becomes a plain opaque stroke (no
+       colour survives monochrome). Twin-rings geometry, no weave overlap needed
+       at this size — plain z-order reads fine. Mark in the ~66% safe circle. -->
+  <g transform="translate(242 242) scale(5.36)" stroke="#000000" fill="none">
+    <circle cx="63" cy="50" r="20" stroke-width="10"/>
+    <circle cx="37" cy="50" r="20" stroke-width="10"/>
+    <path d="M74.5 62 L86 73.5" stroke-width="10" stroke-linecap="round"/>
   </g>
 </svg>

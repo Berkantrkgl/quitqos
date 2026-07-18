@@ -1,22 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
-  <!-- SPLASH mark — transparent; Expo composites it over backgroundColor
-       (#FBFDFC light / #0C1210 dark). Just the mark, centred, with breathing
-       room. Wordmark is NOT baked in (Expo centres a single image; a baked
-       wordmark drifts on odd ratios). Geometry mirrors mark-color.svg, scale 3.2. -->
+  <!-- SPLASH mark — DARK variant. Expo composites it over the dark splash
+       backgroundColor (#0C1210). Uses the app's dark-theme teal (brighter) so
+       the mark reads on the dark ground. Geometry mirrors mark-color.svg, 3.2. -->
   <defs>
     <linearGradient id="teal" gradientUnits="userSpaceOnUse" x1="192" y1="179" x2="307" y2="339">
-      <stop offset="0" stop-color="#5FD9B4"/>
-      <stop offset="0.5" stop-color="#2FB58C"/>
-      <stop offset="1" stop-color="#0C7E5E"/>
+      <stop offset="0" stop-color="#6BF0C6"/>
+      <stop offset="0.55" stop-color="#34E3AD"/>
+      <stop offset="1" stop-color="#1FB98A"/>
     </linearGradient>
     <linearGradient id="amber" gradientUnits="userSpaceOnUse" x1="333" y1="291" x2="378" y2="342">
-      <stop offset="0" stop-color="#FFCF6E"/>
-      <stop offset="1" stop-color="#E5860C"/>
+      <stop offset="0" stop-color="#FFD37A"/>
+      <stop offset="1" stop-color="#F0A020"/>
     </linearGradient>
     <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#F0A020" stop-opacity="0.5"/>
-      <stop offset="0.5" stop-color="#F0A020" stop-opacity="0.2"/>
-      <stop offset="1" stop-color="#F0A020" stop-opacity="0"/>
+      <stop offset="0" stop-color="#F0B429" stop-opacity="0.5"/>
+      <stop offset="0.5" stop-color="#F0B429" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#F0B429" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
