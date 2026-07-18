@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { CalendarDays, RotateCcw, Settings } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
@@ -12,6 +13,8 @@ import {
   getEarnedMilestoneCount,
   getLastEarnedMilestone,
   getNextMilestone,
+  milestoneDescription,
+  milestoneTitle,
 } from '@/constants/milestones';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useElapsedTime } from '@/hooks/use-elapsed-time';
@@ -49,7 +52,7 @@ function Header() {
   return (
     <View style={styles.header}>
       <View style={styles.brand}>
-        <BrandMark size={26} />
+        <BrandMark size={30} />
         <ThemedText style={styles.wordmark}>
           Quit
           <ThemedText style={[styles.wordmark, { color: theme.primaryText }]}>QOS</ThemedText>
@@ -65,9 +68,7 @@ function Header() {
           { backgroundColor: theme.backgroundElement, borderColor: theme.border, opacity: pressed ? 0.7 : 1 },
         ]}
       >
-        <ThemedText type="smallBold" themeColor="primaryText">
-          ⚙
-        </ThemedText>
+        <Settings size={19} color={theme.primaryText} strokeWidth={2} />
       </Pressable>
     </View>
   );
@@ -83,26 +84,46 @@ function StartPrompt() {
   return (
     <View style={styles.pre}>
       <ThemedText type="title" style={styles.preTitle}>
-        {t('home.startTitle')}
+        {t('home.startTitlePre')}
+        <ThemedText type="title" style={[styles.preTitle, { color: theme.primaryText }]}>
+          {t('home.startTitleAccent')}
+        </ThemedText>
+        {t('home.startTitlePost')}
       </ThemedText>
 
-      <Pressable
-        onPress={() => startStreak()}
-        style={({ pressed }) => [
-          styles.cta,
-          { backgroundColor: theme.primary, opacity: pressed ? 0.9 : 1 },
-        ]}
-      >
-        <ThemedText type="smallBold" themeColor="onPrimary" style={styles.ctaText}>
-          {t('home.startButton')}
-        </ThemedText>
-      </Pressable>
+      <View style={styles.actions}>
+        <Pressable
+          onPress={() => startStreak()}
+          accessibilityRole="button"
+          accessibilityLabel={t('home.startButton')}
+          style={({ pressed }) => [
+            styles.cta,
+            { backgroundColor: theme.primary, opacity: pressed ? 0.9 : 1 },
+          ]}
+        >
+          <ThemedText type="smallBold" themeColor="onPrimary" style={styles.ctaText}>
+            {t('home.startButton')}
+          </ThemedText>
+        </Pressable>
 
-      <Pressable onPress={() => setSheetOpen(true)} hitSlop={8}>
-        <ThemedText type="small" themeColor="textSecondary">
-          {t('home.backdated')}
-        </ThemedText>
-      </Pressable>
+        <Pressable
+          onPress={() => setSheetOpen(true)}
+          accessibilityRole="button"
+          accessibilityLabel={t('home.backdated')}
+          style={({ pressed }) => [
+            styles.secondary,
+            {
+              backgroundColor: pressed ? theme.backgroundSelected : theme.backgroundElement,
+              borderColor: pressed ? theme.borderStrong : theme.border,
+            },
+          ]}
+        >
+          <CalendarDays size={18} color={theme.primaryText} strokeWidth={2.1} />
+          <ThemedText type="smallBold" style={styles.secondaryText}>
+            {t('home.backdated')}
+          </ThemedText>
+        </Pressable>
+      </View>
 
       <BackdatedSheet
         visible={sheetOpen}
@@ -119,6 +140,7 @@ function StartPrompt() {
 /** Active streak: hero elapsed figure + next goal + footnotes + relapse. */
 function Dashboard({ startedAt }: { startedAt: string }) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const { relapse } = useQuitStreak();
   const elapsed = useElapsedTime(startedAt);
 
@@ -138,7 +160,10 @@ function Dashboard({ startedAt }: { startedAt: string }) {
 
   // Encouragement: the copy of the milestone we're currently working toward,
   // or the last one we crossed once everything's done.
-  const encouragement = (last ?? next)?.description ?? '';
+  const encouragementMilestone = last ?? next;
+  const encouragement = encouragementMilestone
+    ? milestoneDescription(t, encouragementMilestone)
+    : '';
 
   const clock = `${pad(hours)} : ${pad(minutes)} : ${pad(seconds)}`;
 
@@ -167,8 +192,20 @@ function Dashboard({ startedAt }: { startedAt: string }) {
       {/* FOOTNOTES — badges · rank */}
       <Footnotes earnedCount={earnedCount} />
 
-      <Pressable onPress={confirmRelapse} hitSlop={8} style={styles.relapse}>
-        <ThemedText type="small" themeColor="textTertiary">
+      <Pressable
+        onPress={confirmRelapse}
+        accessibilityRole="button"
+        accessibilityLabel={t('relapse.button')}
+        style={({ pressed }) => [
+          styles.relapse,
+          {
+            backgroundColor: pressed ? theme.dangerMuted : theme.backgroundElement,
+            borderColor: pressed ? theme.danger : theme.border,
+          },
+        ]}
+      >
+        <RotateCcw size={18} color={theme.danger} strokeWidth={2.2} />
+        <ThemedText type="smallBold" style={[styles.relapseText, { color: theme.danger }]}>
           {t('relapse.button')}
         </ThemedText>
       </Pressable>
@@ -255,7 +292,7 @@ function Goal({
   const rem = next ? remaining(next.offsetMinutes - elapsed.totalMinutes) : null;
   const goalLine = next
     ? t('home.dashboard.nextGoal', {
-        title: next.title,
+        title: milestoneTitle(t, next),
         remaining: t(rem!.key, { count: rem!.count }),
       })
     : t('home.dashboard.allMilestonesDone');
@@ -318,12 +355,20 @@ function pad(n: number): string {
 /**
  * Coarse "X kaldı" from minutes remaining: returns the i18n key + count so the
  * caller runs `t` (keeps TFunction's literal-key typing intact).
+ *
+ * Picks the largest sensible unit for the amount left, and always rounds *up*
+ * (ceil) so the figure reads as "at most this long to go" — never rounding a
+ * few minutes down to a misleading 0, nor a sub-hour wait up to a whole hour
+ * (which made a 20-min goal wrongly show "1 hour left").
  */
-function remaining(minutesLeft: number): { key: 'home.dashboard.remHour' | 'home.dashboard.remDay'; count: number } {
+function remaining(minutesLeft: number): {
+  key: 'home.dashboard.remMin' | 'home.dashboard.remHour' | 'home.dashboard.remDay';
+  count: number;
+} {
   const m = Math.max(0, minutesLeft);
-  if (m < 60) return { key: 'home.dashboard.remHour', count: 1 }; // "< 1 saat" rounds up softly
-  if (m < 60 * 48) return { key: 'home.dashboard.remHour', count: Math.round(m / 60) };
-  return { key: 'home.dashboard.remDay', count: Math.round(m / (60 * 24)) };
+  if (m < 60) return { key: 'home.dashboard.remMin', count: Math.max(1, Math.ceil(m)) };
+  if (m < 60 * 48) return { key: 'home.dashboard.remHour', count: Math.ceil(m / 60) };
+  return { key: 'home.dashboard.remDay', count: Math.ceil(m / (60 * 24)) };
 }
 
 const styles = StyleSheet.create({
@@ -348,13 +393,13 @@ const styles = StyleSheet.create({
   brand: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.two,
+    gap: Spacing.two + 2,
   },
   wordmark: {
-    fontSize: 18,
-    lineHeight: 24,
+    fontSize: 23,
+    lineHeight: 28,
     fontWeight: '800',
-    letterSpacing: -0.2,
+    letterSpacing: -0.3,
   },
   avatar: {
     width: 36,
@@ -379,15 +424,40 @@ const styles = StyleSheet.create({
     letterSpacing: -1.5,
     maxWidth: 260,
   },
+  actions: {
+    alignSelf: 'stretch',
+    maxWidth: 340,
+    width: '100%',
+    marginHorizontal: 'auto',
+    gap: Spacing.three - 4,
+  },
   cta: {
+    minHeight: 52,
     paddingVertical: Spacing.three,
     paddingHorizontal: Spacing.five,
     borderRadius: 14,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   ctaText: {
     fontSize: 16,
     lineHeight: 20,
+  },
+  secondary: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.two + 1,
+    minHeight: 50,
+    paddingVertical: Spacing.three - 2,
+    paddingHorizontal: Spacing.four,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+  secondaryText: {
+    fontSize: 15,
+    lineHeight: 20,
+    letterSpacing: -0.1,
   },
 
   // active dashboard
@@ -402,7 +472,9 @@ const styles = StyleSheet.create({
   figureRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    gap: Spacing.two + 2,
+    // Small gap: heroNum already carries paddingRight (see below) to avoid
+    // clipping its last glyph, which visually adds to the space before the unit.
+    gap: Spacing.one,
     marginTop: Spacing.three,
   },
   heroNum: {
@@ -410,11 +482,16 @@ const styles = StyleSheet.create({
     lineHeight: 132 * 1.05,
     letterSpacing: -6,
     fontVariant: ['tabular-nums'],
+    // Negative letterSpacing is applied after the last glyph too, which clips a
+    // round wide digit like "0" on the right. Give the text a hair of right
+    // padding to restore that stolen advance so the last glyph isn't cut off.
+    paddingRight: 6,
   },
   heroNumCompact: {
     fontSize: 104,
     lineHeight: 104 * 0.9,
     letterSpacing: -5,
+    paddingRight: 5,
   },
   heroUnit: {
     fontSize: 26,
@@ -490,8 +567,20 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   relapse: {
-    alignSelf: 'center',
     marginTop: Spacing.three,
-    paddingVertical: Spacing.two,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.two + 1,
+    minHeight: 50,
+    paddingVertical: Spacing.three - 2,
+    paddingHorizontal: Spacing.four,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+  relapseText: {
+    fontSize: 15,
+    lineHeight: 20,
+    letterSpacing: -0.1,
   },
 });

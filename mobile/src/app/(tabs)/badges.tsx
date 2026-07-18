@@ -6,7 +6,13 @@ import Svg, { Circle } from 'react-native-svg';
 import { StreakEmptyState } from '@/components/streak-empty-state';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { MILESTONES, type Milestone } from '@/constants/milestones';
+import {
+  MILESTONES,
+  type Milestone,
+  milestoneDescription,
+  milestoneShort,
+  milestoneTitle,
+} from '@/constants/milestones';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useElapsedTime } from '@/hooks/use-elapsed-time';
 import { useQuitStreak } from '@/hooks/use-quit-streak';
@@ -130,10 +136,10 @@ function Featured({
           {t('badgesScreen.featuredLabel')}
         </ThemedText>
         <ThemedText type="smallBold" style={styles.featureTitle}>
-          {milestone.title}
+          {milestoneTitle(t, milestone)}
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary" style={styles.featureDesc}>
-          {milestone.description}
+          {milestoneDescription(t, milestone)}
         </ThemedText>
         <ThemedText type="eyebrow" themeColor="primaryText" style={styles.featureWhen}>
           {t('badgesScreen.featuredMeta', { date, done: doneCount, total: MILESTONES.length })}
@@ -147,6 +153,7 @@ type ChipState = 'on' | 'next' | 'off';
 
 /** One badge in the collection grid: filled glyph (earned), ringed (up next), or muted (locked). */
 function Chip({ milestone, state }: { milestone: Milestone; state: ChipState }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const { Icon } = milestone;
 
@@ -170,7 +177,7 @@ function Chip({ milestone, state }: { milestone: Milestone; state: ChipState }) 
         themeColor={state === 'off' ? 'textTertiary' : 'textSecondary'}
         style={styles.chipLabel}
       >
-        {milestone.short}
+        {milestoneShort(t, milestone)}
       </ThemedText>
     </View>
   );

@@ -8,7 +8,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StreakEmptyState } from '@/components/streak-empty-state';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { MILESTONES, type Milestone } from '@/constants/milestones';
+import {
+  MILESTONES,
+  type Milestone,
+  milestoneDescription,
+  milestoneTitle,
+} from '@/constants/milestones';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useElapsedTime } from '@/hooks/use-elapsed-time';
 import { useQuitStreak } from '@/hooks/use-quit-streak';
@@ -209,14 +214,14 @@ function TimelineStep({
         <View style={[styles.nowCard, { backgroundColor: theme.primaryMuted }]}>
           <View style={styles.nowHead}>
             <ThemedText type="smallBold" style={styles.nowTitle}>
-              {milestone.title}
+              {milestoneTitle(t, milestone)}
             </ThemedText>
             <ThemedText type="eyebrow" themeColor="primaryText">
               {statusLabel}
             </ThemedText>
           </View>
           <ThemedText type="small" themeColor="textSecondary" style={styles.nowDesc}>
-            {milestone.description}
+            {milestoneDescription(t, milestone)}
           </ThemedText>
           <NowProgress progress={progress} minutesLeft={row.minutesLeft} />
         </View>
@@ -224,7 +229,7 @@ function TimelineStep({
         <View style={styles.body}>
           <View style={styles.bodyTop}>
             <ThemedText type="smallBold" themeColor={done ? 'text' : 'textSecondary'} style={styles.stepTitle}>
-              {milestone.title}
+              {milestoneTitle(t, milestone)}
             </ThemedText>
             <ThemedText type="eyebrow" themeColor={done ? 'primaryText' : 'textTertiary'}>
               {statusLabel}
@@ -235,7 +240,7 @@ function TimelineStep({
             themeColor={done ? 'textSecondary' : 'textTertiary'}
             style={styles.stepDesc}
           >
-            {milestone.description}
+            {milestoneDescription(t, milestone)}
           </ThemedText>
         </View>
       )}

@@ -32,6 +32,9 @@
   },
   "home": {
     "startTitle": "Bırakmaya hazır mısın?",
+    "startTitlePre": "Bırakmaya ",
+    "startTitleAccent": "hazır",
+    "startTitlePost": " mısın?",
     "startButton": "Şimdi bırakıyorum",
     "backdated": "Daha önce bıraktım",
     "backdatedSheet": {
@@ -88,6 +91,8 @@
       "remDay_other": "{{count}} gün",
       "remHour_one": "{{count}} saat",
       "remHour_other": "{{count}} saat",
+      "remMin_one": "{{count}} dakika",
+      "remMin_other": "{{count}} dakika",
       "nextGoal": "Sıradaki: {{title}} · {{remaining}} kaldı",
       "badgesFootnote_one": "{{count}} rozet",
       "badgesFootnote_other": "{{count}} rozet",
@@ -204,5 +209,72 @@
     "badges": "Rozetler",
     "leaderboard": "Sıralama",
     "leaderboardGuestHint": "Sıralamaya katılmak için giriş yap."
+  },
+  "milestoneContent": {
+    "20min": {
+      "title": "20 dakika",
+      "short": "20 dk",
+      "description": "Nabzın ve tansiyonun, nikotinin yol açtığı yükselmenin ardından düşmeye başlıyor."
+    },
+    "12h": {
+      "title": "12 saat",
+      "short": "12 sa",
+      "description": "Kandaki karbonmonoksit normale iniyor; oksijen taşıma kapasiten düzeliyor."
+    },
+    "24h": {
+      "title": "24 saat",
+      "short": "24 sa",
+      "description": "Kandaki nikotin seviyesi neredeyse sıfıra indi."
+    },
+    "48h": {
+      "title": "48 saat",
+      "short": "48 sa",
+      "description": "Tat ve koku duyuların keskinleşmeye başlıyor."
+    },
+    "72h": {
+      "title": "72 saat",
+      "short": "72 sa",
+      "description": "Bronşların gevşiyor, nefes almak kolaylaşıyor."
+    },
+    "5days": {
+      "title": "5 gün",
+      "short": "5 gün",
+      "description": "Yoksunluğun en yoğun günleri geride kaldı — en zor kısmı devirdin."
+    },
+    "1week": {
+      "title": "1 hafta",
+      "short": "1 hf",
+      "description": "Vücudun nikotinsiz düzene uyum sağlamaya başlıyor."
+    },
+    "10days": {
+      "title": "10 gün",
+      "short": "10 gün",
+      "description": "Tat ve koku almaya belirgin biçimde başlıyorsun; yemekler daha lezzetli."
+    },
+    "2weeks": {
+      "title": "2 hafta",
+      "short": "2 hf",
+      "description": "Dolaşımın düzeliyor; yürüyüş ve hareket etmek kolaylaşıyor."
+    },
+    "1month": {
+      "title": "1 ay",
+      "short": "1 ay",
+      "description": "Akciğer fonksiyonun düzeliyor, öksürük azalıyor ve enerjin toparlanmaya başlıyor."
+    },
+    "3months": {
+      "title": "3 ay",
+      "short": "3 ay",
+      "description": "Dolaşımın ve akciğer fonksiyonun belirgin biçimde iyileşiyor."
+    },
+    "6months": {
+      "title": "6 ay",
+      "short": "6 ay",
+      "description": "Stres ve gerginliğin azalıyor; ruh halin daha dengeli hale geliyor."
+    },
+    "1year": {
+      "title": "1 yıl",
+      "short": "1 yıl",
+      "description": "Koroner kalp hastalığı fazla riskin, içmeye devam edenlerin yarısına iniyor."
+    }
   }
 }

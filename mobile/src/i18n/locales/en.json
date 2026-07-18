@@ -32,6 +32,9 @@
   },
   "home": {
     "startTitle": "Ready to quit?",
+    "startTitlePre": "",
+    "startTitleAccent": "Ready",
+    "startTitlePost": " to quit?",
     "startButton": "I'm quitting now",
     "backdated": "I quit earlier",
     "backdatedSheet": {
@@ -88,6 +91,8 @@
       "remDay_other": "{{count}} days",
       "remHour_one": "{{count}} hour",
       "remHour_other": "{{count}} hours",
+      "remMin_one": "{{count}} minute",
+      "remMin_other": "{{count}} minutes",
       "nextGoal": "Next: {{title}} · {{remaining}} left",
       "badgesFootnote_one": "{{count}} badge",
       "badgesFootnote_other": "{{count}} badges",
@@ -204,5 +209,72 @@
     "badges": "Badges",
     "leaderboard": "Leaderboard",
     "leaderboardGuestHint": "Sign in to join the leaderboard."
+  },
+  "milestoneContent": {
+    "20min": {
+      "title": "20 minutes",
+      "short": "20 min",
+      "description": "Your pulse and blood pressure begin to drop from the spike nicotine caused."
+    },
+    "12h": {
+      "title": "12 hours",
+      "short": "12 hr",
+      "description": "Carbon monoxide in your blood returns to normal; your oxygen-carrying capacity recovers."
+    },
+    "24h": {
+      "title": "24 hours",
+      "short": "24 hr",
+      "description": "The nicotine level in your blood has dropped to nearly zero."
+    },
+    "48h": {
+      "title": "48 hours",
+      "short": "48 hr",
+      "description": "Your senses of taste and smell start to sharpen."
+    },
+    "72h": {
+      "title": "72 hours",
+      "short": "72 hr",
+      "description": "Your bronchial tubes relax and breathing gets easier."
+    },
+    "5days": {
+      "title": "5 days",
+      "short": "5 days",
+      "description": "The most intense days of withdrawal are behind you — you've cleared the hardest part."
+    },
+    "1week": {
+      "title": "1 week",
+      "short": "1 wk",
+      "description": "Your body starts adjusting to life without nicotine."
+    },
+    "10days": {
+      "title": "10 days",
+      "short": "10 days",
+      "description": "Taste and smell come back noticeably; food tastes better."
+    },
+    "2weeks": {
+      "title": "2 weeks",
+      "short": "2 wk",
+      "description": "Your circulation improves; walking and moving get easier."
+    },
+    "1month": {
+      "title": "1 month",
+      "short": "1 mo",
+      "description": "Your lung function improves, coughing eases, and your energy starts to recover."
+    },
+    "3months": {
+      "title": "3 months",
+      "short": "3 mo",
+      "description": "Your circulation and lung function improve markedly."
+    },
+    "6months": {
+      "title": "6 months",
+      "short": "6 mo",
+      "description": "Your stress and tension ease; your mood becomes more balanced."
+    },
+    "1year": {
+      "title": "1 year",
+      "short": "1 yr",
+      "description": "Your excess risk of coronary heart disease drops to half that of someone who keeps smoking."
+    }
   }
 }

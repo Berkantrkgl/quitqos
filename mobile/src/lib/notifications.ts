@@ -21,7 +21,8 @@ import {
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
-import { MILESTONES } from '@/constants/milestones';
+import { MILESTONES, milestoneDescription, milestoneTitle } from '@/constants/milestones';
+import i18n from '@/i18n';
 import { updateFcmToken } from '@/lib/api';
 
 /** Android channel id for milestone notifications. */
@@ -135,8 +136,10 @@ export async function scheduleGuestMilestones(startedAt: Date): Promise<void> {
       await Notifications.scheduleNotificationAsync({
         identifier: `milestone-${m.key}`,
         content: {
-          title: m.title,
-          body: m.description,
+          // Resolve against the i18n instance's current language, so a guest's
+          // pre-scheduled notifications match the app language at schedule time.
+          title: milestoneTitle(i18n.t, m),
+          body: milestoneDescription(i18n.t, m),
           ...(Platform.OS === 'android' ? { channelId: CHANNEL_ID } : {}),
         },
         trigger: {
