@@ -29,7 +29,8 @@ module.exports = {
     },
     ios: {
       icon: './assets/images/icon.png',
-      supportsTablet: true,
+      // iPhone-only: QuitQOS is a phone app, and iPad support would require iPad screenshots.
+      supportsTablet: false,
       bundleIdentifier: BUNDLE_ID,
       usesAppleSignIn: true,
       // Firebase config for iOS. Gitignored (real values); absent until we build for iOS on a Mac.
