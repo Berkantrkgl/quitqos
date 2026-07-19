@@ -130,6 +130,11 @@ export function updateFcmToken(accessToken: string, fcmToken: string): Promise<v
   });
 }
 
+/** DELETE /users/me — permanently delete the account (data + Firebase identity). Expects 204. */
+export function deleteMe(accessToken: string): Promise<void> {
+  return apiFetch<void>('/users/me', { method: 'DELETE', accessToken });
+}
+
 // ---- Quit attempts (registered) -------------------------------------------
 
 export type QuitStatus = 'ACTIVE' | 'RELAPSED';

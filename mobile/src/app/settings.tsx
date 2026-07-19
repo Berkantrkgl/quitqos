@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { DeleteAccountSheet } from '@/components/delete-account-sheet';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { getEarnedMilestoneCount } from '@/constants/milestones';
@@ -52,7 +53,8 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { preference, setPreference } = useAppTheme();
   const { language, setLanguage } = useLanguage();
-  const { user, signOut } = useAuth();
+  const { user, signOut, deleteAccount } = useAuth();
+  const [deleteVisible, setDeleteVisible] = useState(false);
 
   return (
     <ThemedView style={styles.container}>
@@ -92,15 +94,49 @@ export default function SettingsScreen() {
           </View>
         </Section>
 
-        {/* Footer: sign out (registered) pinned to the bottom + version */}
+        {/* Footer: sign out (registered) pinned to the bottom + delete link + version */}
         <View style={styles.footer}>
           {user ? <SignOutButton onPress={signOut} /> : null}
+          {user ? <DeleteAccountLink onPress={() => setDeleteVisible(true)} /> : null}
           <ThemedText type="small" themeColor="textTertiary" style={styles.version}>
             {t('common.appName')} · {t('settings.version', { version: '1.0.0' })}
           </ThemedText>
         </View>
       </SafeAreaView>
+
+      {/* Account deletion confirmation (registered-only). On success the session drops to guest and
+          we close the settings modal. */}
+      <DeleteAccountSheet
+        visible={deleteVisible}
+        onCancel={() => setDeleteVisible(false)}
+        onConfirm={async () => {
+          await deleteAccount();
+          setDeleteVisible(false);
+          router.back();
+        }}
+      />
     </ThemedView>
+  );
+}
+
+/**
+ * "Delete my account" — a quiet, underline-free tertiary link below sign-out. Deliberately low
+ * emphasis (App Store requires the option to exist, not to be prominent). Registered-only.
+ */
+function DeleteAccountLink({ onPress }: { onPress: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <Pressable
+      onPress={onPress}
+      hitSlop={8}
+      accessibilityRole="button"
+      accessibilityLabel={t('settings.deleteAccount')}
+      style={({ pressed }) => [styles.deleteLink, { opacity: pressed ? 0.6 : 1 }]}
+    >
+      <ThemedText type="small" themeColor="textTertiary">
+        {t('settings.deleteAccount')}
+      </ThemedText>
+    </Pressable>
   );
 }
 
@@ -632,6 +668,11 @@ const styles = StyleSheet.create({
   signOutText: {
     fontSize: 14,
     lineHeight: 18,
+  },
+  deleteLink: {
+    alignItems: 'center',
+    paddingVertical: Spacing.one,
+    marginTop: -Spacing.one,
   },
   version: {
     textAlign: 'center',

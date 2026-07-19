@@ -24,7 +24,15 @@
     "statLongest": "Longest",
     "statBadges": "Badges",
     "noStreak": "No streak yet",
-    "version": "version {{version}}"
+    "version": "version {{version}}",
+    "deleteAccount": "Delete my account",
+    "deleteSheet": {
+      "title": "Delete your account",
+      "body": "This can't be undone. Your streak, badges, and leaderboard place will be permanently deleted.",
+      "cancel": "Cancel",
+      "confirm": "Delete my account",
+      "error": "Couldn't delete your account. Please try again."
+    }
   },
   "language": {
     "en": "English",

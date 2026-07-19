@@ -20,6 +20,7 @@ import { Platform } from 'react-native';
 import { requestStreakChoice } from '@/components/streak-conflict-modal';
 import {
   createAttempt,
+  deleteMe,
   getCurrentAttempt,
   loginWithFirebase,
   logout as apiLogout,
@@ -73,6 +74,12 @@ type AuthContextValue = {
   /** Create a new email/password account. */
   registerWithEmail: (email: string, password: string, pendingAttempts?: SyncAttempt[], onSynced?: () => void) => Promise<AuthUser>;
   signOut: () => Promise<void>;
+  /**
+   * Permanently delete the account (backend data + Firebase identity), then drop the local session
+   * and return to guest. Throws if the server delete fails, so the caller can keep the user signed in
+   * and surface an error.
+   */
+  deleteAccount: () => Promise<void>;
   /** Increments once each sign-in (and any streak merge) fully settles. */
   sessionVersion: number;
 };
@@ -312,21 +319,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return establishSession(await getIdToken(cred.user), pendingAttempts, onSynced);
   }
 
+  /**
+   * Drop the local session: sign out of Firebase + Google so the next sign-in re-prompts rather than
+   * silently reusing, then clear our stored tokens/user. Shared by signOut and deleteAccount.
+   */
+  async function clearProvidersAndSession() {
+    await firebaseSignOut(getAuth()).catch(() => undefined);
+    if (Platform.OS !== 'web') await GoogleSignin.signOut().catch(() => undefined);
+    await clearSession();
+  }
+
   async function signOut() {
     const refresh = await AsyncStorage.getItem(REFRESH_KEY);
     if (refresh) {
       // Best-effort server-side revocation; clear locally regardless.
       await apiLogout(refresh).catch(() => undefined);
     }
-    // Also sign out of Firebase + Google so the next sign-in re-prompts rather than silently reusing.
-    await firebaseSignOut(getAuth()).catch(() => undefined);
-    if (Platform.OS !== 'web') await GoogleSignin.signOut().catch(() => undefined);
-    await clearSession();
+    await clearProvidersAndSession();
+  }
+
+  async function deleteAccount() {
+    if (!accessToken) return;
+    // Delete server-side first; if it fails we throw and stay signed in (the caller shows an error).
+    await deleteMe(accessToken);
+    // Success → the account is gone; drop the local session and return to guest. No /auth/logout:
+    // the account (and its refresh tokens) no longer exist.
+    await clearProvidersAndSession();
   }
 
   return (
     <AuthContext
-      value={{ user, isLoading, accessToken, signIn, signInWithEmail, registerWithEmail, signOut, sessionVersion }}
+      value={{ user, isLoading, accessToken, signIn, signInWithEmail, registerWithEmail, signOut, deleteAccount, sessionVersion }}
     >
       {children}
     </AuthContext>

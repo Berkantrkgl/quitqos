@@ -24,7 +24,15 @@
     "statLongest": "En uzun",
     "statBadges": "Rozet",
     "noStreak": "Henüz streak başlatmadın",
-    "version": "sürüm {{version}}"
+    "version": "sürüm {{version}}",
+    "deleteAccount": "Hesabımı sil",
+    "deleteSheet": {
+      "title": "Hesabını sil",
+      "body": "Bu işlem geri alınamaz. Streak'in, rozetlerin ve sıralamadaki yerin kalıcı olarak silinir.",
+      "cancel": "Vazgeç",
+      "confirm": "Hesabımı sil",
+      "error": "Hesap silinemedi. Lütfen tekrar dene."
+    }
   },
   "language": {
     "en": "English",
