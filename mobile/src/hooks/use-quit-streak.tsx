@@ -68,7 +68,7 @@ function fromBackend(a: QuitAttemptResponse): QuitAttempt {
 }
 
 export function QuitStreakProvider({ children }: { children: ReactNode }) {
-  const { user, accessToken, sessionVersion } = useAuth();
+  const { user, accessToken, sessionVersion, isLoading: authLoading } = useAuth();
   const [attempt, setAttempt] = useState<QuitAttempt | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   // Backend id of the active attempt, needed to relapse it. Null for guests.
@@ -83,6 +83,13 @@ export function QuitStreakProvider({ children }: { children: ReactNode }) {
    * without an accessToken change (e.g. the streak-conflict resolution).
    */
   const loadAttempt = useCallback(async () => {
+    // Wait until auth is resolved. On a cold start the persisted session hasn't been restored yet,
+    // so we don't yet know if this is a guest or a registered user — reading now would wrongly take
+    // the guest branch (empty storage) and flash the start prompt before the backend streak loads.
+    if (authLoading) {
+      setIsLoading(true);
+      return;
+    }
     setIsLoading(true);
     try {
       if (isRegistered && accessToken) {
@@ -109,7 +116,8 @@ export function QuitStreakProvider({ children }: { children: ReactNode }) {
     }
     // sessionVersion is intentionally a dep: a sign-in + streak merge changes
     // backend data without changing the token, so we re-read when it settles.
-  }, [isRegistered, accessToken, sessionVersion]);
+    // authLoading is a dep so we re-run once the persisted session is restored.
+  }, [isRegistered, accessToken, sessionVersion, authLoading]);
 
   // Reload whenever auth state changes (guest ↔ registered, token rotation) or a
   // sign-in/merge settles (sessionVersion bump).
