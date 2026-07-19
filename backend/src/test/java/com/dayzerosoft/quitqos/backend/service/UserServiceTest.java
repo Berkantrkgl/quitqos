@@ -5,11 +5,13 @@ import java.util.UUID;
 
 import com.dayzerosoft.quitqos.backend.domain.User;
 import com.dayzerosoft.quitqos.backend.repository.UserRepository;
+import com.dayzerosoft.quitqos.backend.security.FirebaseUserDeleter;
 import com.dayzerosoft.quitqos.backend.web.ApiException;
 import com.dayzerosoft.quitqos.backend.web.dto.UserDtos.UpdateUserRequest;
 import com.dayzerosoft.quitqos.backend.web.dto.UserDtos.UserProfileResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -18,6 +20,9 @@ import org.springframework.http.HttpStatus;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -33,6 +38,9 @@ class UserServiceTest {
     @Mock
     UsernameService usernameService;
 
+    @Mock
+    FirebaseUserDeleter firebaseUserDeleter;
+
     @InjectMocks
     UserService service;
 
@@ -40,6 +48,7 @@ class UserServiceTest {
 
     private User existingUser() {
         User user = new User();
+        user.setFirebaseUid("firebase-uid-123");
         user.setDisplayName("Berkan");
         user.setAvatarUrl("https://old/avatar.png");
         user.setNotificationsEnabled(true);
@@ -79,6 +88,42 @@ class UserServiceTest {
         when(users.findById(userId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.me(userId))
+                .isInstanceOf(ApiException.class)
+                .satisfies(ex -> assertThat(((ApiException) ex).status()).isEqualTo(HttpStatus.NOT_FOUND));
+    }
+
+    @Test
+    void deleteAccount_deletesDbRowThenFirebaseIdentity_inOrder() {
+        User user = existingUser();
+        when(users.findById(userId)).thenReturn(Optional.of(user));
+
+        service.deleteAccount(userId);
+
+        // The row must be deleted (cascading to children) before we touch Firebase, and the uid
+        // passed to Firebase is the one read from the row before deletion.
+        InOrder order = inOrder(users, firebaseUserDeleter);
+        order.verify(users).delete(user);
+        order.verify(firebaseUserDeleter).delete("firebase-uid-123");
+    }
+
+    @Test
+    void deleteAccount_whenFirebaseDeleteFails_stillDeletesDbRow_noThrow() {
+        User user = existingUser();
+        when(users.findById(userId)).thenReturn(Optional.of(user));
+        doThrow(new RuntimeException("firebase down")).when(firebaseUserDeleter).delete("firebase-uid-123");
+
+        // Firebase failure is swallowed: our DB deletion stands and the caller sees success.
+        service.deleteAccount(userId);
+
+        verify(users).delete(user);
+        verify(firebaseUserDeleter).delete("firebase-uid-123");
+    }
+
+    @Test
+    void deleteAccount_whenUserMissing_throwsNotFound_andSkipsFirebase() {
+        when(users.findById(userId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.deleteAccount(userId))
                 .isInstanceOf(ApiException.class)
                 .satisfies(ex -> assertThat(((ApiException) ex).status()).isEqualTo(HttpStatus.NOT_FOUND));
     }

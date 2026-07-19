@@ -9,8 +9,10 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.dayzerosoft.quitqos.backend.security.FirebaseTokenVerifier;
+import com.dayzerosoft.quitqos.backend.security.FirebaseUserDeleter;
 import com.dayzerosoft.quitqos.backend.security.PushNotificationSender;
 import com.dayzerosoft.quitqos.backend.security.RealFirebaseTokenVerifier;
+import com.dayzerosoft.quitqos.backend.security.RealFirebaseUserDeleter;
 import com.dayzerosoft.quitqos.backend.security.RealPushNotificationSender;
 import com.dayzerosoft.quitqos.backend.security.StubPushNotificationSender;
 import org.slf4j.Logger;
@@ -47,6 +49,19 @@ public class FirebaseConfig {
         }
         FirebaseApp app = initializeApp(path);
         return new RealFirebaseTokenVerifier(FirebaseAuth.getInstance(app));
+    }
+
+    @Bean
+    FirebaseUserDeleter firebaseUserDeleter(FirebaseProperties properties) {
+        String path = properties.credentialsPath();
+        if (!StringUtils.hasText(path)) {
+            // Same fail-fast contract as the verifier: account deletion must reach real Firebase.
+            throw new IllegalStateException(
+                    "quitqos.firebase.credentials-path is not set. Account deletion requires a "
+                            + "Firebase service-account JSON; set FIREBASE_CREDENTIALS to its path.");
+        }
+        FirebaseApp app = initializeApp(path);
+        return new RealFirebaseUserDeleter(FirebaseAuth.getInstance(app));
     }
 
     @Bean
