@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { LogOut } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -93,13 +94,7 @@ export default function SettingsScreen() {
 
         {/* Footer: sign out (registered) pinned to the bottom + version */}
         <View style={styles.footer}>
-          {user ? (
-            <Pressable onPress={signOut} hitSlop={8} style={styles.signOut}>
-              <ThemedText type="smallBold" themeColor="danger" style={styles.signOutText}>
-                {t('auth.signOut')}
-              </ThemedText>
-            </Pressable>
-          ) : null}
+          {user ? <SignOutButton onPress={signOut} /> : null}
           <ThemedText type="small" themeColor="textTertiary" style={styles.version}>
             {t('common.appName')} · {t('settings.version', { version: '1.0.0' })}
           </ThemedText>
@@ -126,6 +121,36 @@ function CloseButton({ onPress }: { onPress: () => void }) {
     >
       <ThemedText type="smallBold" themeColor="textSecondary">
         ✕
+      </ThemedText>
+    </Pressable>
+  );
+}
+
+/**
+ * Sign out — Sükût "quiet filled" button (design/sukut/settings-signout.html, Yön A):
+ * neutral surface + hairline + Lucide log-out glyph, danger-colored label. Visible and
+ * tappable without stealing attention from the teal CTA. Registered-only.
+ */
+function SignOutButton({ onPress }: { onPress: () => void }) {
+  const { t } = useTranslation();
+  const th = useTheme();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={t('auth.signOut')}
+      style={({ pressed }) => [
+        styles.signOut,
+        {
+          backgroundColor: th.backgroundElement,
+          borderColor: th.border,
+          opacity: pressed ? 0.8 : 1,
+        },
+      ]}
+    >
+      <LogOut size={17} color={th.danger} strokeWidth={2} />
+      <ThemedText type="smallBold" themeColor="danger" style={styles.signOutText}>
+        {t('auth.signOut')}
       </ThemedText>
     </Pressable>
   );
@@ -595,11 +620,18 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.four,
   },
   signOut: {
-    alignSelf: 'flex-start',
-    paddingVertical: Spacing.one,
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.two,
+    paddingVertical: Spacing.three,
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
   },
   signOutText: {
-    borderBottomWidth: 1.5,
+    fontSize: 14,
+    lineHeight: 18,
   },
   version: {
     textAlign: 'center',

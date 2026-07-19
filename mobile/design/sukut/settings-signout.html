@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sükût — Çıkış butonu yönleri</title>
+<style>
+  :root {
+    color-scheme: light;
+    --ink: #0C1613; --ink2: #4C5C55; --ink3: #86978F;
+    --bg: #FBFDFC; --surface: #F2F5F3; --line: #E6ECE9; --lineHi: #D2DCD7;
+    --primary: #0E9E77; --primaryText: #0A7458; --primaryMuted: #E4F5EF; --onPrimary: #FFFFFF;
+    --amber: #C77A0A; --amberMuted: #FBEEDA;
+    --danger: #C4433A; --dangerMuted: #FBE7E5;
+    --font: "SF Pro Text", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --r-sm: 9px; --r-md: 12px; --r-lg: 16px; --r-xl: 22px;
+  }
+  [data-scheme="dark"] {
+    color-scheme: dark;
+    --ink: #ECF3F0; --ink2: #A6B6AF; --ink3: #6F817A;
+    --bg: #0C1210; --surface: #151E1A; --line: #1E2A25; --lineHi: #30403A;
+    --primary: #34E3AD; --primaryText: #52ECBE; --primaryMuted: #123028; --onPrimary: #04130E;
+    --amber: #F0B429; --amberMuted: #2A2410;
+    --danger: #EF8880; --dangerMuted: #3A1A1A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    background: #0a0d0c;
+    color: var(--ink);
+    padding: 40px 24px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+  .toolbar button {
+    font-family: var(--font); font-size: 13px; font-weight: 600;
+    padding: 8px 16px; border-radius: 999px; border: 1px solid #2a3a34;
+    background: #141b18; color: #cfe0d9; cursor: pointer;
+  }
+  .toolbar button.active { background: var(--primary); color: #04130e; border-color: transparent; }
+  h1 { color: #9fb3ab; font-size: 15px; font-weight: 600; letter-spacing: -0.2px; margin-bottom: 4px; }
+  .lede { color: #7c8f88; font-size: 12.5px; max-width: 560px; text-align: center; line-height: 1.5; margin-bottom: 16px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 340px));
+    gap: 28px;
+    justify-content: center;
+    width: 100%;
+    max-width: 1180px;
+  }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .caption { color: #9fb3ab; font-size: 13px; font-weight: 700; letter-spacing: -0.2px; }
+  .caption span { color: #6f817a; font-weight: 400; }
+  .note { color: #6f817a; font-size: 11.5px; max-width: 300px; text-align: center; line-height: 1.5; }
+
+  /* phone shell */
+  .phone {
+    width: 300px;
+    background: var(--bg);
+    border-radius: 34px;
+    padding: 0;
+    border: 1px solid var(--line);
+    box-shadow: 0 24px 60px rgba(0,0,0,.5);
+    overflow: hidden;
+  }
+  .screen {
+    padding: 22px 18px 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 480px;
+  }
+
+  /* condensed settings context above the footer */
+  .hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .hdr h2 { font-size: 21px; font-weight: 800; letter-spacing: -0.5px; }
+  .x { width: 30px; height: 30px; border-radius: 10px; border: 1px solid var(--line);
+       background: var(--surface); display: grid; place-items: center; color: var(--ink2); font-size: 13px; }
+
+  .prof { display: flex; align-items: center; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+  .avatar { width: 46px; height: 46px; border-radius: 14px; background: var(--primary); color: var(--onPrimary);
+            display: grid; place-items: center; font-size: 19px; font-weight: 800; }
+  .prof .name { font-size: 16px; font-weight: 800; letter-spacing: -0.2px; }
+  .prof .sub { font-size: 12px; color: var(--ink2); margin-top: 1px; }
+
+  .stub { padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .stub .lbl { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px; }
+  .stub .row { display: flex; align-items: center; justify-content: space-between; }
+  .stub .row .t { font-size: 14px; font-weight: 700; }
+  .sw { width: 44px; height: 26px; border-radius: 999px; background: var(--primary); padding: 3px; }
+  .sw i { display: block; width: 20px; height: 20px; border-radius: 999px; background:#fff; margin-left: auto; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+
+  .spacer { flex: 1; min-height: 22px; }
+
+  .footer { display: flex; flex-direction: column; align-items: center; gap: 14px; padding-top: 18px; }
+  .version { font-size: 11px; color: var(--ink3); }
+
+  /* icon sizing */
+  svg { display: block; }
+
+  /* ---- Direction A: quiet full-width tinted button ---- */
+  .btnA {
+    width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px 16px;
+    border-radius: var(--r-md);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--danger);
+    font-size: 14px; font-weight: 700;
+  }
+
+  /* ---- Direction B: danger-tinted full-width ---- */
+  .btnB {
+    width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px 16px;
+    border-radius: var(--r-md);
+    background: var(--dangerMuted);
+    border: 1px solid transparent;
+    color: var(--danger);
+    font-size: 14px; font-weight: 700;
+  }
+
+  /* ---- Direction C: full-row list item with chevron ---- */
+  .btnC {
+    width: 100%;
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 4px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    color: var(--danger);
+    font-size: 14.5px; font-weight: 700;
+  }
+  .btnC .chev { margin-left: auto; color: var(--ink3); }
+  .btnC .ic { width: 30px; height: 30px; border-radius: 9px; background: var(--dangerMuted);
+              display: grid; place-items: center; }
+</style>
+</head>
+<body>
+  <div class="toolbar">
+    <button id="lightBtn" class="active" onclick="setScheme('light')">Açık</button>
+    <button id="darkBtn" onclick="setScheme('dark')">Koyu</button>
+  </div>
+  <h1>Ayarlar — Çıkış butonu · 3 yön</h1>
+  <p class="lede">Mevcut hâli footer'da alt-çizgili küçük kırmızı bir yazı; dokunulabilir bir hedef gibi durmuyor ve kayboluyor.
+     Üç yön de Sükût vokabülerinde: dolu-teal CTA'yı gölgede bırakmadan görünür, destructive ama nadir bir aksiyon.</p>
+
+  <div class="grid">
+
+    <!-- DIRECTION A -->
+    <div class="col">
+      <div class="caption">Yön A — <span>Sessiz dolu buton</span></div>
+      <div class="phone"><div class="screen">
+        <div class="hdr"><h2>Ayarlar</h2><div class="x">✕</div></div>
+        <div class="prof">
+          <div class="avatar">B</div>
+          <div><div class="name">@berkan</div><div class="sub">128 gün IQOS'suz</div></div>
+        </div>
+        <div class="stub">
+          <div class="lbl">Bildirimler</div>
+          <div class="row"><span class="t">Kilometre taşları</span><span class="sw"><i></i></span></div>
+        </div>
+        <div class="spacer"></div>
+        <div class="footer">
+          <div class="btnA">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Çıkış yap
+          </div>
+          <div class="version">QuitQOS · Sürüm 1.0.0</div>
+        </div>
+      </div></div>
+      <div class="note">Nötr yüzey + hairline + Lucide "log-out". Yazı kırmızı ama zemin sakin — en az gürültülü, sisteme en sadık.</div>
+    </div>
+
+    <!-- DIRECTION B -->
+    <div class="col">
+      <div class="caption">Yön B — <span>Danger-tint</span></div>
+      <div class="phone"><div class="screen">
+        <div class="hdr"><h2>Ayarlar</h2><div class="x">✕</div></div>
+        <div class="prof">
+          <div class="avatar">B</div>
+          <div><div class="name">@berkan</div><div class="sub">128 gün IQOS'suz</div></div>
+        </div>
+        <div class="stub">
+          <div class="lbl">Bildirimler</div>
+          <div class="row"><span class="t">Kilometre taşları</span><span class="sw"><i></i></span></div>
+        </div>
+        <div class="spacer"></div>
+        <div class="footer">
+          <div class="btnB">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Çıkış yap
+          </div>
+          <div class="version">QuitQOS · Sürüm 1.0.0</div>
+        </div>
+      </div></div>
+      <div class="note">Hafif kırmızı zemin (dangerMuted). Destructive olduğunu net söyler, en görünür yön — ama teal CTA'dan renk çalar, biraz daha yüksek sesli.</div>
+    </div>
+
+    <!-- DIRECTION C -->
+    <div class="col">
+      <div class="caption">Yön C — <span>Satır + ikon</span></div>
+      <div class="phone"><div class="screen">
+        <div class="hdr"><h2>Ayarlar</h2><div class="x">✕</div></div>
+        <div class="prof">
+          <div class="avatar">B</div>
+          <div><div class="name">@berkan</div><div class="sub">128 gün IQOS'suz</div></div>
+        </div>
+        <div class="stub">
+          <div class="lbl">Bildirimler</div>
+          <div class="row"><span class="t">Kilometre taşları</span><span class="sw"><i></i></span></div>
+        </div>
+        <div class="spacer"></div>
+        <div class="footer">
+          <div class="btnC">
+            <span class="ic">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </span>
+            Çıkış yap
+            <span class="chev">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
+          </div>
+          <div class="version">QuitQOS · Sürüm 1.0.0</div>
+        </div>
+      </div></div>
+      <div class="note">Tam-genişlik liste satırı (üst+alt hairline), ikon rozeti + chevron. Ayarların geri kalanıyla aynı satır dilini konuşur, "ayar listesi" hissi verir.</div>
+    </div>
+
+  </div>
+
+<script>
+  function setScheme(s){
+    document.querySelectorAll('.phone').forEach(p => p.setAttribute('data-scheme', s));
+    document.getElementById('lightBtn').classList.toggle('active', s==='light');
+    document.getElementById('darkBtn').classList.toggle('active', s==='dark');
+  }
+  setScheme('light');
+</script>
+</body>
+</html>
