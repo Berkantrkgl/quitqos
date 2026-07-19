@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { LogOut } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Alert, AppState, Linking, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { DeleteAccountSheet } from '@/components/delete-account-sheet';
@@ -20,7 +20,10 @@ import { useLanguage } from '@/i18n/language-provider';
 import { getMyRank, updateMe } from '@/lib/api';
 import {
   cancelGuestMilestones,
+  getNotificationPermission,
   NOTIF_PREF_KEY,
+  registerFcmToken,
+  requestNotificationPermission,
   scheduleGuestMilestones,
 } from '@/lib/notifications';
 import { type ThemePreference, useAppTheme } from '@/theme/theme-provider';
@@ -55,6 +58,14 @@ export default function SettingsScreen() {
   const { language, setLanguage } = useLanguage();
   const { user, signOut, deleteAccount } = useAuth();
   const [deleteVisible, setDeleteVisible] = useState(false);
+
+  /** Confirm before signing out — it's easy to hit by accident, and a tap shouldn't end the session. */
+  function confirmSignOut() {
+    Alert.alert(t('auth.signOutConfirmTitle'), t('auth.signOutConfirmBody'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('auth.signOut'), style: 'destructive', onPress: () => void signOut() },
+    ]);
+  }
 
   return (
     <ThemedView style={styles.container}>
@@ -96,7 +107,7 @@ export default function SettingsScreen() {
 
         {/* Footer: sign out (registered) pinned to the bottom + delete link + version */}
         <View style={styles.footer}>
-          {user ? <SignOutButton onPress={signOut} /> : null}
+          {user ? <SignOutButton onPress={confirmSignOut} /> : null}
           {user ? <DeleteAccountLink onPress={() => setDeleteVisible(true)} /> : null}
           <ThemedText type="small" themeColor="textTertiary" style={styles.version}>
             {t('common.appName')} · {t('settings.version', { version: '1.0.0' })}
@@ -323,36 +334,119 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 /**
- * Notifications on/off. Persists the preference locally (shared key with the notifications
- * service). For **guests** the toggle immediately (re)schedules or cancels their local milestone
- * notifications. For **registered** users it also PATCHes `/users/me { notificationsEnabled }` so
- * the backend skips (or resumes) FCM pushes.
+ * Notifications on/off — reflects the real OS permission, not just a stored flag.
+ *
+ * The switch shows ON only when the user's preference is on AND the OS hasn't blocked notifications;
+ * a blocked OS permission forces it visibly OFF (so it never claims "on" while nothing arrives). It
+ * re-reads the OS permission on every focus, so flipping it in the device Settings is picked up.
+ *
+ * Turning ON requests the OS permission (guest and registered alike). If the OS has blocked it and
+ * can no longer prompt, we route the user to the device Settings instead of silently doing nothing.
+ * For **guests** ON (re)schedules local milestone notifications; for **registered** users ON also
+ * registers the FCM token and PATCHes `/users/me { notificationsEnabled }`.
  */
 function NotificationsRow({ initial }: { initial: boolean }) {
   const { t } = useTranslation();
   const th = useTheme();
   const { user, accessToken } = useAuth();
   const { attempt } = useQuitStreak();
-  const [enabled, setEnabled] = useState(initial);
+  const [pref, setPref] = useState(initial);
+  const [permission, setPermission] = useState<'granted' | 'blocked' | 'undetermined'>('undetermined');
+  // Set when we send the user to the device Settings from a blocked state: if they come back with
+  // permission granted, we honour their original "turn on" intent and enable automatically.
+  const pendingEnableRef = useRef(false);
 
   useEffect(() => {
     AsyncStorage.getItem(NOTIF_PREF_KEY).then((v) => {
-      if (v != null) setEnabled(v === 'true');
+      if (v != null) setPref(v === 'true');
     });
   }, []);
 
-  function toggle() {
-    const next = !enabled;
-    setEnabled(next);
-    AsyncStorage.setItem(NOTIF_PREF_KEY, String(next));
+  // Re-read the OS permission and, if the user came back from device Settings to grant a previously
+  // blocked permission, finish enabling for them.
+  const syncPermission = useCallback(async () => {
+    const p = await getNotificationPermission();
+    setPermission(p);
+    if (pendingEnableRef.current && p === 'granted') {
+      pendingEnableRef.current = false;
+      await enableNotifications();
+    }
+    // enableNotifications reads the latest user/accessToken/attempt via closure each render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, accessToken, attempt]);
 
+  // Two triggers, because returning from the device Settings app is NOT a screen navigation:
+  //   1. useFocusEffect — catches navigating back to this screen within the app.
+  //   2. AppState 'active' — catches the app coming back to the foreground (e.g. from Settings).
+  // The second is the one that fixes "granted the permission in Settings but the toggle stayed off".
+  useFocusEffect(
+    useCallback(() => {
+      void syncPermission();
+    }, [syncPermission]),
+  );
+
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') void syncPermission();
+    });
+    return () => sub.remove();
+  }, [syncPermission]);
+
+  // The switch is ON only when the user wants it AND the OS hasn't blocked it.
+  const on = pref && permission !== 'blocked';
+
+  async function persistPref(next: boolean) {
+    setPref(next);
+    await AsyncStorage.setItem(NOTIF_PREF_KEY, String(next));
+  }
+
+  /** Persist the ON preference and fire the side effects (guest schedule / registered token+PATCH). */
+  async function enableNotifications() {
+    await persistPref(true);
     if (user && accessToken) {
-      // Registered: the backend decides whether to send the FCM push, so persist the choice there.
-      updateMe(accessToken, { notificationsEnabled: next }).catch(() => undefined);
+      // Registered: make sure the device token is registered now, and let the backend resume pushes.
+      void registerFcmToken(() => accessToken);
+      updateMe(accessToken, { notificationsEnabled: true }).catch(() => undefined);
+    } else if (attempt) {
+      // Guest: schedule the local milestone notifications for the running streak.
+      void scheduleGuestMilestones(new Date(attempt.startedAt));
+    }
+  }
+
+  async function turnOn() {
+    // Blocked at the OS level and we can't prompt: send them to Settings, don't fake an ON state.
+    // Remember the intent so we auto-enable when they return with permission granted.
+    if (permission === 'blocked') {
+      Alert.alert(t('settings.notifBlockedTitle'), t('settings.notifBlockedBody'), [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('settings.notifOpenSettings'),
+          onPress: () => {
+            pendingEnableRef.current = true;
+            void Linking.openSettings();
+          },
+        },
+      ]);
+      return;
+    }
+
+    const granted = await requestNotificationPermission();
+    const p = await getNotificationPermission();
+    setPermission(p);
+    if (!granted) {
+      // User dismissed/denied the prompt — leave the switch OFF, don't persist an ON preference.
+      return;
+    }
+
+    await enableNotifications();
+  }
+
+  async function turnOff() {
+    await persistPref(false);
+    if (user && accessToken) {
+      updateMe(accessToken, { notificationsEnabled: false }).catch(() => undefined);
     } else {
-      // Guest: reflect the choice in the actually-scheduled local notifications right away.
-      if (next && attempt) void scheduleGuestMilestones(new Date(attempt.startedAt));
-      else if (!next) void cancelGuestMilestones();
+      void cancelGuestMilestones();
     }
   }
 
@@ -367,12 +461,12 @@ function NotificationsRow({ initial }: { initial: boolean }) {
         </ThemedText>
       </View>
       <Pressable
-        onPress={toggle}
+        onPress={() => void (on ? turnOff() : turnOn())}
         accessibilityRole="switch"
-        accessibilityState={{ checked: enabled }}
-        style={[styles.switch, { backgroundColor: enabled ? th.primary : th.borderStrong }]}
+        accessibilityState={{ checked: on }}
+        style={[styles.switch, { backgroundColor: on ? th.primary : th.borderStrong }]}
       >
-        <View style={[styles.knob, enabled ? styles.knobOn : styles.knobOff]} />
+        <View style={[styles.knob, on ? styles.knobOn : styles.knobOff]} />
       </Pressable>
     </View>
   );

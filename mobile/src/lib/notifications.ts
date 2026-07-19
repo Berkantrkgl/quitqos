@@ -75,6 +75,26 @@ export async function ensureAndroidChannel(): Promise<void> {
 }
 
 /**
+ * The OS notification-permission state, from the app's point of view:
+ * - `granted`     — the OS allows notifications.
+ * - `blocked`     — the user denied it and we can no longer show the system prompt (iOS: denied once;
+ *                   Android 13+: denied twice). The only way back is the device Settings app.
+ * - `undetermined`— never asked; requesting will show the system prompt.
+ */
+export type NotificationPermission = 'granted' | 'blocked' | 'undetermined';
+
+/** Read the current OS notification permission without prompting. Never throws. */
+export async function getNotificationPermission(): Promise<NotificationPermission> {
+  try {
+    const current = await Notifications.getPermissionsAsync();
+    if (current.granted) return 'granted';
+    return current.canAskAgain ? 'undetermined' : 'blocked';
+  } catch {
+    return 'undetermined';
+  }
+}
+
+/**
  * Ask for notification permission if not already granted. Returns true when notifications are
  * allowed. Never throws — a denied/failed permission just returns false and scheduling is skipped.
  */

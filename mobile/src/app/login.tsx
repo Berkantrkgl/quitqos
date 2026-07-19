@@ -87,9 +87,12 @@ export default function LoginScreen() {
     setError(null);
     try {
       await action();
-      // Sign-in (and any streak merge) is done. The quit-streak provider re-reads
-      // backend data off the auth sessionVersion bump, so we just land on Home.
-      router.replace('/');
+      // Sign-in (and any streak merge) is done. Close every open modal (login, and settings
+      // underneath when we came from there) so we land cleanly on Home instead of stacking Home
+      // on top of a leftover modal. The quit-streak provider re-reads backend data off the auth
+      // sessionVersion bump. Fall back to replace if there's nothing to dismiss.
+      if (router.canDismiss()) router.dismissAll();
+      else router.replace('/');
     } catch (err) {
       // Cancelling a native sheet (Google/Apple) is a no-op, not an error — leave the screen alone.
       if (isSignInCancellation(err)) return;
