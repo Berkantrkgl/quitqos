@@ -54,6 +54,10 @@ class MilestoneNotificationServiceTest {
         lenient().when(m.getOffsetMinutes()).thenReturn(offsetMinutes);
         lenient().when(m.getTitle()).thenReturn(title);
         lenient().when(m.getDescription()).thenReturn(description);
+        // Push now resolves copy by locale; these mirror the real titleFor/descriptionFor
+        // for the Turkish default the tests exercise.
+        lenient().when(m.titleFor(anyString())).thenReturn(title);
+        lenient().when(m.descriptionFor(anyString())).thenReturn(description);
         return m;
     }
 
@@ -62,6 +66,7 @@ class MilestoneNotificationServiceTest {
         lenient().when(u.getId()).thenReturn(id);
         lenient().when(u.isNotificationsEnabled()).thenReturn(notificationsEnabled);
         lenient().when(u.getFcmToken()).thenReturn(fcmToken);
+        lenient().when(u.getLocale()).thenReturn("tr");
         return u;
     }
 

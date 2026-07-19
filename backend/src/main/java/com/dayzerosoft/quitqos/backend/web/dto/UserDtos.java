@@ -21,7 +21,8 @@ public final class UserDtos {
             String username,
             String displayName,
             String avatarUrl,
-            Boolean notificationsEnabled) {
+            Boolean notificationsEnabled,
+            String locale) {
     }
 
     /** {@code PUT /users/me/fcm-token}. */
@@ -36,6 +37,7 @@ public final class UserDtos {
             String displayName,
             String avatarUrl,
             boolean notificationsEnabled,
+            String locale,
             Instant createdAt,
             Instant updatedAt) {
 
@@ -48,6 +50,7 @@ public final class UserDtos {
                     user.getDisplayName(),
                     user.getAvatarUrl(),
                     user.isNotificationsEnabled(),
+                    user.getLocale(),
                     user.getCreatedAt(),
                     user.getUpdatedAt());
         }

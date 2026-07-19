@@ -38,7 +38,24 @@ public class Milestone {
     @Column(nullable = false)
     private String description;
 
+    /** English copy (mirrors the mobile i18n catalogue). Turkish is title/description. */
+    @Column(name = "title_en", nullable = false)
+    private String titleEn;
+
+    @Column(name = "description_en", nullable = false)
+    private String descriptionEn;
+
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "badge_id", nullable = false)
     private Badge badge;
+
+    /** Title in the given locale ('en' → English, anything else → Turkish default). */
+    public String titleFor(String locale) {
+        return "en".equalsIgnoreCase(locale) ? titleEn : title;
+    }
+
+    /** Description in the given locale ('en' → English, anything else → Turkish default). */
+    public String descriptionFor(String locale) {
+        return "en".equalsIgnoreCase(locale) ? descriptionEn : description;
+    }
 }

@@ -91,7 +91,8 @@ public class MilestoneNotificationService {
         }
 
         try {
-            pushSender.send(user.getFcmToken(), milestone.getTitle(), milestone.getDescription(),
+            String locale = user.getLocale();
+            pushSender.send(user.getFcmToken(), milestone.titleFor(locale), milestone.descriptionFor(locale),
                     milestone.getId().toString());
             userMilestone.setNotificationSentAt(Instant.now());
             userMilestones.save(userMilestone);

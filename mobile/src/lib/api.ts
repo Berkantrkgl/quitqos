@@ -73,6 +73,7 @@ export type AuthUser = {
   displayName: string | null;
   avatarUrl: string | null;
   notificationsEnabled: boolean;
+  locale: string | null;
   createdAt: string;
 };
 
@@ -115,7 +116,7 @@ export function logout(refreshToken: string): Promise<void> {
 /** PATCH /users/me — partial profile update. Send only the fields you want to change. */
 export function updateMe(
   accessToken: string,
-  patch: { username?: string; displayName?: string; notificationsEnabled?: boolean },
+  patch: { username?: string; displayName?: string; notificationsEnabled?: boolean; locale?: string },
 ): Promise<AuthUser> {
   return apiFetch<AuthUser>('/users/me', { method: 'PATCH', body: patch, accessToken });
 }

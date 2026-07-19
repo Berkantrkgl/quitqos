@@ -26,9 +26,11 @@ import {
   refreshTokens,
   relapseAttempt,
   syncQuitAttempts,
+  updateMe,
   type AuthUser,
   type SyncAttempt,
 } from '@/lib/api';
+import { useLanguage } from '@/i18n/language-provider';
 import { registerFcmToken } from '@/lib/notifications';
 
 const ACCESS_KEY = 'quitqos.auth.access';
@@ -173,6 +175,7 @@ async function mergeGuestAttempts(
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { language } = useLanguage();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -203,6 +206,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     // Re-run when the signed-in user changes (fresh device/token per account).
   }, [user?.id, accessToken]);
+
+  // Keep the backend in sync with the app language so milestone pushes arrive in
+  // the user's language. Runs on sign-in and whenever the language changes; only
+  // PATCHes when it actually differs from what the server last returned. Guests
+  // skip this (their notifications are local, already localized at schedule time).
+  useEffect(() => {
+    if (!user || !accessToken) return;
+    if (user.locale === language) return;
+    updateMe(accessToken, { locale: language })
+      .then((updated) => setUser(updated))
+      .catch(() => {
+        // Non-fatal: pushes just stay in the previous locale until the next sync.
+      });
+  }, [user?.id, accessToken, language]);
 
   // Restore a persisted session on mount; refresh the access token if we have a refresh token.
   useEffect(() => {

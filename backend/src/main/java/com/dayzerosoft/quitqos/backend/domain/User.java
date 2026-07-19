@@ -50,6 +50,10 @@ public class User {
     @Column(name = "notifications_enabled", nullable = false)
     private boolean notificationsEnabled = true;
 
+    /** App language ('tr' | 'en'), set by mobile. Milestone pushes use this locale. */
+    @Column(name = "locale", nullable = false)
+    private String locale = "tr";
+
     /** Latest device FCM token for push; null until the device registers one. */
     @Column(name = "fcm_token")
     private String fcmToken;

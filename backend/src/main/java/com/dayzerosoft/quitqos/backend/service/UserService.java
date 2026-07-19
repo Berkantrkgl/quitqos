@@ -49,6 +49,14 @@ public class UserService {
         if (request.notificationsEnabled() != null) {
             user.setNotificationsEnabled(request.notificationsEnabled());
         }
+        if (request.locale() != null) {
+            // Only the languages the app ships; ignore anything else so a stray value
+            // can't leave pushes in an unsupported locale.
+            String locale = request.locale().toLowerCase();
+            if (locale.equals("tr") || locale.equals("en")) {
+                user.setLocale(locale);
+            }
+        }
         return UserProfileResponse.from(users.save(user));
     }
 

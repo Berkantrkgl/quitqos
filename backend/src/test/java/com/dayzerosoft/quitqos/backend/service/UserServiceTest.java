@@ -53,7 +53,7 @@ class UserServiceTest {
         when(users.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // only displayName + notificationsEnabled are set; username + avatarUrl are null (absent)
-        UpdateUserRequest request = new UpdateUserRequest(null, "Berkan T.", null, false);
+        UpdateUserRequest request = new UpdateUserRequest(null, "Berkan T.", null, false, null);
         UserProfileResponse response = service.update(userId, request);
 
         assertThat(response.displayName()).isEqualTo("Berkan T.");       // changed
@@ -67,7 +67,7 @@ class UserServiceTest {
         when(users.findById(userId)).thenReturn(Optional.of(user));
         when(users.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        UserProfileResponse response = service.update(userId, new UpdateUserRequest(null, null, null, null));
+        UserProfileResponse response = service.update(userId, new UpdateUserRequest(null, null, null, null, null));
 
         assertThat(response.displayName()).isEqualTo("Berkan");
         assertThat(response.avatarUrl()).isEqualTo("https://old/avatar.png");

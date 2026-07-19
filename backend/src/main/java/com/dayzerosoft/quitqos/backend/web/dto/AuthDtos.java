@@ -46,12 +46,13 @@ public final class AuthDtos {
             String displayName,
             String avatarUrl,
             boolean notificationsEnabled,
+            String locale,
             Instant createdAt) {
 
         public static UserDto from(User user) {
             // Every backend user is registered (guests never reach the server), so isGuest is always false.
             return new UserDto(user.getId(), false, user.getUsername(), user.getDisplayName(),
-                    user.getAvatarUrl(), user.isNotificationsEnabled(), user.getCreatedAt());
+                    user.getAvatarUrl(), user.isNotificationsEnabled(), user.getLocale(), user.getCreatedAt());
         }
     }
 }
